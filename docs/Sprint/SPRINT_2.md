@@ -99,4 +99,5 @@ Can be opened in browser (local or live)
 
 #Next Step 
 -Connect Frontend to backend
+-Connect to database
 
