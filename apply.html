@@ -1,151 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Job Application</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Apply Now</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
 
-    .container {
-      background: #fff;
-      padding: 25px;
-      width: 350px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
+body {
+  height: 100vh;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+/* Glass Card */
+.container {
+  backdrop-filter: blur(15px);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 30px;
+  width: 380px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  color: white;
+  animation: fadeIn 1s ease;
+}
 
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(20px);}
+  to {opacity: 1; transform: translateY(0);}
+}
 
-    button {
-      width: 100%;
-      padding: 10px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-    button:hover {
-      background: #0056b3;
-    }
+/* Floating Inputs */
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
 
-    .error {
-      color: red;
-      font-size: 12px;
-    }
+.input-group input,
+.input-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  outline: none;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
 
-    .success {
-      color: green;
-      text-align: center;
-      margin-top: 10px;
-    }
-  </style>
+.input-group label {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  font-size: 14px;
+  color: #ddd;
+  transition: 0.3s;
+  pointer-events: none;
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label,
+.input-group textarea:focus + label,
+.input-group textarea:not(:placeholder-shown) + label {
+  top: -10px;
+  left: 10px;
+  font-size: 12px;
+  background: #764ba2;
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+
+/* Button */
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #ff7a18;
+  background: linear-gradient(90deg, #ff7a18, #ffb347);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+/* Messages */
+.error {
+  color: #ff6b6b;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.success {
+  text-align: center;
+  margin-top: 15px;
+  color: #00ffcc;
+  font-weight: bold;
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
-  <h2>Apply for Job</h2>
+  <h2>🚀 Apply Now</h2>
 
   <form id="applyForm">
-    <input type="text" id="name" placeholder="Full Name">
-    <div id="nameError" class="error"></div>
 
-    <input type="email" id="email" placeholder="Email">
-    <div id="emailError" class="error"></div>
+    <div class="input-group">
+      <input type="text" id="name" placeholder=" " />
+      <label>Full Name</label>
+      <div id="nameError" class="error"></div>
+    </div>
 
-    <textarea id="message" placeholder="Why should we hire you?" rows="4"></textarea>
-    <div id="messageError" class="error"></div>
+    <div class="input-group">
+      <input type="email" id="email" placeholder=" " />
+      <label>Email Address</label>
+      <div id="emailError" class="error"></div>
+    </div>
+
+    <div class="input-group">
+      <textarea id="message" rows="4" placeholder=" "></textarea>
+      <label>Why should we hire you?</label>
+      <div id="messageError" class="error"></div>
+    </div>
 
     <button type="submit">Submit Application</button>
+
   </form>
 
   <div id="successMessage" class="success"></div>
 </div>
 
 <script>
-  const form = document.getElementById("applyForm");
+const form = document.getElementById("applyForm");
 
-  form.addEventListener("submit", function(e) {
-    e.preventDefault();
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
 
-    // Get values
-    let name = document.getElementById("name").value.trim();
-    let email = document.getElementById("email").value.trim();
-    let message = document.getElementById("message").value.trim();
+  let name = document.getElementById("name").value.trim();
+  let email = document.getElementById("email").value.trim();
+  let message = document.getElementById("message").value.trim();
 
-    // Error elements
-    let nameError = document.getElementById("nameError");
-    let emailError = document.getElementById("emailError");
-    let messageError = document.getElementById("messageError");
-    let successMessage = document.getElementById("successMessage");
+  let nameError = document.getElementById("nameError");
+  let emailError = document.getElementById("emailError");
+  let messageError = document.getElementById("messageError");
+  let successMessage = document.getElementById("successMessage");
 
-    // Reset errors
-    nameError.textContent = "";
-    emailError.textContent = "";
-    messageError.textContent = "";
-    successMessage.textContent = "";
+  nameError.textContent = "";
+  emailError.textContent = "";
+  messageError.textContent = "";
+  successMessage.textContent = "";
 
-    let isValid = true;
+  let isValid = true;
 
-    // Validation
-    if (name === "") {
-      nameError.textContent = "Name is required";
-      isValid = false;
-    }
+  if (name === "") {
+    nameError.textContent = "Name is required";
+    isValid = false;
+  }
 
-    if (email === "") {
-      emailError.textContent = "Email is required";
-      isValid = false;
-    } else if (!email.includes("@")) {
-      emailError.textContent = "Invalid email format";
-      isValid = false;
-    }
+  if (email === "") {
+    emailError.textContent = "Email is required";
+    isValid = false;
+  } else if (!email.includes("@")) {
+    emailError.textContent = "Invalid email";
+    isValid = false;
+  }
 
-    if (message === "") {
-      messageError.textContent = "Message is required";
-      isValid = false;
-    }
+  if (message === "") {
+    messageError.textContent = "Message is required";
+    isValid = false;
+  }
 
-    // If valid
-    if (isValid) {
-      // Simulate storing data
-      let application = {
-        name,
-        email,
-        message
-      };
+  if (isValid) {
+    const application = { name, email, message };
 
-      console.log("Application Submitted:", application);
+    console.log(application);
+    localStorage.setItem("application", JSON.stringify(application));
 
-      // Optional: Save to localStorage (demo purpose)
-      localStorage.setItem("application", JSON.stringify(application));
-
-      successMessage.textContent = "Application submitted successfully!";
-
-      form.reset();
-    }
-  });
+    successMessage.textContent = "✅ Application submitted successfully!";
+    form.reset();
+  }
+});
 </script>
 
 </body>
