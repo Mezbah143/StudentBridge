@@ -4,7 +4,7 @@
 #signup 
 #Join as a student 
 #post a job 
-# For Students ( when we click this the description about this should appear )
+# For Students ( when we click this ,description about this should appear )
 #simillarly for Employers and community.
 #Job tittle
 #city or region
@@ -87,3 +87,16 @@ Project runs without errors
 Can be opened in browser (local or live)
 
 ## We have to work in this features so our Website function properly.
+
+##Testing Plan
+-Valid input
+-Invalid input
+-Empty form
+
+## Backup Demo Idea 
+<img width="1919" height="911" alt="Screenshot 2026-04-01 130822" src="https://github.com/user-attachments/assets/3db07e5c-6467-47ec-bcaf-55b716e5ce67" /> 
+<img width="1919" height="943" alt="Screenshot 2026-04-01 123302" src="https://github.com/user-attachments/assets/cc6385b3-76a1-4713-b8df-bab5208c0696" />
+
+#Next Step 
+-Connect Frontend to backend
+
