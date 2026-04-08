@@ -15,7 +15,7 @@ Apply Feature Implementation
 ## Team Members
 
 * Mezbah Uddin
-* Member 2
+* ALI MOHAMAD ASHRAF
 * Member 3
 
 ## Definition of Done
