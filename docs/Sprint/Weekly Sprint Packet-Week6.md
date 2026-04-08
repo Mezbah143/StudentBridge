@@ -1,16 +1,69 @@
-## Sprint Goal
+Sprint 2 – Week 6 (StudentBridge)
 
-Implement job application feature.
+Sprint Goal
 
-## Main Issue
+Deliver a complete job application flow where users can access the Apply page, submit a form, and receive confirmation, with data properly handled by the system.
 
-Apply Feature Implementation
 
-## Tasks
+Main Issue
 
-* Build apply.html
-* Connect Apply button
-* Add form submission
+Implement Job Application Feature
+
+Scope:
+
+* Build `apply.html` page
+* Connect “Apply” button to the page
+* Create and handle form submission
+* Process and store (or simulate storing) application data
+
+
+Definition of Done (DoD)
+
+
+* Apply page is accessible from job listing
+* Form contains required fields (e.g., name, email, CV/message)
+* Form validation prevents empty or invalid input
+* Submit button successfully sends data
+* User receives confirmation message after submission
+* No console errors during execution
+* Feature works on both desktop and mobile view
+
+Testing / Checking Plan**
+
+Functional Testing
+
+* Click Apply → page opens correctly
+* Fill form → submit → confirmation appears
+
+Validation Testing
+
+* Submit empty form → error message shown
+* Invalid email → rejected
+* 
+Edge Cases
+
+* Refresh after submit → no duplicate submission
+* Slow internet → system still responds properly
+
+UI Testing
+
+* Form layout is readable and usable
+* Buttons are clickable and responsive
+
+Backup Demo Idea 
+
+If backend fails:
+
+* Use local storage / mock data
+* Show fake success message after submission
+* Pre-recorded demo video of working version
+
+Next Step
+
+* Connect frontend form to real backend/database
+* Add user authentication 
+* Store and display submitted applications
+
 
 ## Team Members
 
@@ -18,11 +71,6 @@ Apply Feature Implementation
 * ALI MOHAMAD ASHRAF
 * CHAULAGAIN DIPESH
 * Sami Ul Alim
-## Definition of Done
-
-* Apply page is accessible
-* Form is visible and usable
-* Button redirects correctly
 
 ## Status
 
