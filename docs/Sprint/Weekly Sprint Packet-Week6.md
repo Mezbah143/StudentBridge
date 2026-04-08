@@ -17,7 +17,7 @@ Apply Feature Implementation
 * Mezbah Uddin
 * ALI MOHAMAD ASHRAF
 * CHAULAGAIN DIPESH
-
+* Sami Ul Alim
 ## Definition of Done
 
 * Apply page is accessible
