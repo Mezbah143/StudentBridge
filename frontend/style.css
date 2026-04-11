@@ -1,0 +1,191 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background: white;
+}
+
+.logo {
+  font-weight: bold;
+}
+
+.nav-center a {
+  margin: 0 15px;
+  text-decoration: none;
+  color: #555;
+}
+
+.nav-center .active {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.hero h1 {
+  font-size: 42px;
+  margin-bottom: 10px;
+}
+
+.hero p {
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+.search-btn {
+  background: #3b82f6;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+}
+
+/* Why Section */
+.why {
+  padding: 60px;
+  text-align: center;
+}
+
+.cards {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.card {
+  background: #e5e7eb;
+  padding: 25px;
+  border-radius: 12px;
+  width: 250px;
+}
+
+.icon {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+/* Steps */
+.steps {
+  padding: 60px;
+  text-align: center;
+}
+
+.step-container {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 40px;
+}
+
+.circle {
+  width: 50px;
+  height: 50px;
+  background: #3b82f6;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  margin-bottom: 10px;
+}
+
+/* Stats */
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  margin-top: 50px;
+}
+
+.stats h3 {
+  color: #3b82f6;
+  font-size: 28px;
+}
+
+/* CTA */
+.cta {
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+  color: white;
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.cta-buttons {
+  margin-top: 20px;
+}
+
+.btn-light {
+  background: white;
+  color: black;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  margin-right: 10px;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+}
+
+/* Footer */
+.footer {
+  background: #0f172a;
+  color: white;
+  padding: 50px;
+}
+
+.footer-grid {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.footer h4 {
+  margin-bottom: 10px;
+}
+
+.footer p {
+  color: #cbd5f5;
+  margin: 5px 0;
+}
+
+copyright {
+  text-align: center;
+}

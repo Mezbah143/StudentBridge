@@ -1,153 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>StudentBridge</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./frontend/style.css">
 </head>
-
 <body>
 
-<!-- ================= NAVBAR ================= -->
+<!-- Navbar -->
 <header class="navbar">
-  <div class="logo">🎓 StudentBridge</div>
+  <div class="logo">
+    🎓 <span>StudentBridge</span>
+  </div>
 
-  <nav>
-    <a href="#">Find Jobs</a>
+  <nav class="nav-center">
+    <a class="active" href="#">Home</a>
+    <a href="#">Jobs</a>
   </nav>
 
-  <div class="auth">
-    <button onclick="openLogin()">Log in</button>
-    <button onclick="openSignup()">Sign up</button>
+  <div class="nav-right">
+    <a href="#">Login</a>
+    <button class="btn-primary">Register</button>
   </div>
 </header>
 
-<!-- ================= HERO ================= -->
+<!-- Hero Section -->
 <section class="hero">
-  <div class="hero-left">
+  <h1>Find Part-Time Jobs Easily</h1>
+  <p>Helping international students in Korea connect with employers</p>
+  <button class="search-btn">🔍 Search Jobs</button>
+</section>
 
-    <p class="tag">#1 Job Platform for International Students</p>
+<!-- Why Section -->
+<section class="why">
+  <h2>Why Choose StudentBridge?</h2>
 
-    <h1>
-      Bridge the gap to your <span>local career</span>
-    </h1>
-
-    <p class="desc">
-      Find part-time jobs, internships, and freelance opportunities with local employers.
-    </p>
-
-    <!-- SEARCH -->
-    <div class="search-box">
-      <input type="text" id="searchTitle" placeholder="Job title">
-      <input type="text" id="searchCity" placeholder="City or region">
-      <button onclick="searchJobs()">Search</button>
+  <div class="cards">
+    <div class="card">
+      <div class="icon">🔍</div>
+      <h3>Easy Job Search</h3>
+      <p>Find jobs quickly with smart filters</p>
     </div>
 
-    <div class="popular">
-      <span>Popular:</span>
-      <button onclick="quickSearch('Part-time')">Part-time</button>
-      <button onclick="quickSearch('Internship')">Internships</button>
+    <div class="card">
+      <div class="icon">🌐</div>
+      <h3>Multi-Language</h3>
+      <p>Support for international students</p>
     </div>
 
+    <div class="card">
+      <div class="icon">💼</div>
+      <h3>Student-Friendly</h3>
+      <p>Jobs suited for student schedules</p>
+    </div>
   </div>
 </section>
 
-<!-- ================= FEATURES ================= -->
-<section class="features">
-  <div class="card">
-    🎓
-    <h3>For Students</h3>
-    <p>Build your network and earn while studying.</p>
+<!-- How It Works -->
+<section class="steps">
+  <h2>How It Works</h2>
+
+  <div class="step-container">
+    <div class="step">
+      <div class="circle">1</div>
+      <h4>Create Profile</h4>
+      <p>Sign up and complete your student profile</p>
+    </div>
+
+    <div class="step">
+      <div class="circle">2</div>
+      <h4>Search Jobs</h4>
+      <p>Browse and filter jobs</p>
+    </div>
+
+    <div class="step">
+      <div class="circle">3</div>
+      <h4>Apply Online</h4>
+      <p>Submit application easily</p>
+    </div>
+
+    <div class="step">
+      <div class="circle">4</div>
+      <h4>Get Hired</h4>
+      <p>Connect with employers</p>
+    </div>
   </div>
 
-  <div class="card">
-    💼
-    <h3>For Employers</h3>
-    <p>Hire skilled international students easily.</p>
-  </div>
-
-  <div class="card">
-    🌍
-    <h3>Community</h3>
-    <p>Connect and grow with others.</p>
+  <!-- Stats -->
+  <div class="stats">
+    <div><h3>500+</h3><p>Active Job Listings</p></div>
+    <div><h3>2,000+</h3><p>Student Members</p></div>
+    <div><h3>150+</h3><p>Partner Companies</p></div>
   </div>
 </section>
 
-<!-- ================= JOBS ================= -->
-<section class="jobs-section">
-  <div class="jobs-header">
-    <h2>Latest Opportunities</h2>
-  </div>
-
-  <div id="jobs" class="jobs-container">
-    <!-- Jobs will load here dynamically -->
-  </div>
-</section>
-
-<!-- ================= CTA ================= -->
+<!-- CTA -->
 <section class="cta">
-  <h2>Ready to take the next step?</h2>
-  <p>Join StudentBridge and start your journey today.</p>
-
+  <h2>Ready to Find Your Next Opportunity?</h2>
+  <p>Join thousands of international students finding work in Korea</p>
   <div class="cta-buttons">
-    <button onclick="openSignup()">Join as Student</button>
-    <button onclick="openPostJob()">Post a Job</button>
+    <button class="btn-light">Get Started</button>
+    <button class="btn-outline">Browse Jobs</button>
   </div>
 </section>
 
-<!-- ================= LOGIN MODAL ================= -->
-<div id="loginModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('loginModal')">&times;</span>
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-grid">
 
-    <h2>Login</h2>
+    <div>
+      <h3>🎓 StudentBridge</h3>
+      <p>Connecting international students with opportunities in South Korea.</p>
+    </div>
 
-    <input type="email" id="loginEmail" placeholder="Email">
-    <input type="password" id="loginPassword" placeholder="Password">
+    <div>
+      <h4>For Students</h4>
+      <p>Find Jobs</p>
+      <p>Dashboard</p>
+      <p>Resources</p>
+    </div>
 
-    <button onclick="login()">Log in</button>
+    <div>
+      <h4>For Employers</h4>
+      <p>Post a Job</p>
+      <p>View Applicants</p>
+      <p>Pricing</p>
+    </div>
+
+    <div>
+      <h4>Support</h4>
+      <p>Help Center</p>
+      <p>Contact Us</p>
+      <p>FAQs</p>
+    </div>
+
   </div>
-</div>
 
-<!-- ================= SIGNUP MODAL ================= -->
-<div id="signupModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('signupModal')">&times;</span>
-
-    <h2>Sign Up</h2>
-
-    <input type="email" id="signupEmail" placeholder="Email">
-    <input type="password" id="signupPassword" placeholder="Password">
-
-    <!-- Role Selection -->
-    <select id="role">
-      <option value="student">Student</option>
-      <option value="employer">Employer</option>
-    </select>
-
-    <button onclick="signup()">Create Account</button>
-  </div>
-</div>
-
-<!-- ================= POST JOB MODAL ================= -->
-<div id="jobModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('jobModal')">&times;</span>
-
-    <h2>Post a Job</h2>
-
-    <input type="text" id="jobTitle" placeholder="Job Title">
-    <input type="text" id="jobCity" placeholder="City">
-    <textarea id="jobDesc" placeholder="Job Description"></textarea>
-
-    <button onclick="postJob()">Post Job</button>
-  </div>
-</div>
-
-<script src="script.js"></script>
+  <p class="copyright">© 2026 StudentBridge. All rights reserved.</p>
+</footer>
 
 </body>
 </html>
