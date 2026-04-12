@@ -36,16 +36,39 @@ body {
 
 .nav-right {
   display: flex;
-  align-items: center;
-  gap: 15px;
+  gap: 10px;
 }
 
+/* Base button style */
+.btn {
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+/* Login button (outline) */
+.btn-outline {
+  border: 1px solid #2563EB;
+  color: #2563EB;
+  background: transparent;
+}
+
+.btn-outline:hover {
+  background: #2563EB;
+  color: white;
+}
+
+/* Register button (primary) */
 .btn-primary {
-  background: #3b82f6;
+  background: #2563EB;
   color: white;
   border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
+}
+
+.btn-primary:hover {
+  background: #1E40AF;
 }
 
 /* Hero */

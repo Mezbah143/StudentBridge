@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login - StudentBridge</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Card */
+.login-box {
+  background: #3b82f6;
+  padding: 35px;
+  width: 350px;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+}
+
+.login-box h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.login-box p {
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+/* Input group */
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  font-size: 14px;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+/* Password toggle */
+.password-group {
+  position: relative;
+}
+
+.toggle {
+  position: absolute;
+  right: 10px;
+  top: 38px;
+  cursor: pointer;
+}
+
+/* Button */
+button {
+  width: 100%;
+  padding: 12px;
+  background: #0d60e7;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2563eb;
+}
+
+/* Link */
+.switch {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.switch a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+</style>
+
+</head>
+<body>
+
+<div class="login-box">
+  <h2>Welcome Back 👋</h2>
+  <p>Login to your StudentBridge account</p>
+
+  <form onsubmit="loginUser(event)">
+    
+    <div class="input-group">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="Enter your email" required>
+    </div>
+
+    <div class="input-group password-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Enter your password" required>
+      <span class="toggle" onclick="togglePassword()">👁️</span>
+    </div>
+
+    <button type="submit">Login</button>
+  </form>
+
+  <p class="switch">
+    Don’t have an account? <a href="register.html">Register</a>
+  </p>
+</div>
+
+<script>
+// Show/Hide Password
+function togglePassword() {
+  pass.type = pass.type === "password" ? "text" : "password";
+}
+
+// Login System
+function loginUser(event) {
+  event.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+
+  if (storedUser && email === storedUser.email && password === storedUser.password) {
+    localStorage.setItem("loggedIn", "true");
+    alert("Login successful!");
+    window.location.href = "index.html";
+  } else {
+    alert("Invalid email or password!");
+  }
+}
+</script>
+
+</body>
+</html>

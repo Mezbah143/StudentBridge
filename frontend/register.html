@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register - StudentBridge</title>
+  <link rel="stylesheet" href="register.css">
+</head>
+<body>
+
+<div class="container">
+  <div class="auth-box">
+    <h2>Create Your Account </h2>
+    <p>Join StudentBridge and start your journey</p>
+
+    <form>
+
+      <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" placeholder="Enter your full name" required>
+      </div>
+
+      <div class="input-group">
+        <label>Email Address</label>
+        <input type="email" placeholder="Enter your email" required>
+      </div>
+
+      <div class="input-group">
+        <label>Phone Number</label>
+        <input type="tel" placeholder="e.g. 010-1234-5678" required>
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" placeholder="Create password" required>
+      </div>
+
+      <div class="input-group">
+        <label>Confirm Password</label>
+        <input type="password" placeholder="Confirm password" required>
+      </div>
+
+      <div class="input-group">
+        <label>Account Type</label>
+        <select required>
+          <option value="">Select type</option>
+          <option>Student</option>
+          <option>Employer</option>
+        </select>
+      </div>
+
+      <div class="terms">
+        <input type="checkbox" required>
+        <span>I agree to the Terms & Conditions</span>
+      </div>
+
+      <button type="submit">Create Account</button>
+
+    </form>
+
+    <p class="switch">
+      Already have an account? <a href="login.html">Login</a>
+    </p>
+  </div>
+</div>
+
+</body>
+</html>
