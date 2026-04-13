@@ -49,15 +49,14 @@ body {
 }
 
 /* Login button (outline) */
-.btn-outline {
-  border: 1px solid #2563EB;
-  color: #2563EB;
-  background: transparent;
+.btn-outline{
+  background: #2563EB;
+  color: white;
+  border: none;
 }
 
 .btn-outline:hover {
   background: #2563EB;
-  color: white;
 }
 
 /* Register button (primary) */
