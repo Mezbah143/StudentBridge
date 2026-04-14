@@ -1,173 +1,181 @@
-// ================= BASE URL (IMPORTANT FIX) =================
-const BASE_URL = window.location.origin;
+// ===============================
+// StudentBridge - Main JS (Pro)
+// ===============================
 
-// ================= MODAL CONTROL =================
-function openLogin() {
-  document.getElementById("loginModal").style.display = "block";
-}
+// Global App Object
+const App = {
+  state: {
+    user: null,
+    jobs: [],
+  },
 
-function openSignup() {
-  document.getElementById("signupModal").style.display = "block";
-}
+  init() {
+    this.cacheDOM();
+    this.bindEvents();
+    this.initUI();
+    this.loadData();
+  },
 
-function openPostJob() {
-  document.getElementById("jobModal").style.display = "block";
-}
+  // ===============================
+  // CACHE DOM ELEMENTS
+  // ===============================
+ cacheDOM() {
+   this.navLinks = document.querySelectorAll(".nav-center a");
+   this.searchBtn = document.getElementById("searchBtn");
+   this.getStartedBtn = document.getElementById("getStartedBtn");
+   this.browseJobsBtn = document.getElementById("browseJobsBtn");
+  },
 
-function closeModal(id) {
-  document.getElementById(id).style.display = "none";
-}
-
-// ================= SIGNUP =================
-async function signup() {
-  try {
-    const email = document.getElementById("signupEmail").value;
-    const password = document.getElementById("signupPassword").value;
-    const role = document.getElementById("role").value;
-
-    const res = await fetch(`${BASE_URL}/api/auth/signup`, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ email, password, role })
-    });
-
-    const data = await res.json();
-    alert(data.message);
-
-    closeModal("signupModal");
-  } catch (error) {
-    console.error(error);
-    alert("Signup failed");
-  }
-}
-
-// ================= LOGIN =================
-async function login() {
-  try {
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
-
-    const res = await fetch(`${BASE_URL}/api/auth/login`, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ email, password })
-    });
-
-    const data = await res.json();
-    console.log("Login response:", data); // DEBUG
-
-    if (data.success) {
-      localStorage.setItem("user", JSON.stringify(data.user));
-      window.location.href = "dashboard.html";
-    } else {
-      alert("Invalid login");
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Login error");
-  }
-}
-
-// ================= POST JOB =================
-async function postJob() {
-  try {
-    const title = document.getElementById("jobTitle").value;
-    const city = document.getElementById("jobCity").value;
-    const description = document.getElementById("jobDesc").value;
-
-    const res = await fetch(`${BASE_URL}/api/jobs/add`, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ title, city, description })
-    });
-
-    const data = await res.json();
-    alert(data.message);
-
-    closeModal("jobModal");
-    loadJobs();
-  } catch (error) {
-    console.error(error);
-    alert("Failed to post job");
-  }
-}
-
-// ================= LOAD JOBS =================
-async function loadJobs() {
-  try {
-    const res = await fetch(`${BASE_URL}/api/jobs`);
-    const jobs = await res.json();
-
-    displayJobs(jobs);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-// ================= DISPLAY JOBS =================
-function displayJobs(jobs) {
-  const container = document.getElementById("jobs");
-
-  if (!container) return; // IMPORTANT (dashboard fix)
-
-  container.innerHTML = "";
-
-  if (jobs.length === 0) {
-    container.innerHTML = "<p>No jobs found</p>";
-    return;
-  }
-
-  jobs.forEach(job => {
-    container.innerHTML += `
-      <div class="job-card">
-        <h3>${job.title}</h3>
-        <p><strong>City:</strong> ${job.city}</p>
-        <p>${job.description}</p>
-        <button onclick="applyJob(${job.id})">Apply</button>
-      </div>
-    `;
-  });
-}
-
-// ================= SEARCH =================
-async function searchJobs() {
-  try {
-    const title = document.getElementById("searchTitle").value.toLowerCase();
-    const city = document.getElementById("searchCity").value.toLowerCase();
-
-    const res = await fetch(`${BASE_URL}/api/jobs`);
-    const jobs = await res.json();
-
-    const filtered = jobs.filter(job =>
-      job.title.toLowerCase().includes(title) &&
-      job.city.toLowerCase().includes(city)
+  // ===============================
+  // EVENT LISTENERS
+  // ===============================
+  bindEvents() {
+    this.navLinks.forEach(link =>
+      link.addEventListener("click", this.handleNavClick.bind(this))
     );
 
-    displayJobs(filtered);
-  } catch (error) {
-    console.error(error);
+    if (this.searchBtn)
+      this.searchBtn.addEventListener("click", this.handleSearch.bind(this));
+
+    if (this.getStartedBtn)
+      this.getStartedBtn.addEventListener("click", this.handleRegister.bind(this));
+
+    if (this.browseJobsBtn)
+      this.browseJobsBtn.addEventListener("click", this.handleBrowseJobs.bind(this));
+
+    window.addEventListener("scroll", this.handleScroll.bind(this));
+  },
+
+  // ===============================
+  // INITIAL UI SETUP
+  // ===============================
+  initUI() {
+    this.enableSmoothScroll();
+    this.initAnimations();
+  },
+
+  // ===============================
+  // DATA LOADING (API READY)
+  // ===============================
+  async loadData() {
+    try {
+      console.log("Loading data...");
+
+      // Future API call
+      // const res = await fetch('/api/jobs');
+      // this.state.jobs = await res.json();
+
+      this.state.jobs = this.getMockJobs();
+
+      console.log("Jobs loaded:", this.state.jobs);
+    } catch (err) {
+      console.error("Error loading data:", err);
+    }
+  },
+
+  // ===============================
+  // NAVIGATION HANDLER
+  // ===============================
+  handleNavClick(e) {
+    this.navLinks.forEach(l => l.classList.remove("active"));
+    e.target.classList.add("active");
+  },
+
+  // ===============================
+  // SEARCH HANDLER
+  // ===============================
+  handleSearch() {
+    this.showLoader();
+
+    setTimeout(() => {
+      window.location.href = "/jobs.html"; // clean routing
+    }, 800);
+  },
+
+  // ===============================
+  // REGISTER HANDLER
+  // ===============================
+  handleRegister() {
+    window.location.href = "/frontend/register.html";
+  },
+
+  // ===============================
+  // BROWSE JOBS HANDLER
+  // ===============================
+  handleBrowseJobs() {
+    window.location.href = "/jobs.html";
+  },
+
+  // ===============================
+  // SCROLL EFFECT (Navbar Shadow)
+  // ===============================
+  handleScroll() {
+    const navbar = document.querySelector(".navbar");
+
+    if (window.scrollY > 50) {
+      navbar.classList.add("scrolled");
+    } else {
+      navbar.classList.remove("scrolled");
+    }
+  },
+
+  // ===============================
+  // SMOOTH SCROLL
+  // ===============================
+  enableSmoothScroll() {
+    document.querySelectorAll("a[href^='#']").forEach(anchor => {
+      anchor.addEventListener("click", function (e) {
+        const target = document.querySelector(this.getAttribute("href"));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: "smooth" });
+        }
+      });
+    });
+  },
+
+  // ===============================
+  // ANIMATIONS (Intersection Observer)
+  // ===============================
+  initAnimations() {
+    const elements = document.querySelectorAll(".card, .step");
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("show");
+        }
+      });
+    }, { threshold: 0.2 });
+
+    elements.forEach(el => observer.observe(el));
+  },
+
+  // ===============================
+  // UI LOADER (Professional UX)
+  // ===============================
+  showLoader() {
+    const loader = document.createElement("div");
+    loader.className = "page-loader";
+    loader.innerHTML = `<div class="spinner"></div>`;
+    document.body.appendChild(loader);
+  },
+
+  // ===============================
+  // MOCK DATA (TEMP)
+  // ===============================
+  getMockJobs() {
+    return [
+      { id: 1, title: "Cafe Assistant", location: "Ulsan", pay: "₩10,000/hr" },
+      { id: 2, title: "English Tutor", location: "Busan", pay: "₩25,000/hr" },
+      { id: 3, title: "Convenience Store Staff", location: "Seoul", pay: "₩9,620/hr" }
+    ];
   }
-}
-
-// ================= QUICK SEARCH =================
-function quickSearch(keyword) {
-  document.getElementById("searchTitle").value = keyword;
-  searchJobs();
-}
-
-// ================= APPLY JOB =================
-function applyJob(id) {
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  if (!user) {
-    alert("Please login first");
-    return;
-  }
-
-  alert("Applied successfully! (Next step: backend API)");
-}
-
-// ================= AUTO LOAD =================
-window.onload = () => {
-  loadJobs();
 };
+
+// ===============================
+// INIT APP
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+  App.init();
+});
