@@ -12,36 +12,36 @@
     <h2>Create Your Account </h2>
     <p>Join StudentBridge and start your journey</p>
 
-    <form>
+    <form action="RegisterServlet" method="post">  
 
       <div class="input-group">
         <label>Full Name</label>
-        <input type="text" placeholder="Enter your full name" required>
+        <input type="text" name="name" placeholder="Enter your full name" required>
       </div>
 
       <div class="input-group">
         <label>Email Address</label>
-        <input type="email" placeholder="Enter your email" required>
+        <input type="email" name="email" placeholder="Enter your email" required>
       </div>
 
       <div class="input-group">
         <label>Phone Number</label>
-        <input type="tel" placeholder="e.g. 010-1234-5678" required>
+        <input type="tel" name="phone" placeholder="e.g. 010-1234-5678" required>
       </div>
 
       <div class="input-group">
         <label>Password</label>
-        <input type="password" placeholder="Create password" required>
+        <input type="password" name="password" placeholder="Create password" required>
       </div>
 
       <div class="input-group">
         <label>Confirm Password</label>
-        <input type="password" placeholder="Confirm password" required>
+        <input type="password" name="confirmPassword" placeholder="Confirm password" required>
       </div>
 
       <div class="input-group">
         <label>Account Type</label>
-        <select required>
+        <select name="accountType" required>
           <option value="">Select type</option>
           <option>Student</option>
           <option>Employer</option>
@@ -53,7 +53,7 @@
         <span>I agree to the Terms & Conditions</span>
       </div>
 
-      <button type="submit">Create Account</button>
+      <button type="submit" class="register-btn">Create Account</button>
 
     </form>
 
