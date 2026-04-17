@@ -1,5 +1,6 @@
 ## Demo Link
 http://localhost:8080/StudentBridge/   (Local working backend)
+
 https://capstonedesign-spring2026-ulsancollege.github.io/StudentBridge/  (Public UI demo)
 
 ## GitHub Board Snapshot
