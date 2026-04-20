@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>StudentBridge - Job Search</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #eef2f7, #dfe9f3);
+}
+
+header {
+  background: #1f2937;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.search-box {
+  max-width: 1000px;
+  margin: 30px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.search-box input,
+.search-box select {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 180px;
+}
+
+.search-box button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #3b82f6;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.search-box button:hover {
+  background: #2563eb;
+}
+
+.jobs {
+  max-width: 1100px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.job-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: 0.2s;
+}
+
+.job-card:hover {
+  transform: translateY(-5px);
+}
+
+.job-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.company {
+  color: #6b7280;
+  margin: 5px 0;
+}
+
+.location {
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.tags {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #374151;
+}
+
+.apply-btn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #10b981;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.apply-btn:hover {
+  background: #059669;
+}
+
+.no-results {
+  text-align: center;
+  font-size: 18px;
+  color: #6b7280;
+}
+</style>
+</head>
+
+<body>
+
+<header>StudentBridge Job Search</header>
+
+<div class="search-box">
+  <input type="text" id="keyword" placeholder="Job title...">
+  <input type="text" id="location" placeholder="Location...">
+
+  <select id="category">
+    <option value="">All Categories</option>
+    <option value="IT">IT & Software</option>
+    <option value="Design">Design</option>
+    <option value="Marketing">Marketing</option>
+    <option value="Business">Business</option>
+    <option value="Data">Data & AI</option>
+    <option value="Engineering">Engineering</option>
+    <option value="Student">Student Jobs</option>
+  </select>
+
+  <select id="type">
+    <option value="">All Types</option>
+    <option value="Full-time">Full-time</option>
+    <option value="Part-time">Part-time</option>
+    <option value="Internship">Internship</option>
+  </select>
+
+  <button onclick="searchJobs()">Search</button>
+</div>
+
+<div class="jobs" id="jobList"></div>
+
+<script>
+const jobs = [
+  { id: 1, title: "Frontend Developer", location: "Seoul", company: "TechCorp", category: "IT", type: "Full-time" },
+  { id: 2, title: "Backend Developer", location: "Busan", company: "DevWorks", category: "IT", type: "Full-time" },
+  { id: 3, title: "Mobile App Developer", location: "Ulsan", company: "Appify", category: "IT", type: "Internship" },
+  { id: 4, title: "UI/UX Designer", location: "Seoul", company: "Creative Studio", category: "Design", type: "Full-time" },
+  { id: 5, title: "Graphic Designer", location: "Daegu", company: "DesignHub", category: "Design", type: "Part-time" },
+  { id: 6, title: "Digital Marketing Intern", location: "Seoul", company: "MarketPro", category: "Marketing", type: "Internship" },
+  { id: 7, title: "Sales Assistant", location: "Busan", company: "RetailX", category: "Business", type: "Part-time" },
+  { id: 8, title: "Data Analyst", location: "Seoul", company: "DataLab", category: "Data", type: "Full-time" },
+  { id: 9, title: "AI Research Intern", location: "Daejeon", company: "AI Korea", category: "Data", type: "Internship" },
+  { id: 10, title: "Mechanical Engineer", location: "Ulsan", company: "Hyundai Works", category: "Engineering", type: "Full-time" },
+  { id: 11, title: "Cafe Assistant", location: "Ulsan", company: "CoffeeDay", category: "Student", type: "Part-time" },
+  { id: 12, title: "Library Assistant", location: "Seoul", company: "City Library", category: "Student", type: "Part-time" }
+];
+
+function displayJobs(list) {
+  const container = document.getElementById("jobList");
+  container.innerHTML = "";
+
+  if (list.length === 0) {
+    container.innerHTML = `<div class="no-results">No jobs found</div>`;
+    return;
+  }
+
+  list.forEach(job => {
+    container.innerHTML += `
+      <div class="job-card">
+        <div class="job-title">${job.title}</div>
+        <div class="company">${job.company}</div>
+        <div class="location">${job.location}</div>
+        <div class="tags">${job.category} • ${job.type}</div>
+        <button class="apply-btn" onclick="applyJob(${job.id})">Apply Now</button>
+      </div>
+    `;
+  });
+}
+
+function searchJobs() {
+  const keyword = document.getElementById("keyword").value.toLowerCase();
+  const location = document.getElementById("location").value.toLowerCase();
+  const category = document.getElementById("category").value;
+  const type = document.getElementById("type").value;
+
+  const filtered = jobs.filter(job =>
+    job.title.toLowerCase().includes(keyword) &&
+    job.location.toLowerCase().includes(location) &&
+    (category === "" || job.category === category) &&
+    (type === "" || job.type === type)
+  );
+
+  displayJobs(filtered);
+}
+
+function applyJob(id) {
+  window.location.href = `apply.html?job_id=${id}`;
+}
+
+displayJobs(jobs);
+</script>
+
+</body>
+</html>
