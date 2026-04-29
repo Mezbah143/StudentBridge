@@ -88,7 +88,7 @@ const App = {
     this.showLoader();
 
     setTimeout(() => {
-      window.location.href = "/jobs.html"; // clean routing
+      window.location.href = "//frontend/jobsearch.html"; // clean routing
     }, 800);
   },
 
