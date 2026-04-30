@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
@@ -19,11 +20,6 @@ public class LoginServlet extends HttpServlet {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
 
-        resp.setContentType("text/html");
-
-        resp.getWriter().println("Email from form = " + email + "<br>");
-        resp.getWriter().println("Password from form = " + password + "<br><hr>");
-
         try {
             Connection con = DBConnection.getConnection();
 
@@ -32,9 +28,8 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT * FROM users WHERE email = ? AND password = ?"
-            );
+            String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
 
             ps.setString(1, email);
             ps.setString(2, password);
@@ -42,11 +37,12 @@ public class LoginServlet extends HttpServlet {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                resp.getWriter().println("LOGIN SUCCESS<br>");
-                resp.getWriter().println("Welcome, " + rs.getString("name"));
+                HttpSession session = req.getSession();
+                session.setAttribute("user", rs.getString("name"));
+
+                resp.sendRedirect("index.html");
             } else {
-                resp.getWriter().println("LOGIN FAILED<br>");
-                resp.getWriter().println("No matching user found in database.");
+                resp.sendRedirect("frontend/login.html?error=1");
             }
 
             rs.close();

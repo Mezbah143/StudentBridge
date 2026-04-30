@@ -1,156 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Login - StudentBridge</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Login to your StudentBridge account.">
+  <title>Login | StudentBridge</title>
 
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
-}
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", Arial, sans-serif;
+    }
 
-body {
-  background: linear-gradient(to right, #1c412b, #6a1820);
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+    body {
+      min-height: 100vh;
+      background: linear-gradient(to right, #1c412b, #6a1820);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
 
-/* Card */
-.login-box {
-  background: #3b82f6;
-  padding: 35px;
-  width: 350px;
-  border-radius: 16px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-}
+    main {
+      width: 100%;
+      max-width: 380px;
+    }
 
-.login-box h2 {
-  text-align: center;
-  margin-bottom: 10px;
-}
+    .login-box {
+      background: #ffffff;
+      padding: 35px;
+      border-radius: 16px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
 
-.login-box p {
-  text-align: center;
-  color: #441109;
-  margin-bottom: 20px;
-}
+    .login-box h1 {
+      margin-bottom: 10px;
+      color: #111827;
+      text-align: center;
+      font-size: 28px;
+    }
 
-/* Input group */
-.input-group {
-  margin-bottom: 15px;
-}
+    .login-box p {
+      margin-bottom: 20px;
+      color: #4b5563;
+      text-align: center;
+    }
 
-.input-group label {
-  font-size: 14px;
-  display: block;
-  margin-bottom: 5px;
-}
+    .input-group {
+      margin-bottom: 15px;
+    }
 
-.input-group input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-}
+    .input-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 600;
+    }
 
-/* Password toggle */
-.password-group {
-  position: relative;
-}
+    .input-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 16px;
+    }
 
-.toggle {
-  position: absolute;
-  right: 10px;
-  top: 38px;
-  cursor: pointer;
-}
+    .password-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
 
-/* Button */
-button {
-  width: 100%;
-  padding: 12px;
-  background: #116605;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
+    .password-row input {
+      flex: 1;
+    }
 
-button:hover {
-  background: #893105;
-}
+    .toggle-password {
+      width: 44px;
+      min-height: 44px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #f9fafb;
+      color: #111827;
+      cursor: pointer;
+    }
 
-/* Link */
-.switch {
-  text-align: center;
-  margin-top: 15px;
-}
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      background: #116605;
+      color: #ffffff;
+      border: 0;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
 
-.switch a {
-  color: #3b82f6;
-  text-decoration: none;
-}
-</style>
+    .submit-btn:hover {
+      background: #0f5705;
+    }
 
+    .switch {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .switch a {
+      color: #2563eb;
+      font-weight: 600;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
+  <main>
+    <section class="login-box" aria-labelledby="login-title">
+      <h1 id="login-title">Welcome Back</h1>
+      <p>Login to your StudentBridge account.</p>
 
-<div class="login-box">
-  <h2>Welcome Back 👋</h2>
-  <p>Login to your StudentBridge account</p>
+      <form action="/LoginServlet" method="post">
+        <div class="input-group">
+          <label for="email">Email address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter your email"
+            autocomplete="email"
+            required
+          >
+        </div>
 
-  <form action="LoginServlet" method="post">
+        <div class="input-group">
+          <label for="password">Password</label>
+          <div class="password-row">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+            >
+            <button
+              type="button"
+              class="toggle-password"
+              aria-label="Show password"
+              aria-controls="password"
+              aria-pressed="false"
+            >
+              Show
+            </button>
+          </div>
+        </div>
 
-    <div class="input-group">
-      <label>Email</label>
-      <input type="email" id="email" name="email" placeholder="Enter your email" required>
-    </div>
+        <button type="submit" class="submit-btn">Login</button>
+      </form>
 
-    <div class="input-group password-group">
-      <label>Password</label>
-      <input type="password" id="password" name="password" placeholder="Enter your password" required>
-      <span class="toggle" onclick="togglePassword()">👁️</span>
-    </div>
+      <p class="switch">
+        Do not have an account? <a href="./register.html">Register</a>
+      </p>
+    </section>
+  </main>
 
-    <button type="submit">Login</button>
-  </form>
+  <script>
+    const togglePasswordButton = document.querySelector(".toggle-password");
+    const passwordInput = document.getElementById("password");
 
-  <p class="switch">
-    Don’t have an account? <a href="register.html">Register</a>
-  </p>
-</div>
-
-<script>
-// Show/Hide Password
-function togglePassword() {
-  const pass = document.getElementById("password");
-  pass.type = pass.type === "password" ? "text" : "password";
-}
-
-// Login System
-function loginUser(event) {
-  event.preventDefault();
-
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  const storedUser = JSON.parse(localStorage.getItem("user"));
-
-  if (storedUser && email === storedUser.email && password === storedUser.password) {
-    localStorage.setItem("loggedIn", "true");
-    alert("Login successful!");
-    window.location.href = "index.html";
-  } else {
-    alert("Invalid email or password!");
-  }
-}
-</script>
-
+    togglePasswordButton.addEventListener("click", () => {
+      const isHidden = passwordInput.type === "password";
+      passwordInput.type = isHidden ? "text" : "password";
+      togglePasswordButton.textContent = isHidden ? "Hide" : "Show";
+      togglePasswordButton.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
+      togglePasswordButton.setAttribute("aria-pressed", String(isHidden));
+    });
+  </script>
 </body>
 </html>
