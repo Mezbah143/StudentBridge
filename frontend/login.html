@@ -5,72 +5,125 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Login to your StudentBridge account.">
   <title>Login | StudentBridge</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+    :root {
+      --bg: #071226;
+      --surface: #ffffff;
+      --primary: #2f6df6;
+      --primary-dark: #1f4ed8;
+      --secondary: #22d3ee;
+      --accent: #f8b84e;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #dbe4f0;
+      --shadow: 0 24px 70px rgba(2, 6, 23, 0.24);
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: "Inter", Arial, sans-serif;
     }
 
     body {
       min-height: 100vh;
-      background: linear-gradient(to right, #1c412b, #6a1820);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      color: var(--text);
+      font-family: "Inter", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 20% 16%, rgba(34, 211, 238, 0.23), transparent 26%),
+        radial-gradient(circle at 82% 10%, rgba(248, 184, 78, 0.18), transparent 24%),
+        linear-gradient(135deg, #071226, #0d1b34 58%, #071226);
     }
 
     main {
       width: 100%;
-      max-width: 380px;
+      max-width: 420px;
     }
 
     .login-box {
-      background: #ffffff;
-      padding: 35px;
-      border-radius: 16px;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+      padding: 36px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      color: var(--text);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 12px;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
     }
 
     .login-box h1 {
-      margin-bottom: 10px;
-      color: #111827;
-      text-align: center;
-      font-size: 28px;
+      margin-bottom: 8px;
+      color: var(--text);
+      font-size: 32px;
+      line-height: 1.12;
+      font-weight: 800;
+      letter-spacing: 0;
     }
 
-    .login-box p {
-      margin-bottom: 20px;
-      color: #4b5563;
-      text-align: center;
+    .login-box > p {
+      margin-bottom: 24px;
+      color: var(--muted);
     }
 
     .input-group {
-      margin-bottom: 15px;
+      margin-bottom: 16px;
     }
 
     .input-group label {
       display: block;
-      margin-bottom: 6px;
-      color: #374151;
+      margin-bottom: 7px;
+      color: #334155;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .input-group input {
       width: 100%;
-      padding: 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 16px;
+      min-height: 48px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      outline: none;
+      color: var(--text);
+      background: #f8fafc;
+      font: inherit;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .input-group input:focus {
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(47, 109, 246, 0.14);
     }
 
     .password-row {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
     }
 
@@ -79,81 +132,85 @@
     }
 
     .toggle-password {
-      width: 44px;
-      min-height: 44px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      background: #f9fafb;
-      color: #111827;
+      min-width: 64px;
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #ffffff;
+      color: var(--primary-dark);
+      font-weight: 800;
       cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .toggle-password:hover {
+      border-color: var(--primary);
+      box-shadow: 0 10px 22px rgba(47, 109, 246, 0.14);
     }
 
     .submit-btn {
       width: 100%;
-      padding: 12px;
-      background: #116605;
-      color: #ffffff;
+      min-height: 50px;
       border: 0;
-      border-radius: 8px;
-      font-weight: 700;
+      border-radius: 999px;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--primary), #65a8ff);
+      box-shadow: 0 18px 40px rgba(47, 109, 246, 0.32);
+      font-weight: 800;
       cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .submit-btn:hover {
-      background: #0f5705;
+      transform: translateY(-2px);
+      box-shadow: 0 24px 50px rgba(47, 109, 246, 0.4);
     }
 
     .switch {
-      margin-top: 15px;
+      margin-top: 18px;
+      color: var(--muted);
       text-align: center;
     }
 
     .switch a {
-      color: #2563eb;
-      font-weight: 600;
+      color: var(--primary-dark);
+      font-weight: 800;
       text-decoration: none;
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 18px;
+      }
+
+      .login-box {
+        padding: 26px;
+      }
     }
   </style>
 </head>
 <body>
   <main>
     <section class="login-box" aria-labelledby="login-title">
-      <h1 id="login-title">Welcome Back</h1>
-      <p>Login to your StudentBridge account.</p>
+      <a class="brand-link" href="../index.html">
+        <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-bridge"></i></span>
+        <span>StudentBridge</span>
+      </a>
+
+      <h1 id="login-title">Welcome back</h1>
+      <p>Login to continue exploring student-friendly jobs.</p>
 
       <form action="/LoginServlet" method="post">
         <div class="input-group">
           <label for="email">Email address</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="Enter your email"
-            autocomplete="email"
-            required
-          >
+          <input type="email" id="email" name="email" placeholder="Enter your email" autocomplete="email" required>
         </div>
 
         <div class="input-group">
           <label for="password">Password</label>
           <div class="password-row">
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Enter your password"
-              autocomplete="current-password"
-              required
-            >
-            <button
-              type="button"
-              class="toggle-password"
-              aria-label="Show password"
-              aria-controls="password"
-              aria-pressed="false"
-            >
-              Show
-            </button>
+            <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+            <button type="button" class="toggle-password" aria-label="Show password" aria-controls="password" aria-pressed="false">Show</button>
           </div>
         </div>
 

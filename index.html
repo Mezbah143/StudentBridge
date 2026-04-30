@@ -5,12 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="StudentBridge helps international students in Korea find student-friendly part-time jobs.">
   <title>StudentBridge | Part-Time Jobs for International Students</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="./frontend/style.css">
 </head>
 <body>
   <header class="navbar">
     <a class="logo" href="./index.html" aria-label="StudentBridge home">
-      <span aria-hidden="true">🎓</span>
+      <span class="logo-mark" aria-hidden="true"><i class="fa-solid fa-bridge"></i></span>
       <span>StudentBridge</span>
     </a>
 
@@ -27,31 +28,78 @@
 
   <main>
     <section class="hero" aria-labelledby="hero-title">
-      <h1 id="hero-title">Find Part-Time Jobs Easily</h1>
-      <p>Helping international students in Korea connect with employers.</p>
-      <a href="./frontend/jobsearch.html" class="search-btn">Search Jobs</a>
+      <div class="hero-content">
+        <p class="eyebrow"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Built for students in Korea</p>
+        <h1 id="hero-title">Build your career, one <span class="highlight">opportunity</span> at a time</h1>
+        <p>Discover student-friendly jobs, filter by city and schedule, and connect with employers who understand international students.</p>
+
+        <div class="hero-actions">
+          <a href="./frontend/jobsearch.html" class="search-btn">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            Explore Jobs
+          </a>
+          <a href="./frontend/register.html" class="btn-browse">Create Account</a>
+        </div>
+
+        <div class="hero-trust" aria-label="Platform highlights">
+          <span class="trust-pill"><i class="fa-solid fa-star" aria-hidden="true"></i> 4.9 student rating</span>
+          <span class="trust-pill"><i class="fa-solid fa-language" aria-hidden="true"></i> English-friendly jobs</span>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="candidate-card">
+          <div class="candidate-row">
+            <div class="avatar-stack">
+              <span>M</span>
+              <span>S</span>
+              <span>A</span>
+            </div>
+            <h2>Students are matching with local employers faster.</h2>
+          </div>
+
+          <div class="mini-stats">
+            <div>
+              <strong>500+</strong>
+              <span>job listings</span>
+            </div>
+            <div>
+              <strong>150+</strong>
+              <span>partner companies</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="floating-badge">
+          <strong>2,000+</strong>
+          <span>student members building real work experience</span>
+        </div>
+      </div>
     </section>
 
     <section class="why" aria-labelledby="why-title">
-      <h2 id="why-title">Why Choose StudentBridge?</h2>
+      <div class="section-heading">
+        <h2 id="why-title">A smarter way to find student work</h2>
+        <p>StudentBridge keeps the job search simple, clear, and focused on opportunities students can actually use.</p>
+      </div>
 
       <div class="cards">
         <article class="card">
-          <div class="icon" aria-hidden="true">🔍</div>
+          <div class="icon" aria-hidden="true"><i class="fa-solid fa-filter"></i></div>
           <h3>Easy Job Search</h3>
-          <p>Find jobs quickly with useful filters.</p>
+          <p>Find jobs quickly with location, category, and job type filters.</p>
         </article>
 
         <article class="card">
-          <div class="icon" aria-hidden="true">🌐</div>
-          <h3>Multi-Language Support</h3>
-          <p>Designed for international students.</p>
+          <div class="icon" aria-hidden="true"><i class="fa-solid fa-globe"></i></div>
+          <h3>International Student Friendly</h3>
+          <p>Focus on jobs suitable for students balancing study, language, and work.</p>
         </article>
 
         <article class="card">
-          <div class="icon" aria-hidden="true">💼</div>
-          <h3>Student-Friendly Jobs</h3>
-          <p>Browse jobs suited for student schedules.</p>
+          <div class="icon" aria-hidden="true"><i class="fa-solid fa-handshake"></i></div>
+          <h3>Employer Connections</h3>
+          <p>Help employers discover motivated student workers near their business.</p>
         </article>
       </div>
     </section>
@@ -63,25 +111,25 @@
         <article class="step">
           <div class="circle" aria-hidden="true">1</div>
           <h3>Create Profile</h3>
-          <p>Sign up and complete your student profile.</p>
+          <p>Register as a student or employer with a simple account form.</p>
         </article>
 
         <article class="step">
           <div class="circle" aria-hidden="true">2</div>
           <h3>Search Jobs</h3>
-          <p>Browse and filter available jobs.</p>
+          <p>Browse jobs by city, category, and type.</p>
         </article>
 
         <article class="step">
           <div class="circle" aria-hidden="true">3</div>
           <h3>Apply Online</h3>
-          <p>Submit applications from the platform.</p>
+          <p>Submit applications from the platform once the application flow is connected.</p>
         </article>
 
         <article class="step">
           <div class="circle" aria-hidden="true">4</div>
           <h3>Get Hired</h3>
-          <p>Connect with employers and start working.</p>
+          <p>Connect with employers and start gaining work experience.</p>
         </article>
       </div>
 
@@ -102,8 +150,8 @@
     </section>
 
     <section class="cta" aria-labelledby="cta-title">
-      <h2 id="cta-title">Ready to Find Your Next Opportunity?</h2>
-      <p>Join international students finding work in Korea.</p>
+      <h2 id="cta-title">Ready to find your next opportunity?</h2>
+      <p>Start with the job search, or create your account to prepare for applications.</p>
       <div class="cta-buttons">
         <a href="./frontend/register.html" class="btn-light">Get Started</a>
         <a href="./frontend/jobsearch.html" class="btn-browse">Browse Jobs</a>
