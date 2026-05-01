@@ -121,6 +121,29 @@
       box-shadow: 0 0 0 4px rgba(47, 109, 246, 0.14);
     }
 
+    .form-message {
+      display: none;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-weight: 700;
+    }
+
+    .form-message.show {
+      display: block;
+    }
+
+    .form-message.error {
+      color: #b42318;
+      background: #fff1f0;
+    }
+
+    .form-message.success,
+    .form-message.info {
+      color: var(--primary-dark);
+      background: #eaf1ff;
+    }
+
     .password-row {
       display: flex;
       gap: 10px;
@@ -166,6 +189,63 @@
       box-shadow: 0 24px 50px rgba(47, 109, 246, 0.4);
     }
 
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 26px 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .social-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .social-btn {
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #ffffff;
+      color: var(--text);
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .social-btn:hover {
+      transform: translateY(-2px);
+      border-color: #b8c7e3;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+    }
+
+    .social-btn i,
+    .social-btn span {
+      margin-right: 8px;
+    }
+
+    .social-btn.kakao span {
+      display: inline-grid;
+      width: 20px;
+      height: 20px;
+      place-items: center;
+      border-radius: 6px;
+      color: #3a1d1d;
+      background: #fee500;
+      font-size: 12px;
+    }
+
     .switch {
       margin-top: 18px;
       color: var(--muted);
@@ -186,6 +266,10 @@
       .login-box {
         padding: 26px;
       }
+
+      .social-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -199,6 +283,8 @@
 
       <h1 id="login-title">Welcome back</h1>
       <p>Login to continue exploring student-friendly jobs.</p>
+
+      <p class="form-message" id="loginMessage" role="status" aria-live="polite"></p>
 
       <form action="/LoginServlet" method="post">
         <div class="input-group">
@@ -217,6 +303,27 @@
         <button type="submit" class="submit-btn">Login</button>
       </form>
 
+      <div class="divider"><span>or continue with</span></div>
+
+      <div class="social-grid" aria-label="Social login options">
+        <button type="button" class="social-btn" data-social-placeholder>
+          <i class="fa-brands fa-google" aria-hidden="true"></i>
+          Google
+        </button>
+        <button type="button" class="social-btn" data-social-placeholder>
+          <i class="fa-brands fa-apple" aria-hidden="true"></i>
+          Apple
+        </button>
+        <button type="button" class="social-btn kakao" data-social-placeholder>
+          <span aria-hidden="true">K</span>
+          Kakao
+        </button>
+        <button type="button" class="social-btn" data-social-placeholder>
+          <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+          Instagram
+        </button>
+      </div>
+
       <p class="switch">
         Do not have an account? <a href="./register.html">Register</a>
       </p>
@@ -224,8 +331,24 @@
   </main>
 
   <script>
+    const loginMessage = document.getElementById("loginMessage");
     const togglePasswordButton = document.querySelector(".toggle-password");
     const passwordInput = document.getElementById("password");
+
+    function showLoginMessage(message, type = "info") {
+      loginMessage.textContent = message;
+      loginMessage.className = `form-message show ${type}`;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("error") === "1") {
+      showLoginMessage("Invalid email or password. Please try again.", "error");
+    }
+
+    if (params.get("registered") === "1") {
+      showLoginMessage("Registration successful. You can login now.", "success");
+    }
 
     togglePasswordButton.addEventListener("click", () => {
       const isHidden = passwordInput.type === "password";
@@ -233,6 +356,12 @@
       togglePasswordButton.textContent = isHidden ? "Hide" : "Show";
       togglePasswordButton.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
       togglePasswordButton.setAttribute("aria-pressed", String(isHidden));
+    });
+
+    document.querySelectorAll("[data-social-placeholder]").forEach((button) => {
+      button.addEventListener("click", () => {
+        showLoginMessage("Social login is prepared for future OAuth integration.", "info");
+      });
     });
   </script>
 </body>
