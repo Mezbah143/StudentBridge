@@ -1,7 +1,10 @@
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -19,6 +22,11 @@ public class LoginServlet extends HttpServlet {
 
         String email = req.getParameter("email");
         String password = req.getParameter("password");
+
+        if (email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            resp.sendRedirect("frontend/login.html?error=1");
+            return;
+        }
 
         try {
             Connection con = DBConnection.getConnection();
@@ -39,8 +47,11 @@ public class LoginServlet extends HttpServlet {
             if (rs.next()) {
                 HttpSession session = req.getSession();
                 session.setAttribute("user", rs.getString("name"));
+                session.setAttribute("userEmail", rs.getString("email"));
+                session.setAttribute("accountType", safeGetString(rs, "account_type"));
 
-                resp.sendRedirect("index.html");
+                String encodedEmail = URLEncoder.encode(rs.getString("email"), StandardCharsets.UTF_8);
+                resp.sendRedirect("index.html?login=success&email=" + encodedEmail);
             } else {
                 resp.sendRedirect("frontend/login.html?error=1");
             }
@@ -52,6 +63,15 @@ public class LoginServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             resp.getWriter().println("Error: " + e.getMessage());
+        }
+    }
+
+    private String safeGetString(ResultSet rs, String columnName) {
+        try {
+            String value = rs.getString(columnName);
+            return value == null ? "" : value;
+        } catch (SQLException e) {
+            return "";
         }
     }
 }

@@ -21,8 +21,25 @@
     </nav>
 
     <div class="nav-right" aria-label="Account actions">
-      <a href="./frontend/login.html" class="btn btn-outline">Login</a>
-      <a href="./frontend/register.html" class="btn btn-primary">Register</a>
+      <div class="guest-actions" data-guest-actions>
+        <a href="./frontend/login.html" class="btn btn-outline">Login</a>
+        <a href="./frontend/register.html" class="btn btn-primary">Register</a>
+      </div>
+
+      <div class="user-menu" data-user-menu hidden>
+        <button type="button" class="user-menu-trigger" data-user-menu-trigger aria-haspopup="true" aria-expanded="false">
+          <span class="user-icon" aria-hidden="true"><i class="fa-solid fa-user"></i></span>
+          <span data-user-email>user@email.com</span>
+          <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+        </button>
+
+        <div class="user-dropdown" data-user-dropdown hidden>
+          <a href="./frontend/jobsearch.html"><i class="fa-solid fa-table-columns" aria-hidden="true"></i> Dashboard</a>
+          <a href="./frontend/register.html"><i class="fa-solid fa-id-card" aria-hidden="true"></i> Profile</a>
+          <a data-user-mail href="mailto:user@email.com"><i class="fa-solid fa-envelope" aria-hidden="true"></i> Email</a>
+          <button type="button" data-logout-button><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Logout</button>
+        </div>
+      </div>
     </div>
   </header>
 
