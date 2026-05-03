@@ -97,7 +97,7 @@ This ownership map is based on existing repository docs and should be verified b
 |---|---|---|---|---|
 | Mezbah Uddin | Backend, DB connection, homepage | Clear | `[TODO: evidence links]` | Credential/security cleanup |
 | Sami Ul Alim | Job search UI / frontend pages | Needs verification | `[TODO: evidence links]` | Backend integration |
-| Ali Mohammed Ashraf | Login/job page support | Needs verification | `[TODO: evidence links]` | Servlet testing |
+| Ali Mohamad Ashraf | Login/job page support | Needs verification | `[TODO: evidence links]` | Servlet testing |
 | Guramg Roman | Documentation / sprint evidence | Needs verification | `[TODO: evidence links]` | Link cleanup and evidence collection |
 | Dipesh Chaulagain | Testing / QA support | Needs verification | `[TODO: evidence links]` | Repeatable test evidence |
 
