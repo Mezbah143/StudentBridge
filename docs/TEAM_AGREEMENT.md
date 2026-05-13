@@ -8,8 +8,8 @@ This class-template document records how the StudentBridge team will work togeth
 |---|---|
 | Mezbah Uddin | Backend, database connection, homepage support |
 | Sami Ul Alim | Frontend pages and job search support |
-| Ali Mohammed Ashraf | Login and job page support |
-| Guramg Roman | Documentation and sprint evidence |
+| Ali Mohamad Ashraf | Login and job page support |
+| Gurung Roman | Documentation and sprint evidence |
 | Dipesh Chaulagain | Testing and QA support |
 
 Verify spelling and weekly responsibilities before final submission.

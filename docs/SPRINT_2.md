@@ -54,11 +54,11 @@ Sprint 2 is done when:
 | Item | Owner | Evidence | Notes |
 |---|---|---|---|
 | Homepage UI | Mezbah / Team | `index.html` | Working as frontend entry point. |
-| Job search UI and filters | Sami / Ali / Team | `frontend/jobsearch.html` | Working with seeded JavaScript data. |
+| Job search UI and filters | Sami / Ali Ashraf / Team | `frontend/jobsearch.html` | Working with seeded JavaScript data. |
 | Register servlet | Mezbah | `Backend/RegisterServlet.java` | Needs Tomcat/MySQL test evidence. |
-| Login servlet | Ali / Mezbah | `Backend/LoginServlet.java` | Needs session and error handling verification. |
+| Login servlet | Ali Ashraf / Mezbah | `Backend/LoginServlet.java` | Needs session and error handling verification. |
 | MySQL connection helper | Mezbah | `Backend/DBConnection.java` | Works only when local credentials and schema match. |
-| Documentation cleanup | Guramg / Team | `docs/` | Evidence links still need real issue/PR URLs. |
+| Documentation cleanup | Gurung / Dipesh / Team | `docs/` | Evidence links still need real issue/PR URLs. |
 
 ## 6) Bugs / Broken Things
 
