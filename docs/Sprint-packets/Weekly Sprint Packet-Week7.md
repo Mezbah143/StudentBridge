@@ -33,5 +33,7 @@ Completed Issues
 Blockers
 
 GitHub Pages cannot run Java/Tomcat/MySQL backend
+
 Initial servlet setup and classpath issues
+
 Login debugging and Tomcat deployment synchronization
