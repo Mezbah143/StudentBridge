@@ -24,13 +24,13 @@ public class PostJobServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
 
         if (session == null || session.getAttribute("userEmail") == null) {
-            response.sendRedirect("frontend/login.html?error=loginRequired");
+            response.sendRedirect("frontend/login.html?error=loginRequired&source=postJob");
             return;
         }
 
         String accountType = clean((String) session.getAttribute("accountType"));
 
-        if (!accountType.isEmpty() && !"Employer".equalsIgnoreCase(accountType)) {
+        if (!"Employer".equalsIgnoreCase(accountType)) {
             response.sendRedirect("frontend/post-job.html?error=notEmployer");
             return;
         }
@@ -51,7 +51,8 @@ public class PostJobServlet extends HttpServlet {
         String employerEmail = clean((String) session.getAttribute("userEmail"));
 
         if (title.isEmpty() || company.isEmpty() || location.isEmpty() || category.isEmpty()
-                || type.isEmpty() || salary.isEmpty() || description.isEmpty() || address.isEmpty()) {
+                || type.isEmpty() || salary.isEmpty() || description.isEmpty() || address.isEmpty()
+                || latitude == null || longitude == null) {
             response.sendRedirect("frontend/post-job.html?error=missing");
             return;
         }

@@ -115,7 +115,13 @@ const App = {
   logout() {
     localStorage.removeItem(AUTH_STORAGE_KEY);
     this.closeUserMenu();
-    this.renderAuthState();
+
+    if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
+      this.renderAuthState();
+      return;
+    }
+
+    window.location.href = StudentBridgePlatform.toBackendUrl("LogoutServlet");
   },
 
   handleScroll() {

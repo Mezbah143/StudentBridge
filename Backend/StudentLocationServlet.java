@@ -24,13 +24,13 @@ public class StudentLocationServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
 
         if (session == null || session.getAttribute("userEmail") == null) {
-            response.sendRedirect("frontend/login.html?error=loginRequired");
+            response.sendRedirect("frontend/login.html?error=loginRequired&source=studentAddress");
             return;
         }
 
         String accountType = clean((String) session.getAttribute("accountType"));
 
-        if (!accountType.isEmpty() && !"Student".equalsIgnoreCase(accountType)) {
+        if (!"Student".equalsIgnoreCase(accountType)) {
             response.sendRedirect("frontend/student-profile.html?error=notStudent");
             return;
         }
@@ -42,6 +42,11 @@ public class StudentLocationServlet extends HttpServlet {
 
         if (address.isEmpty()) {
             response.sendRedirect("frontend/student-profile.html?error=missing");
+            return;
+        }
+
+        if (latitude == null || longitude == null) {
+            response.sendRedirect("frontend/student-profile.html?error=mapRequired");
             return;
         }
 
