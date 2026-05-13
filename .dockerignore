@@ -1,0 +1,9 @@
+.git
+.github
+.vscode
+Assets
+bin
+demo-screenshots
+docs
+node_modules
+npm-debug.log
