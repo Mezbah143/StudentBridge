@@ -7,3 +7,7 @@ demo-screenshots
 docs
 node_modules
 npm-debug.log
+*.class
+.DS_Store
+**/.DS_Store
+server/servlet-api.jar

@@ -58,6 +58,8 @@ The current implementation uses a static HTML/CSS/JavaScript frontend, Java Serv
 | [Roadmap](docs/ROADMAP.md) | Path from current MVP to final presentation. |
 | [Team Roles](docs/TEAM_ROLES.md) | Team ownership, weekly role rotation, and responsibilities. |
 | [AI Code Ownership Audit](docs/AI_CODE_OWNERSHIP_AUDIT.md) | AI usage, code ownership, risks, and stabilization goals. |
+| [Design Package](docs/DESIGN_PACKAGE.md) | Paper.design UI plan, Canva visual package, and brochure content. |
+| [Docs Index](docs/README.md) | Full documentation map for the repository. |
 
 ## Known Issues
 
