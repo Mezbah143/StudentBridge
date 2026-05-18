@@ -2,8 +2,9 @@ services:
   - type: web
     name: studentbridge
     runtime: docker
+    plan: free
     dockerfilePath: ./Dockerfile
-    autoDeploy: true
+    autoDeployTrigger: commit
     healthCheckPath: /StudentBridge/
     envVars:
       - key: DB_HOST
