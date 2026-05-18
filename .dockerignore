@@ -3,7 +3,10 @@
 .vscode
 Assets
 bin
+demo-screenshots
 docs
+node_modules
+npm-debug.log
 *.class
 .DS_Store
 **/.DS_Store

@@ -37,7 +37,7 @@
       font-family: "Inter", Arial, sans-serif;
       background:
         radial-gradient(circle at 82% 0%, rgba(34, 211, 238, 0.16), transparent 25%),
-        linear-gradient(180deg, #071226 0, #071226 290px, var(--surface-soft) 290px);
+        linear-gradient(180deg, #071226 0, #071226 430px, var(--surface-soft) 430px);
     }
 
     .navbar {
@@ -99,12 +99,13 @@
     }
 
     main {
-      padding: 48px clamp(20px, 5vw, 72px) 64px;
+      padding: 56px clamp(20px, 5vw, 72px) 64px;
     }
 
     .page-heading {
       max-width: 1120px;
-      margin: 0 auto 24px;
+      margin: 0 auto 36px;
+      padding-bottom: 8px;
       color: #ffffff;
     }
 
@@ -293,6 +294,13 @@
       background: var(--primary);
     }
 
+    .apply-btn:disabled {
+      color: #94a3b8;
+      background: #e2e8f0;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .empty-state {
       grid-column: 1 / -1;
       padding: 26px;
@@ -472,6 +480,8 @@
     </section>
   </main>
 
+  <script src="./runtime-config.js"></script>
+  <script src="./platform.js"></script>
   <script src="./map-config.js"></script>
   <script src="./location-map.js"></script>
   <script>
@@ -481,10 +491,15 @@
     const jobSearchForm = document.getElementById("jobSearchForm");
 
     async function loadJobs() {
+      if (window.StudentBridgePlatform && !StudentBridgePlatform.canReachBackend()) {
+        showStatus("Live jobs are available on the Tomcat or Render deployment. This GitHub Pages site is a static preview.");
+        return;
+      }
+
       showStatus("Loading jobs...");
 
       try {
-        const response = await fetch("../JobServlet");
+        const response = await fetch(StudentBridgePlatform.toBackendUrl("JobServlet"));
 
         if (!response.ok) {
           throw new Error("Unable to load jobs from the server.");
@@ -562,7 +577,8 @@
         applyButton.type = "button";
         applyButton.className = "apply-btn";
         applyButton.dataset.jobId = job.id;
-        applyButton.textContent = "Apply Now";
+        applyButton.textContent = "Applications Coming Soon";
+        applyButton.disabled = true;
 
         const mapButton = document.createElement("button");
         mapButton.type = "button";
@@ -622,12 +638,9 @@
 
       const applyButton = event.target.closest(".apply-btn");
 
-      if (!applyButton) {
+      if (applyButton) {
         return;
       }
-
-      const jobId = applyButton.dataset.jobId;
-      alert(`Application flow is not connected yet. Selected job ID: ${jobId}`);
     });
 
     StudentBridgeLocationMap.initViewer({

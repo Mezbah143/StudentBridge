@@ -1,0 +1,15 @@
+CREATE DATABASE IF NOT EXISTS studentbridge
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE studentbridge;
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(160) NOT NULL UNIQUE,
+  phone VARCHAR(40),
+  password VARCHAR(255) NOT NULL,
+  account_type VARCHAR(20) NOT NULL DEFAULT 'Student',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

@@ -20,12 +20,18 @@ RUN mkdir -p /tmp/studentbridge/WEB-INF/classes /tmp/studentbridge/WEB-INF/lib \
 
 FROM tomcat:10.1-jdk17-temurin
 
+ENV CATALINA_HOME=/usr/local/tomcat
+ENV PORT=8080
 ENV CATALINA_OPTS="-Dfile.encoding=UTF-8"
 
-RUN rm -rf /usr/local/tomcat/webapps/*
+RUN rm -rf "$CATALINA_HOME"/webapps/*
 
-COPY --from=build /tmp/studentbridge /usr/local/tomcat/webapps/ROOT
+COPY --from=build /tmp/studentbridge "$CATALINA_HOME"/webapps/ROOT
+COPY render-start.sh /usr/local/bin/render-start.sh
+
+RUN chmod +x /usr/local/bin/render-start.sh
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "sed -i \"s/port=\\\"8080\\\"/port=\\\"${PORT:-8080}\\\"/\" /usr/local/tomcat/conf/server.xml && catalina.sh run"]
+CMD ["/usr/local/bin/render-start.sh"]
+

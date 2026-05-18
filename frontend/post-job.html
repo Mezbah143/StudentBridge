@@ -177,6 +177,18 @@
       showMessage("The job could not be saved. Please check MySQL and try again.", "error");
     }
 
+    document.getElementById("postJobForm").addEventListener("submit", (event) => {
+      const latitude = document.getElementById("latitude").value.trim();
+      const longitude = document.getElementById("longitude").value.trim();
+
+      if (latitude && longitude) {
+        return;
+      }
+
+      event.preventDefault();
+      showMessage("Please choose the real job location on the map before publishing.", "error");
+    });
+
     StudentBridgeLocationMap.initPicker({
       mapId: "jobLocationMap",
       addressInputId: "address",

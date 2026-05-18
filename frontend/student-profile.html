@@ -96,11 +96,25 @@
 
     if (params.get("error") === "missing") {
       showMessage("Please enter your address before saving.", "error");
+    } else if (params.get("error") === "mapRequired") {
+      showMessage("Please choose your address on the map before saving.", "error");
     } else if (params.get("error") === "notStudent") {
       showMessage("Only student accounts can save a student address here.", "error");
     } else if (params.get("error") === "db") {
       showMessage("Your address could not be saved. Please check MySQL and try again.", "error");
     }
+
+    document.getElementById("studentLocationForm").addEventListener("submit", (event) => {
+      const latitude = document.getElementById("studentLatitude").value.trim();
+      const longitude = document.getElementById("studentLongitude").value.trim();
+
+      if (latitude && longitude) {
+        return;
+      }
+
+      event.preventDefault();
+      showMessage("Please choose your address on the map before saving.", "error");
+    });
 
     StudentBridgeLocationMap.initPicker({
       mapId: "studentLocationMap",
