@@ -8,7 +8,7 @@ const App = {
     this.userMenuTrigger = document.querySelector("[data-user-menu-trigger]");
     this.userDropdown = document.querySelector("[data-user-dropdown]");
     this.userEmailElements = document.querySelectorAll("[data-user-email]");
-    this.userMailLink = document.querySelector("[data-user-mail]");
+
     this.logoutButton = document.querySelector("[data-logout-button]");
     this.languageButton = document.getElementById("languageButton");
     this.languageMenu = document.getElementById("languageMenu");
@@ -127,7 +127,7 @@ document.querySelectorAll("[data-lang]")
     }
 
     this.userEmailElements.forEach((element) => {
-      element.textContent = auth.email;
+      element.textContent = "👤";
     });
 
     if (this.userMailLink) {
