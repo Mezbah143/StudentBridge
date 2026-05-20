@@ -21,7 +21,7 @@ The current implementation uses a static HTML/CSS/JavaScript frontend, Java Serv
 |---|---|---|
 | Local Tomcat demo | <http://localhost:8080/StudentBridge/> | Use for the midterm live demo after running setup. |
 | Static GitHub Pages demo | <https://capstonedesign-spring2026-ulsancollege.github.io/StudentBridge/> | Verify before using in a presentation. |
-real page link https://studentbridge-6jn2.onrender.com
+real page link  | https://studentbridge-6jn2.onrender.com
 | Demo video | `[TODO: add demo video link]` | Required backup evidence. |
 | Screenshots | `[TODO: add screenshot folder or issue links]` | Required for sprint packets and brochure QR support. |
 
