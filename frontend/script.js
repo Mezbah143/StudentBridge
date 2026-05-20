@@ -8,8 +8,11 @@ const App = {
     this.userMenuTrigger = document.querySelector("[data-user-menu-trigger]");
     this.userDropdown = document.querySelector("[data-user-dropdown]");
     this.userEmailElements = document.querySelectorAll("[data-user-email]");
-    this.userMailLink = document.querySelector("[data-user-mail]");
+
     this.logoutButton = document.querySelector("[data-logout-button]");
+    this.languageButton = document.getElementById("languageButton");
+    this.languageMenu = document.getElementById("languageMenu");
+    this.languageWrapper = document.querySelector(".language-wrapper");
 
     this.syncLoginFromRedirect();
     this.renderAuthState();
@@ -27,6 +30,36 @@ const App = {
     if (this.logoutButton) {
       this.logoutButton.addEventListener("click", () => this.logout());
     }
+    if (this.languageButton) {
+
+  this.languageButton
+    .addEventListener("click", () => {
+
+      this.languageMenu
+        .classList.toggle("show");
+
+    });
+}
+
+document.querySelectorAll("[data-lang]")
+  .forEach((item) => {
+
+    item.addEventListener("click", () => {
+
+      const selected =
+        item.dataset.lang;
+
+      localStorage.setItem(
+        "studentBridgeLanguage",
+        selected
+      );
+
+      this.languageMenu
+        .classList.remove("show");
+
+    });
+
+});
 
     document.addEventListener("click", (event) => {
       if (!this.userMenu || this.userMenu.contains(event.target)) {
@@ -34,6 +67,15 @@ const App = {
       }
 
       this.closeUserMenu();
+      if (
+  this.languageWrapper &&
+  !this.languageWrapper.contains(event.target)
+) {
+
+  this.languageMenu
+    .classList.remove("show");
+
+}
     });
   },
 
@@ -85,7 +127,7 @@ const App = {
     }
 
     this.userEmailElements.forEach((element) => {
-      element.textContent = auth.email;
+      element.textContent = "👤";
     });
 
     if (this.userMailLink) {

@@ -16,25 +16,41 @@ import jakarta.servlet.http.HttpSession;
 public class PostJobServlet extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request,
+                          HttpServletResponse response)
             throws ServletException, IOException {
 
+        // UTF-8 support
         request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
 
+        // Check session
         HttpSession session = request.getSession(false);
 
         if (session == null || session.getAttribute("userEmail") == null) {
-            response.sendRedirect("frontend/login.html?error=loginRequired&source=postJob");
+
+            response.sendRedirect(
+                    "frontend/login.html?error=loginRequired"
+            );
+
             return;
         }
 
-        String accountType = clean((String) session.getAttribute("accountType"));
+        // Verify employer account
+        String accountType = clean(
+                (String) session.getAttribute("accountType")
+        );
 
         if (!"Employer".equalsIgnoreCase(accountType)) {
-            response.sendRedirect("frontend/post-job.html?error=notEmployer");
+
+            response.sendRedirect(
+                    "frontend/post-job.html?error=notEmployer"
+            );
+
             return;
         }
 
+        // Form data
         String title = clean(request.getParameter("title"));
         String company = clean(request.getParameter("company"));
         String location = clean(request.getParameter("location"));
@@ -42,48 +58,112 @@ public class PostJobServlet extends HttpServlet {
         String type = clean(request.getParameter("type"));
         String salary = clean(request.getParameter("salary"));
         String description = clean(request.getParameter("description"));
+
         String workingHours = clean(request.getParameter("workingHours"));
         String requirements = clean(request.getParameter("requirements"));
         String contactEmail = clean(request.getParameter("contactEmail"));
-        String address = clean(request.getParameter("address"));
-        BigDecimal latitude = parseDecimal(request.getParameter("latitude"));
-        BigDecimal longitude = parseDecimal(request.getParameter("longitude"));
-        String employerEmail = clean((String) session.getAttribute("userEmail"));
 
-        if (title.isEmpty() || company.isEmpty() || location.isEmpty() || category.isEmpty()
-                || type.isEmpty() || salary.isEmpty() || description.isEmpty() || address.isEmpty()
-                || latitude == null || longitude == null) {
-            response.sendRedirect("frontend/post-job.html?error=missing");
+        String address = clean(request.getParameter("address"));
+
+        BigDecimal latitude = parseDecimal(
+                request.getParameter("latitude")
+        );
+
+        BigDecimal longitude = parseDecimal(
+                request.getParameter("longitude")
+        );
+
+        String employerEmail = clean(
+                (String) session.getAttribute("userEmail")
+        );
+
+        // Required field validation
+        if (title.isEmpty()
+                || company.isEmpty()
+                || location.isEmpty()
+                || category.isEmpty()
+                || type.isEmpty()
+                || salary.isEmpty()
+                || description.isEmpty()) {
+
+            response.sendRedirect(
+                    "frontend/post-job.html?error=missing"
+            );
+
             return;
         }
 
         try (Connection con = DBConnection.getConnection()) {
+
             if (con == null) {
-                response.sendRedirect("frontend/post-job.html?error=db");
+
+                response.sendRedirect(
+                        "frontend/post-job.html?error=db"
+                );
+
                 return;
             }
 
-            insertJob(con, title, company, location, category, type, salary, description, employerEmail,
-                    workingHours, requirements, contactEmail, address, latitude, longitude);
+            insertJob(
+                    con,
+                    title,
+                    company,
+                    location,
+                    category,
+                    type,
+                    salary,
+                    description,
+                    employerEmail,
+                    workingHours,
+                    requirements,
+                    contactEmail,
+                    address,
+                    latitude,
+                    longitude
+            );
 
-            response.sendRedirect("frontend/post-job.html?success=1");
+            response.sendRedirect(
+                    "frontend/post-job.html?success=1"
+            );
 
         } catch (SQLException e) {
+
             e.printStackTrace();
-            response.sendRedirect("frontend/post-job.html?error=db");
+
+            response.sendRedirect(
+                    "frontend/post-job.html?error=database"
+            );
         }
     }
 
-    private void insertJob(Connection con, String title, String company, String location, String category,
-            String type, String salary, String description, String employerEmail, String workingHours,
-            String requirements, String contactEmail, String address, BigDecimal latitude, BigDecimal longitude)
-            throws SQLException {
+    private void insertJob(
+            Connection con,
+            String title,
+            String company,
+            String location,
+            String category,
+            String type,
+            String salary,
+            String description,
+            String employerEmail,
+            String workingHours,
+            String requirements,
+            String contactEmail,
+            String address,
+            BigDecimal latitude,
+            BigDecimal longitude
+    ) throws SQLException {
 
-        String extendedSql = "INSERT INTO jobs "
-                + "(title, company, location, category, type, salary, description, employer_email, working_hours, requirements, contact_email, address, latitude, longitude) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String extendedSql =
+                "INSERT INTO jobs " +
+                "(title, company, location, category, type, salary, " +
+                "description, employer_email, working_hours, requirements, " +
+                "contact_email, address, latitude, longitude) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement ps = con.prepareStatement(extendedSql)) {
+        try (PreparedStatement ps =
+                     con.prepareStatement(extendedSql)) {
+
             ps.setString(1, title);
             ps.setString(2, company);
             ps.setString(3, location);
@@ -91,26 +171,38 @@ public class PostJobServlet extends HttpServlet {
             ps.setString(5, type);
             ps.setString(6, salary);
             ps.setString(7, description);
+
             ps.setString(8, employerEmail);
             ps.setString(9, workingHours);
             ps.setString(10, requirements);
             ps.setString(11, contactEmail);
+
             ps.setString(12, address);
+
             setNullableDecimal(ps, 13, latitude);
             setNullableDecimal(ps, 14, longitude);
+
             ps.executeUpdate();
+
             return;
+
         } catch (SQLException e) {
+
+            // Use old query if columns do not exist
             if (!isMissingOptionalJobColumn(e)) {
                 throw e;
             }
         }
 
-        // Backward-compatible insert for the original jobs table.
-        String baseSql = "INSERT INTO jobs (title, company, location, category, type, salary, description) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        // Backward compatible insert
+        String baseSql =
+                "INSERT INTO jobs " +
+                "(title, company, location, category, type, salary, description) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement ps = con.prepareStatement(baseSql)) {
+        try (PreparedStatement ps =
+                     con.prepareStatement(baseSql)) {
+
             ps.setString(1, title);
             ps.setString(2, company);
             ps.setString(3, location);
@@ -118,12 +210,17 @@ public class PostJobServlet extends HttpServlet {
             ps.setString(5, type);
             ps.setString(6, salary);
             ps.setString(7, description);
+
             ps.executeUpdate();
         }
     }
 
     private boolean isMissingOptionalJobColumn(SQLException e) {
-        String message = e.getMessage() == null ? "" : e.getMessage().toLowerCase();
+
+        String message = e.getMessage() == null
+                ? ""
+                : e.getMessage().toLowerCase();
+
         return "42S22".equals(e.getSQLState())
                 || message.contains("employer_email")
                 || message.contains("working_hours")
@@ -135,10 +232,14 @@ public class PostJobServlet extends HttpServlet {
     }
 
     private String clean(String value) {
-        return value == null ? "" : value.trim();
+
+        return value == null
+                ? ""
+                : value.trim();
     }
 
     private BigDecimal parseDecimal(String value) {
+
         String cleanedValue = clean(value);
 
         if (cleanedValue.isEmpty()) {
@@ -146,18 +247,28 @@ public class PostJobServlet extends HttpServlet {
         }
 
         try {
+
             return new BigDecimal(cleanedValue);
+
         } catch (NumberFormatException e) {
+
             return null;
         }
     }
 
-    private void setNullableDecimal(PreparedStatement ps, int index, BigDecimal value) throws SQLException {
-        if (value == null) {
-            ps.setNull(index, Types.DECIMAL);
-            return;
-        }
+    private void setNullableDecimal(
+            PreparedStatement ps,
+            int index,
+            BigDecimal value
+    ) throws SQLException {
 
-        ps.setBigDecimal(index, value);
+        if (value == null) {
+
+            ps.setNull(index, Types.DECIMAL);
+
+        } else {
+
+            ps.setBigDecimal(index, value);
+        }
     }
 }

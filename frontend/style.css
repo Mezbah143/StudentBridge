@@ -41,6 +41,58 @@ body {
 a {
   color: inherit;
 }
+.language-wrapper{
+  position: relative;
+}
+
+.language-btn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  color: white;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(12px);
+}
+
+.language-btn:hover{
+  background: rgba(255,255,255,0.16);
+  transform: translateY(-2px);
+}
+
+.language-menu{
+  position: absolute;
+  top: 55px;
+  right: 0;
+  width: 160px;
+  overflow: hidden;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 18px 45px rgba(15,23,42,0.18);
+  display: none;
+  z-index: 999;
+}
+
+.language-menu.show{
+  display: block;
+}
+
+.language-menu div{
+  padding: 14px 16px;
+  color: #111827;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.language-menu div:hover{
+  background: #f3f6fb;
+}
 
 .navbar {
   position: sticky;
@@ -297,10 +349,10 @@ a {
 
 .highlight {
   color: #ffffff;
-  background: linear-gradient(135deg, var(--secondary), var(--primary));
-  border-radius: 18px;
-  padding: 0 12px 6px;
-  box-decoration-break: clone;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .hero p {

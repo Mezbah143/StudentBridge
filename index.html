@@ -21,10 +21,40 @@
     </nav>
 
     <div class="nav-right" aria-label="Account actions">
-      <div class="guest-actions" data-guest-actions>
-        <a href="./frontend/login.html" class="btn btn-outline">Login</a>
-        <a href="./frontend/register.html" class="btn btn-primary">Register</a>
-      </div>
+     <div class="guest-actions" data-guest-actions>
+
+  <a href="./frontend/login.html"
+     class="btn btn-outline">
+     Login
+  </a>
+
+  <a href="./frontend/register.html"
+     class="btn btn-primary">
+     Register
+  </a>
+
+  <!-- Language Selector -->
+  <div class="language-wrapper">
+
+    <button class="language-btn"
+            id="languageButton">
+
+      <i class="fa-solid fa-globe"></i>
+
+    </button>
+
+    <div class="language-menu"
+         id="languageMenu">
+
+      <div data-lang="en">English</div>
+      <div data-lang="ko">한국어</div>
+      <div data-lang="bn">বাংলা</div>
+
+    </div>
+
+  </div>
+
+</div>
 
       <div class="user-menu" data-user-menu hidden>
         <button type="button" class="user-menu-trigger" data-user-menu-trigger aria-haspopup="true" aria-expanded="false">
