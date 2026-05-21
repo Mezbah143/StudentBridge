@@ -56,7 +56,14 @@
   }
 
   function hasCoordinates(latitude, longitude) {
-    return latitude !== "" && longitude !== "" && !Number.isNaN(Number(latitude)) && !Number.isNaN(Number(longitude));
+    return latitude !== null
+      && longitude !== null
+      && latitude !== undefined
+      && longitude !== undefined
+      && String(latitude).trim() !== ""
+      && String(longitude).trim() !== ""
+      && !Number.isNaN(Number(latitude))
+      && !Number.isNaN(Number(longitude));
   }
 
   async function initPicker(options) {

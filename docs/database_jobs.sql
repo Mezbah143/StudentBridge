@@ -16,6 +16,10 @@ CREATE TABLE IF NOT EXISTS jobs (
   working_hours VARCHAR(150),
   requirements TEXT,
   contact_email VARCHAR(255),
+  contact_phone VARCHAR(50),
+  company_details TEXT,
+  application_deadline DATE,
+  logo_url VARCHAR(500),
   address VARCHAR(255),
   latitude DECIMAL(10, 7),
   longitude DECIMAL(10, 7),
@@ -34,6 +38,10 @@ CREATE TABLE IF NOT EXISTS jobs (
 -- ALTER TABLE jobs ADD COLUMN working_hours VARCHAR(150);
 -- ALTER TABLE jobs ADD COLUMN requirements TEXT;
 -- ALTER TABLE jobs ADD COLUMN contact_email VARCHAR(255);
+-- ALTER TABLE jobs ADD COLUMN contact_phone VARCHAR(50);
+-- ALTER TABLE jobs ADD COLUMN company_details TEXT;
+-- ALTER TABLE jobs ADD COLUMN application_deadline DATE;
+-- ALTER TABLE jobs ADD COLUMN logo_url VARCHAR(500);
 -- ALTER TABLE jobs ADD COLUMN address VARCHAR(255);
 -- ALTER TABLE jobs ADD COLUMN latitude DECIMAL(10, 7);
 -- ALTER TABLE jobs ADD COLUMN longitude DECIMAL(10, 7);

@@ -6,7 +6,7 @@
   <meta name="description" content="StudentBridge helps international students in Korea find student-friendly part-time jobs.">
   <title>StudentBridge | Part-Time Jobs for International Students</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="./frontend/style.css">
+  <link rel="stylesheet" href="./frontend/style.css?v=20260521">
 </head>
 <body>
   <header class="navbar">
@@ -33,40 +33,41 @@
      Register
   </a>
 
-  <!-- Language Selector -->
-  <div class="language-wrapper">
-
-    <button class="language-btn"
-            id="languageButton">
-
-      <i class="fa-solid fa-globe"></i>
-
-    </button>
-
-    <div class="language-menu"
-         id="languageMenu">
-
-      <div data-lang="en">English</div>
-      <div data-lang="ko">한국어</div>
-      <div data-lang="bn">বাংলা</div>
-
-    </div>
-
-  </div>
-
 </div>
+
+      <!-- Language Selector -->
+      <div class="language-wrapper">
+
+        <button class="language-btn"
+                id="languageButton">
+
+          <i class="fa-solid fa-globe"></i>
+
+        </button>
+
+        <div class="language-menu"
+             id="languageMenu">
+
+          <div data-lang="en">English</div>
+          <div data-lang="ko">한국어</div>
+          <div data-lang="bn">বাংলা</div>
+
+        </div>
+
+      </div>
 
       <div class="user-menu" data-user-menu hidden>
         <button type="button" class="user-menu-trigger" data-user-menu-trigger aria-haspopup="true" aria-expanded="false">
           <span class="user-icon" aria-hidden="true"><i class="fa-solid fa-user"></i></span>
-          <span data-user-email>user@email.com</span>
+          <span class="sr-only" data-user-email></span>
           <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
         </button>
 
         <div class="user-dropdown" data-user-dropdown hidden>
-          <a href="./frontend/employer-dashboard.html"><i class="fa-solid fa-table-columns" aria-hidden="true"></i> Dashboard</a>
-          <a href="./frontend/post-job.html"><i class="fa-solid fa-plus" aria-hidden="true"></i> Post Job</a>
-          <a href="./frontend/student-profile.html"><i class="fa-solid fa-id-card" aria-hidden="true"></i> Student Address</a>
+          <p class="dropdown-email" data-dropdown-email></p>
+          <a data-employer-link href="./frontend/employer-dashboard.html"><i class="fa-solid fa-table-columns" aria-hidden="true"></i> Employer Dashboard</a>
+          <a data-employer-link href="./frontend/post-job.html"><i class="fa-solid fa-plus" aria-hidden="true"></i> Post Job</a>
+          <a data-student-link href="./frontend/student-profile.html"><i class="fa-solid fa-id-card" aria-hidden="true"></i> Student Dashboard</a>
           <a data-user-mail href="mailto:user@email.com"><i class="fa-solid fa-envelope" aria-hidden="true"></i> Email</a>
           <button type="button" data-logout-button><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Logout</button>
         </div>
@@ -108,19 +109,19 @@
 
           <div class="mini-stats">
             <div>
-              <strong>500+</strong>
-              <span>job listings</span>
+              <strong>Live</strong>
+              <span>job listings from MySQL</span>
             </div>
             <div>
-              <strong>150+</strong>
-              <span>partner companies</span>
+              <strong>Ready</strong>
+              <span>student and employer dashboards</span>
             </div>
           </div>
         </div>
 
         <div class="floating-badge">
-          <strong>2,000+</strong>
-          <span>student members building real work experience</span>
+          <strong>Demo-ready</strong>
+          <span>auth, maps, posting, and search flows</span>
         </div>
       </div>
     </section>
@@ -170,8 +171,8 @@
 
         <article class="step">
           <div class="circle" aria-hidden="true">3</div>
-          <h3>Apply Online</h3>
-          <p>Submit applications from the platform once the application flow is connected.</p>
+          <h3>Contact Employers</h3>
+          <p>Use each listing's contact details while the full application flow is being built.</p>
         </article>
 
         <article class="step">
@@ -184,15 +185,15 @@
       <dl class="stats" aria-label="StudentBridge platform statistics">
         <div>
           <dt>500+</dt>
-          <dd>Active Job Listings</dd>
+          <dd>Ready for Real Listings</dd>
         </div>
         <div>
-          <dt>2,000+</dt>
-          <dd>Student Members</dd>
+          <dt>3</dt>
+          <dd>Supported Languages</dd>
         </div>
         <div>
-          <dt>150+</dt>
-          <dd>Partner Companies</dd>
+          <dt>2</dt>
+          <dd>Account Dashboards</dd>
         </div>
       </dl>
     </section>
@@ -240,6 +241,7 @@
 
   <script src="./frontend/runtime-config.js"></script>
   <script src="./frontend/platform.js"></script>
-  <script src="./frontend/script.js" defer></script>
+  <script src="./frontend/i18n.js"></script>
+  <script src="./frontend/script.js?v=20260521" defer></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 # StudentBridge Testing Notes
 
-Last updated: 2026-05-01
+Last updated: 2026-05-21
 
 ## Testing Goal
 
@@ -40,6 +40,19 @@ Homepage -> Jobs search -> Register -> Login -> Explain/prepare Apply flow
 | T-10 | Apply button | Click Apply on a job card. | Placeholder alert appears; no database action yet. | `[TODO]` | `[TODO: screenshot]` |
 | T-11 | Mobile layout | Test homepage and jobs page at narrow width. | Content remains readable and usable. | `[TODO]` | `[TODO: screenshot]` |
 | T-12 | Deploy script | Run `./deploy.sh`. | Java compiles and files copy to Tomcat. | `[TODO]` | `[TODO: terminal screenshot]` |
+
+## 2026-05-21 Sprint Bugfix Validation
+
+These checks were run after the sprint bugfix patch:
+
+| Check | Result |
+|---|---|
+| Compile all servlets with `javac` and Jakarta Servlet/MySQL connector classpath | Passed |
+| Syntax-check shared frontend scripts with `node --check` | Passed |
+| Static browser smoke test for homepage auth menu, login/register messages, job search controls, employer dashboard, student dashboard, and post-job form | Passed with no console errors |
+| Docker image build | Not run because Docker is not installed on the local Mac |
+
+Extra deployment note: if the enhanced job-posting fields are needed in production immediately, apply the latest `jobs` table changes from `docs/database_jobs.sql` or `database_schema.sql` to the Railway MySQL database before testing those fields on Render.
 
 ## Database Verification
 

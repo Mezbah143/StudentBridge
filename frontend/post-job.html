@@ -106,6 +106,22 @@
             <input type="email" id="contactEmail" name="contactEmail" placeholder="owner@business.com">
           </div>
 
+          <div class="input-group">
+            <label for="contactPhone">Contact phone</label>
+            <input type="tel" id="contactPhone" name="contactPhone" placeholder="010-1234-5678">
+          </div>
+
+          <div class="input-group">
+            <label for="applicationDeadline">Application deadline</label>
+            <input type="date" id="applicationDeadline" name="applicationDeadline">
+          </div>
+
+          <div class="input-group full-width">
+            <label for="logoUrl">Company logo/image URL</label>
+            <input type="url" id="logoUrl" name="logoUrl" placeholder="https://example.com/logo.png">
+            <p class="field-help">Upload can be added later; for now paste a public logo or workplace image URL.</p>
+          </div>
+
           <div class="input-group full-width">
             <label for="address">Real business address *</label>
             <div class="location-search-row">
@@ -141,6 +157,11 @@
           </div>
 
           <div class="input-group full-width">
+            <label for="companyDetails">Company details</label>
+            <textarea id="companyDetails" name="companyDetails" rows="4" placeholder="Tell students about your business, team, and work culture."></textarea>
+          </div>
+
+          <div class="input-group full-width">
             <label for="requirements">Requirements</label>
             <textarea id="requirements" name="requirements" rows="4" placeholder="Example: basic English, friendly customer service, available weekends."></textarea>
           </div>
@@ -154,6 +175,9 @@
     </section>
   </main>
 
+  <script src="./runtime-config.js"></script>
+  <script src="./platform.js"></script>
+  <script src="./i18n.js"></script>
   <script src="./map-config.js"></script>
   <script src="./location-map.js"></script>
   <script>
@@ -173,15 +197,28 @@
       showMessage("Please complete all required job fields.", "error");
     } else if (params.get("error") === "notEmployer") {
       showMessage("Only employer accounts can post jobs.", "error");
+    } else if (params.get("error") === "loginRequired") {
+      showMessage("Please login with an employer account before posting a job.", "error");
     } else if (params.get("error") === "db") {
       showMessage("The job could not be saved. Please check MySQL and try again.", "error");
+    }
+
+    if (window.StudentBridgePlatform && StudentBridgePlatform.canReachBackend()) {
+      document.getElementById("postJobForm").action = StudentBridgePlatform.toBackendUrl("PostJobServlet");
     }
 
     document.getElementById("postJobForm").addEventListener("submit", (event) => {
       const latitude = document.getElementById("latitude").value.trim();
       const longitude = document.getElementById("longitude").value.trim();
+      const kakaoKey = (window.STUDENTBRIDGE_KAKAO_MAP_KEY || "").trim();
 
-      if (latitude && longitude) {
+      if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
+        event.preventDefault();
+        showMessage("This page is a static preview. Job posting works on the Tomcat or Render deployment.", "info");
+        return;
+      }
+
+      if (!kakaoKey || (latitude && longitude)) {
         return;
       }
 

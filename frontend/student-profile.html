@@ -23,16 +23,37 @@
 
   <main class="page-shell">
     <section class="page-heading" aria-labelledby="student-profile-title">
-      <p class="eyebrow"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Student location</p>
-      <h1 id="student-profile-title">Save your address for nearby jobs.</h1>
-      <p>Add your real location so StudentBridge can support better job matching and future distance-based search.</p>
+      <p class="eyebrow"><i class="fa-solid fa-user-graduate" aria-hidden="true"></i> Student dashboard</p>
+      <h1 id="student-profile-title">Manage your profile and job search readiness.</h1>
+      <p>Review your student details, save your address for nearby jobs, and jump back into the job board.</p>
+    </section>
+
+    <section class="dashboard-grid dashboard-summary" aria-label="Student profile summary">
+      <article>
+        <i class="fa-solid fa-id-card" aria-hidden="true"></i>
+        <h2>Profile</h2>
+        <p id="studentSummaryProfile">Login as a student to load your profile.</p>
+      </article>
+
+      <article>
+        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+        <h2>Saved address</h2>
+        <p id="studentSummaryAddress">No saved address loaded yet.</p>
+      </article>
+
+      <article>
+        <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+        <h2>Applications</h2>
+        <p>Applications are planned next. For now, use job search and contact details on each listing.</p>
+        <a class="text-link" href="./jobsearch.html">Back to job search</a>
+      </article>
     </section>
 
     <section class="form-card" aria-labelledby="student-address-title">
       <div class="form-header">
         <div>
           <h2 id="student-address-title">Your address</h2>
-          <p>Search your address or click the map to set a precise point.</p>
+          <p>Search your address or click the map to set a precise point. If Kakao is not configured, save the address text first.</p>
         </div>
         <a href="./jobsearch.html">Find jobs</a>
       </div>
@@ -79,24 +100,34 @@
     </section>
   </main>
 
+  <script src="./runtime-config.js"></script>
+  <script src="./platform.js"></script>
+  <script src="./i18n.js"></script>
   <script src="./map-config.js"></script>
   <script src="./location-map.js"></script>
   <script>
     const message = document.getElementById("studentLocationMessage");
     const params = new URLSearchParams(window.location.search);
+    const profileSummary = document.getElementById("studentSummaryProfile");
+    const addressSummary = document.getElementById("studentSummaryAddress");
+    const studentLocationForm = document.getElementById("studentLocationForm");
 
     function showMessage(text, type) {
       message.textContent = text;
       message.className = `form-message show ${type}`;
     }
 
+    function valueOrDash(value) {
+      return value || "Not added yet";
+    }
+
     if (params.get("success") === "1") {
       showMessage("Your student address was saved successfully.", "success");
     }
 
-    if (params.get("error") === "missing") {
+    if (params.get("error") === "missing" || params.get("error") === "address") {
       showMessage("Please enter your address before saving.", "error");
-    } else if (params.get("error") === "mapRequired") {
+    } else if (params.get("error") === "mapRequired" || params.get("error") === "map") {
       showMessage("Please choose your address on the map before saving.", "error");
     } else if (params.get("error") === "notStudent") {
       showMessage("Only student accounts can save a student address here.", "error");
@@ -104,11 +135,64 @@
       showMessage("Your address could not be saved. Please check MySQL and try again.", "error");
     }
 
-    document.getElementById("studentLocationForm").addEventListener("submit", (event) => {
+    if (window.StudentBridgePlatform && StudentBridgePlatform.canReachBackend()) {
+      studentLocationForm.action = StudentBridgePlatform.toBackendUrl("StudentLocationServlet");
+    }
+
+    async function loadStudentProfile() {
+      if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
+        profileSummary.textContent = "Static preview: profile details load on Tomcat or Render.";
+        return;
+      }
+
+      try {
+        const response = await fetch(StudentBridgePlatform.toBackendUrl("StudentProfileServlet"));
+
+        if (response.status === 401) {
+          profileSummary.textContent = "Please login as a student to view your dashboard.";
+          return;
+        }
+
+        if (response.status === 403) {
+          profileSummary.textContent = "This dashboard is only for student accounts.";
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("Profile load failed.");
+        }
+
+        const profile = await response.json();
+        profileSummary.textContent = `${valueOrDash(profile.name)} · ${valueOrDash(profile.universityName)} · ${valueOrDash(profile.major)} · ${valueOrDash(profile.koreanLanguageLevel)}`;
+        addressSummary.textContent = profile.address
+          ? `${profile.address}${profile.latitude && profile.longitude ? " · map point saved" : " · address saved"}`
+          : "No saved address yet.";
+
+        if (profile.address) {
+          document.getElementById("studentAddress").value = profile.address;
+        }
+
+        if (profile.latitude && profile.longitude) {
+          document.getElementById("studentLatitude").value = profile.latitude;
+          document.getElementById("studentLongitude").value = profile.longitude;
+        }
+      } catch (error) {
+        profileSummary.textContent = "Student profile could not be loaded right now.";
+      }
+    }
+
+    studentLocationForm.addEventListener("submit", (event) => {
       const latitude = document.getElementById("studentLatitude").value.trim();
       const longitude = document.getElementById("studentLongitude").value.trim();
+      const kakaoKey = (window.STUDENTBRIDGE_KAKAO_MAP_KEY || "").trim();
 
-      if (latitude && longitude) {
+      if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
+        event.preventDefault();
+        showMessage("This page is a static preview. Address saving works on the Tomcat or Render deployment.", "info");
+        return;
+      }
+
+      if (!kakaoKey || (latitude && longitude)) {
         return;
       }
 
@@ -124,6 +208,8 @@
       searchButtonId: "findStudentAddressBtn",
       statusId: "studentMapStatus"
     });
+
+    loadStudentProfile();
   </script>
 </body>
 </html>

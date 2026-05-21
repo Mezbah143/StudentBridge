@@ -61,7 +61,9 @@ public class JobServlet extends HttpServlet {
         if (includeMapColumns) {
 
             sql = "SELECT id, title, company, location, category, type, " +
-                    "salary, description, address, latitude, longitude " +
+                    "salary, description, employer_email, working_hours, requirements, " +
+                    "contact_email, contact_phone, company_details, application_deadline, " +
+                    "logo_url, address, latitude, longitude, created_at " +
                     "FROM jobs ORDER BY id DESC";
 
         } else {
@@ -96,8 +98,42 @@ public class JobServlet extends HttpServlet {
                 json.append("\"salary\":\"").append(escapeJson(rs.getString("salary"))).append("\",");
                 json.append("\"description\":\"").append(escapeJson(rs.getString("description"))).append("\",");
 
-                // Optional map columns
                 if (includeMapColumns) {
+                    json.append("\"employerEmail\":\"")
+                            .append(escapeJson(rs.getString("employer_email")))
+                            .append("\",");
+
+                    json.append("\"workingHours\":\"")
+                            .append(escapeJson(rs.getString("working_hours")))
+                            .append("\",");
+
+                    json.append("\"requirements\":\"")
+                            .append(escapeJson(rs.getString("requirements")))
+                            .append("\",");
+
+                    json.append("\"contactEmail\":\"")
+                            .append(escapeJson(rs.getString("contact_email")))
+                            .append("\",");
+
+                    json.append("\"contactPhone\":\"")
+                            .append(escapeJson(rs.getString("contact_phone")))
+                            .append("\",");
+
+                    json.append("\"companyDetails\":\"")
+                            .append(escapeJson(rs.getString("company_details")))
+                            .append("\",");
+
+                    json.append("\"applicationDeadline\":\"")
+                            .append(escapeJson(rs.getString("application_deadline")))
+                            .append("\",");
+
+                    json.append("\"logoUrl\":\"")
+                            .append(escapeJson(rs.getString("logo_url")))
+                            .append("\",");
+
+                    json.append("\"createdAt\":\"")
+                            .append(escapeJson(rs.getString("created_at")))
+                            .append("\",");
 
                     json.append("\"address\":\"")
                             .append(escapeJson(rs.getString("address")))
@@ -112,6 +148,15 @@ public class JobServlet extends HttpServlet {
 
                 } else {
 
+                    json.append("\"employerEmail\":\"\",");
+                    json.append("\"workingHours\":\"\",");
+                    json.append("\"requirements\":\"\",");
+                    json.append("\"contactEmail\":\"\",");
+                    json.append("\"contactPhone\":\"\",");
+                    json.append("\"companyDetails\":\"\",");
+                    json.append("\"applicationDeadline\":\"\",");
+                    json.append("\"logoUrl\":\"\",");
+                    json.append("\"createdAt\":\"\",");
                     json.append("\"address\":\"\",");
                     json.append("\"latitude\":null,");
                     json.append("\"longitude\":null");
@@ -146,6 +191,15 @@ public class JobServlet extends HttpServlet {
                 : e.getMessage().toLowerCase();
 
         return "42S22".equals(e.getSQLState())
+                || message.contains("employer_email")
+                || message.contains("working_hours")
+                || message.contains("requirements")
+                || message.contains("contact_email")
+                || message.contains("contact_phone")
+                || message.contains("company_details")
+                || message.contains("application_deadline")
+                || message.contains("logo_url")
+                || message.contains("created_at")
                 || message.contains("address")
                 || message.contains("latitude")
                 || message.contains("longitude");

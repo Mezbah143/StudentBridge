@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,6 +11,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
@@ -34,7 +37,9 @@ public class RegisterServlet extends HttpServlet {
         );
 
         // Validate account type
-        if (accountType.isEmpty()) {
+        if (accountType.isEmpty()
+                || (!"Student".equalsIgnoreCase(accountType)
+                && !"Employer".equalsIgnoreCase(accountType))) {
 
             response.sendRedirect(
                     "frontend/register.html?error=accountType"
@@ -121,8 +126,18 @@ public class RegisterServlet extends HttpServlet {
 
             con.commit();
 
+            HttpSession session = request.getSession(true);
+            session.setAttribute("user", name);
+            session.setAttribute("userEmail", email);
+            session.setAttribute("accountType", accountType);
+            session.setMaxInactiveInterval(30 * 60);
+
             response.sendRedirect(
-                    "frontend/login.html?registered=1"
+                    "index.html?login=success"
+                            + "&registered=1"
+                            + "&email=" + encode(nameOrEmpty(email))
+                            + "&name=" + encode(nameOrEmpty(name))
+                            + "&accountType=" + encode(nameOrEmpty(accountType))
             );
 
         } catch (Exception e) {
@@ -381,5 +396,13 @@ public class RegisterServlet extends HttpServlet {
 
         return "42S22".equals(e.getSQLState())
                 || message.contains("account_type");
+    }
+
+    private String nameOrEmpty(String value) {
+        return value == null ? "" : value;
+    }
+
+    private String encode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 }

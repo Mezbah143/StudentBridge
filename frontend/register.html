@@ -257,6 +257,7 @@
 
   <script src="./runtime-config.js"></script>
   <script src="./platform.js"></script>
+  <script src="./i18n.js"></script>
   <script>
     const accountTabs = document.querySelectorAll(".account-tab");
     const registerForms = document.querySelectorAll(".register-form");
@@ -274,8 +275,12 @@
       showMessage("Passwords do not match.", "error");
     } else if (serverError === "email") {
       showMessage("Email is required.", "error");
+    } else if (serverError === "emailExists") {
+      showMessage("That email is already registered. Please login instead.", "error");
     } else if (serverError === "accountType") {
       showMessage("Please choose an account type.", "error");
+    } else if (serverError === "db" || serverError === "server") {
+      showMessage("Registration could not be completed. Please try again shortly.", "error");
     }
 
     accountTabs.forEach((tab) => {
@@ -344,7 +349,7 @@
           return;
         }
 
-        if (window.StudentBridgePlatform && !StudentBridgePlatform.canReachBackend()) {
+        if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
           event.preventDefault();
           showMessage("This page is a static preview. Registration works on the Tomcat or Render deployment.", "info");
           return;

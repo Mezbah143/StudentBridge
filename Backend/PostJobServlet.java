@@ -62,6 +62,10 @@ public class PostJobServlet extends HttpServlet {
         String workingHours = clean(request.getParameter("workingHours"));
         String requirements = clean(request.getParameter("requirements"));
         String contactEmail = clean(request.getParameter("contactEmail"));
+        String contactPhone = clean(request.getParameter("contactPhone"));
+        String companyDetails = clean(request.getParameter("companyDetails"));
+        String applicationDeadline = clean(request.getParameter("applicationDeadline"));
+        String logoUrl = clean(request.getParameter("logoUrl"));
 
         String address = clean(request.getParameter("address"));
 
@@ -84,7 +88,8 @@ public class PostJobServlet extends HttpServlet {
                 || category.isEmpty()
                 || type.isEmpty()
                 || salary.isEmpty()
-                || description.isEmpty()) {
+                || description.isEmpty()
+                || address.isEmpty()) {
 
             response.sendRedirect(
                     "frontend/post-job.html?error=missing"
@@ -117,6 +122,10 @@ public class PostJobServlet extends HttpServlet {
                     workingHours,
                     requirements,
                     contactEmail,
+                    contactPhone,
+                    companyDetails,
+                    applicationDeadline,
+                    logoUrl,
                     address,
                     latitude,
                     longitude
@@ -149,6 +158,10 @@ public class PostJobServlet extends HttpServlet {
             String workingHours,
             String requirements,
             String contactEmail,
+            String contactPhone,
+            String companyDetails,
+            String applicationDeadline,
+            String logoUrl,
             String address,
             BigDecimal latitude,
             BigDecimal longitude
@@ -158,8 +171,9 @@ public class PostJobServlet extends HttpServlet {
                 "INSERT INTO jobs " +
                 "(title, company, location, category, type, salary, " +
                 "description, employer_email, working_hours, requirements, " +
-                "contact_email, address, latitude, longitude) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "contact_email, contact_phone, company_details, application_deadline, " +
+                "logo_url, address, latitude, longitude) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps =
                      con.prepareStatement(extendedSql)) {
@@ -176,11 +190,15 @@ public class PostJobServlet extends HttpServlet {
             ps.setString(9, workingHours);
             ps.setString(10, requirements);
             ps.setString(11, contactEmail);
+            ps.setString(12, contactPhone);
+            ps.setString(13, companyDetails);
+            ps.setString(14, applicationDeadline.isEmpty() ? null : applicationDeadline);
+            ps.setString(15, logoUrl);
 
-            ps.setString(12, address);
+            ps.setString(16, address);
 
-            setNullableDecimal(ps, 13, latitude);
-            setNullableDecimal(ps, 14, longitude);
+            setNullableDecimal(ps, 17, latitude);
+            setNullableDecimal(ps, 18, longitude);
 
             ps.executeUpdate();
 
@@ -226,6 +244,10 @@ public class PostJobServlet extends HttpServlet {
                 || message.contains("working_hours")
                 || message.contains("requirements")
                 || message.contains("contact_email")
+                || message.contains("contact_phone")
+                || message.contains("company_details")
+                || message.contains("application_deadline")
+                || message.contains("logo_url")
                 || message.contains("address")
                 || message.contains("latitude")
                 || message.contains("longitude");

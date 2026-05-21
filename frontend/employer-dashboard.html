@@ -52,6 +52,102 @@
         <p>Applicant management can be connected next after the job application flow is added.</p>
       </article>
     </section>
+
+    <section class="form-card listing-panel" aria-labelledby="employer-listings-title">
+      <div class="form-header">
+        <div>
+          <h2 id="employer-listings-title">Your posted jobs</h2>
+          <p>Only listings created by the logged-in employer account appear here.</p>
+        </div>
+        <a href="./post-job.html">Post another job</a>
+      </div>
+
+      <p class="form-message show info" id="employerJobsStatus" role="status" aria-live="polite">Loading your listings...</p>
+      <div class="listing-grid" id="employerJobsList"></div>
+    </section>
   </main>
+
+  <script src="./runtime-config.js"></script>
+  <script src="./platform.js"></script>
+  <script src="./i18n.js"></script>
+  <script>
+    const statusElement = document.getElementById("employerJobsStatus");
+    const jobsList = document.getElementById("employerJobsList");
+
+    function setStatus(message, type = "info") {
+      statusElement.textContent = message;
+      statusElement.className = `form-message show ${type}`;
+    }
+
+    function createInfoLine(icon, value) {
+      const line = document.createElement("p");
+      line.className = "listing-meta";
+      line.innerHTML = `<i class="${icon}" aria-hidden="true"></i> `;
+      line.append(document.createTextNode(value || "Not added yet"));
+      return line;
+    }
+
+    function renderJobs(jobs) {
+      jobsList.innerHTML = "";
+
+      if (!jobs.length) {
+        setStatus("No jobs posted yet. Use Post a Job to create your first listing.", "info");
+        return;
+      }
+
+      setStatus(`${jobs.length} listing${jobs.length === 1 ? "" : "s"} loaded.`, "success");
+
+      jobs.forEach((job) => {
+        const card = document.createElement("article");
+        card.className = "listing-card";
+
+        const heading = document.createElement("h3");
+        heading.textContent = job.title;
+
+        const salary = createInfoLine("fa-solid fa-won-sign", job.salary);
+        const location = createInfoLine("fa-solid fa-location-dot", `${job.location || "Location not added"} · ${job.type || "Type not added"}`);
+        const deadline = createInfoLine("fa-solid fa-calendar", job.applicationDeadline ? `Deadline: ${job.applicationDeadline}` : "No deadline added");
+        const contact = createInfoLine("fa-solid fa-envelope", job.contactEmail || job.contactPhone || "No contact added");
+
+        const description = document.createElement("p");
+        description.className = "listing-description";
+        description.textContent = job.description || "No description added.";
+
+        card.append(heading, salary, location, deadline, contact, description);
+        jobsList.appendChild(card);
+      });
+    }
+
+    async function loadEmployerJobs() {
+      if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
+        setStatus("Static preview: employer listings load on Tomcat or Render.", "info");
+        return;
+      }
+
+      try {
+        const response = await fetch(StudentBridgePlatform.toBackendUrl("EmployerJobsServlet"));
+
+        if (response.status === 401) {
+          setStatus("Please login with an employer account to view your posted jobs.", "error");
+          return;
+        }
+
+        if (response.status === 403) {
+          setStatus("Student accounts cannot view employer listings.", "error");
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("Employer job load failed.");
+        }
+
+        renderJobs(await response.json());
+      } catch (error) {
+        setStatus("Employer listings could not be loaded. Please check Tomcat, MySQL, and your session.", "error");
+      }
+    }
+
+    loadEmployerJobs();
+  </script>
 </body>
 </html>
