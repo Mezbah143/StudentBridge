@@ -109,6 +109,8 @@ public class PostJobServlet extends HttpServlet {
                 return;
             }
 
+            DatabaseSchemaManager.ensureJobsTable(con);
+
             insertJob(
                     con,
                     title,

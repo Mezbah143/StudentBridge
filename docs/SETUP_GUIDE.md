@@ -1,6 +1,6 @@
 # StudentBridge Setup Guide
 
-Last updated: 2026-05-01
+Last updated: 2026-05-21
 
 ## Project
 
@@ -61,11 +61,28 @@ Security note: this schema matches the current demo code, but plain-text passwor
 
 ## Configure Database Credentials
 
-The current code connects in `Backend/DBConnection.java`.
+The app reads database settings from environment variables in `Backend/DBConnection.java`.
 
-Before running locally, make sure the database URL, username, and password match your machine.
+| Variable | Local default | Notes |
+|---|---|---|
+| `DB_HOST` | `localhost` | Ignored when `DB_URL` is set. |
+| `DB_PORT` | `3306` | Ignored when `DB_URL` is set. |
+| `DB_NAME` | `studentbridge` | Ignored when `DB_URL` is set. |
+| `DB_USER` | `root` | Set this for Railway/Render and teammate machines. |
+| `DB_PASSWORD` | empty string | Set this locally if your MySQL user has a password. |
+| `DB_URL` | not set | Optional full JDBC URL, useful for hosted databases. |
 
-Do not publish real database passwords in screenshots, slides, or documentation. A future improvement should move credentials out of source code.
+Example local setup:
+
+```bash
+export DB_HOST="localhost"
+export DB_PORT="3306"
+export DB_NAME="studentbridge"
+export DB_USER="root"
+export DB_PASSWORD="your-local-password"
+```
+
+Do not publish real database passwords in screenshots, slides, documentation, commits, or pull requests.
 
 ## Deploy To Local Tomcat
 
@@ -145,7 +162,7 @@ SELECT id, name, email, phone, created_at FROM users ORDER BY id DESC LIMIT 5;
 |---|---|---|
 | 404 on homepage | Tomcat webapp path is wrong | Confirm files copied to `webapps/StudentBridge/`. |
 | Servlet 404 | Classes not copied to `WEB-INF/classes` or Tomcat not restarted | Run `./deploy.sh` and restart Tomcat. |
-| Database connection failed | MySQL is stopped, schema missing, or credentials mismatch | Start MySQL, create schema, update local DB credentials. |
+| Database connection failed | MySQL is stopped, schema missing, or credentials mismatch | Start MySQL, create schema, and set the `DB_*` environment variables. |
 | `ClassNotFoundException: com.mysql.cj.jdbc.Driver` | MySQL jar missing from Tomcat app | Copy connector jar into `WEB-INF/lib`. |
 | Compile error for `jakarta.servlet` | Servlet API jar missing or wrong Tomcat version | Use Tomcat 10 and `server/servlet-api.jar`. |
 | Form posts to wrong URL | Absolute form action misses context path | Test under `/StudentBridge` and update form action if needed. |

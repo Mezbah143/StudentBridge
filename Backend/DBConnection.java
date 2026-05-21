@@ -11,7 +11,7 @@ public class DBConnection {
             String dbPort = getEnvOrDefault("DB_PORT", "3306");
             String dbName = getEnvOrDefault("DB_NAME", "studentbridge");
             String dbUser = getEnvOrDefault("DB_USER", "root");
-            String dbPassword = getEnvOrDefault("DB_PASSWORD", "mezbah143");
+            String dbPassword = getEnvOrDefault("DB_PASSWORD", "");
             String dbUrl = System.getenv("DB_URL");
 
             String jdbcUrl = (dbUrl != null && !dbUrl.isBlank())
