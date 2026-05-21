@@ -332,6 +332,7 @@
 
   <script src="./runtime-config.js"></script>
   <script src="./platform.js"></script>
+  <script src="./i18n.js"></script>
   <script>
     const loginMessage = document.getElementById("loginMessage");
     const loginForm = document.getElementById("loginForm");
@@ -345,7 +346,7 @@
 
     const params = new URLSearchParams(window.location.search);
 
-    if (params.get("error") === "1") {
+    if (params.get("error") === "1" || params.get("error") === "invalid") {
       showLoginMessage("Invalid email or password. Please try again.", "error");
     }
 
@@ -359,11 +360,19 @@
       }
     }
 
+    if (params.get("error") === "database") {
+      showLoginMessage("Login could not reach the database. Please try again shortly.", "error");
+    }
+
+    if (params.get("error") === "server") {
+      showLoginMessage("Login failed because of a server error. Please try again.", "error");
+    }
+
     if (params.get("registered") === "1") {
       showLoginMessage("Registration successful. You can login now.", "success");
     }
 
-    if (params.get("logout") === "1") {
+    if (params.get("logout") === "1" || params.get("logout") === "success") {
       showLoginMessage("You have been logged out successfully.", "success");
     }
 

@@ -4,7 +4,13 @@
   }
 
   function isStaticPreview() {
-    return window.location.protocol === "file:" || window.location.hostname.endsWith("github.io");
+    const isLocalStaticServer = ["127.0.0.1", "localhost", "::1"].includes(window.location.hostname)
+      && window.location.port
+      && window.location.port !== "8080";
+
+    return window.location.protocol === "file:"
+      || window.location.hostname.endsWith("github.io")
+      || isLocalStaticServer;
   }
 
   function getConfiguredBackendBase() {

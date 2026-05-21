@@ -41,10 +41,7 @@ public class LoginServlet extends HttpServlet {
 
         String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
 
-        try (
-                Connection con = DBConnection.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
-        ) {
+        try (Connection con = DBConnection.getConnection()) {
 
             // Check database connection
             if (con == null) {
@@ -53,37 +50,40 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
 
-            // Set query parameters
-            ps.setString(1, email);
-            ps.setString(2, password);
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                // Set query parameters
+                ps.setString(1, email);
+                ps.setString(2, password);
 
-            try (ResultSet rs = ps.executeQuery()) {
+                try (ResultSet rs = ps.executeQuery()) {
 
-                // Login successful
-                if (rs.next()) {
+                    // Login successful
+                    if (rs.next()) {
 
-                    HttpSession session = req.getSession();
+                        HttpSession session = req.getSession();
 
-                    session.setAttribute("user", safeGetString(rs, "name"));
-                    session.setAttribute("userEmail", safeGetString(rs, "email"));
-                    session.setAttribute("accountType", safeGetString(rs, "account_type"));
+                        session.setAttribute("user", safeGetString(rs, "name"));
+                        session.setAttribute("userEmail", safeGetString(rs, "email"));
+                        session.setAttribute("accountType", safeGetString(rs, "account_type"));
 
-                    // Session timeout (30 minutes)
-                    session.setMaxInactiveInterval(30 * 60);
+                        // Session timeout (30 minutes)
+                        session.setMaxInactiveInterval(30 * 60);
 
-                    String encodedEmail = URLEncoder.encode(
-                            safeGetString(rs, "email"),
-                            StandardCharsets.UTF_8
-                    );
+                        String encodedEmail = encode(safeGetString(rs, "email"));
+                        String encodedName = encode(safeGetString(rs, "name"));
+                        String encodedAccountType = encode(safeGetString(rs, "account_type"));
 
-                    resp.sendRedirect(
-                            "index.html?login=success&email=" + encodedEmail
-                    );
+                        resp.sendRedirect(
+                                "index.html?login=success&email=" + encodedEmail
+                                        + "&name=" + encodedName
+                                        + "&accountType=" + encodedAccountType
+                        );
 
-                } else {
+                    } else {
 
-                    // Invalid login
-                    resp.sendRedirect("frontend/login.html?error=invalid");
+                        // Invalid login
+                        resp.sendRedirect("frontend/login.html?error=invalid");
+                    }
                 }
             }
 
@@ -114,5 +114,13 @@ public class LoginServlet extends HttpServlet {
 
             return "";
         }
+    }
+
+    private String encode(String value) {
+
+        return URLEncoder.encode(
+                value == null ? "" : value,
+                StandardCharsets.UTF_8
+        );
     }
 }

@@ -79,15 +79,6 @@ public class StudentLocationServlet extends HttpServlet {
             return;
         }
 
-        if (latitude == null || longitude == null) {
-
-            response.sendRedirect(
-                    "frontend/student-profile.html?error=map"
-            );
-
-            return;
-        }
-
         try (Connection con = DBConnection.getConnection()) {
 
             if (con == null) {

@@ -141,7 +141,7 @@
       max-width: 1120px;
       margin: 34px auto 28px;
       display: grid;
-      grid-template-columns: repeat(4, minmax(150px, 1fr)) auto;
+      grid-template-columns: repeat(4, minmax(150px, 1fr));
       gap: 12px;
       padding: 18px;
       border: 1px solid rgba(255, 255, 255, 0.6);
@@ -179,8 +179,13 @@
       box-shadow: 0 0 0 4px rgba(47, 109, 246, 0.14);
     }
 
+    .search-actions {
+      display: flex;
+      align-items: end;
+      gap: 10px;
+    }
+
     .search-container button {
-      align-self: end;
       min-height: 48px;
       padding: 0 22px;
       border: 0;
@@ -191,6 +196,13 @@
       font-weight: 800;
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .reset-btn {
+      color: var(--primary-dark) !important;
+      background: #ffffff !important;
+      border: 1px solid #b8c7e3 !important;
+      box-shadow: none !important;
     }
 
     .search-container button:hover {
@@ -231,6 +243,32 @@
       background: #ccfbf1;
       font-size: 13px;
       font-weight: 800;
+    }
+
+    .job-heading {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .job-logo {
+      display: grid;
+      width: 52px;
+      height: 52px;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 16px;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      font-weight: 900;
+    }
+
+    .job-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .job-title {
@@ -274,6 +312,27 @@
       color: var(--muted);
       font-size: 14px;
       line-height: 1.55;
+    }
+
+    .details {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+      color: #334155;
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .details p {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .details i {
+      width: 16px;
+      margin-top: 2px;
+      color: var(--primary-dark);
     }
 
     .apply-btn {
@@ -388,7 +447,7 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .search-container button {
+      .search-actions {
         grid-column: 1 / -1;
       }
     }
@@ -405,6 +464,11 @@
 
       .search-container {
         grid-template-columns: 1fr;
+      }
+
+      .search-actions {
+        flex-direction: column;
+        align-items: stretch;
       }
     }
   </style>
@@ -444,6 +508,8 @@
           <option value="Busan">Busan</option>
           <option value="Ulsan">Ulsan</option>
           <option value="Daegu">Daegu</option>
+          <option value="Incheon">Incheon</option>
+          <option value="Other">Other</option>
         </select>
       </div>
 
@@ -452,9 +518,13 @@
         <select id="category" name="category">
           <option value="">All Categories</option>
           <option value="Student">Student</option>
+          <option value="Cafe">Cafe</option>
+          <option value="Restaurant">Restaurant</option>
+          <option value="Tutoring">Tutoring</option>
           <option value="IT">IT</option>
           <option value="Design">Design</option>
           <option value="Marketing">Marketing</option>
+          <option value="Retail">Retail</option>
         </select>
       </div>
 
@@ -465,10 +535,31 @@
           <option value="Part-time">Part-time</option>
           <option value="Full-time">Full-time</option>
           <option value="Internship">Internship</option>
+          <option value="Temporary">Temporary</option>
         </select>
       </div>
 
-      <button type="submit"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Search</button>
+      <div class="form-field">
+        <label for="salarySort">Salary sort</label>
+        <select id="salarySort" name="salarySort">
+          <option value="">No Sort</option>
+          <option value="high">Highest salary first</option>
+          <option value="low">Lowest salary first</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="mapOnly">Map availability</label>
+        <select id="mapOnly" name="mapOnly">
+          <option value="">All jobs</option>
+          <option value="yes">Only with map</option>
+        </select>
+      </div>
+
+      <div class="search-actions">
+        <button type="submit"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Search</button>
+        <button type="button" class="reset-btn" id="resetFilters">Reset</button>
+      </div>
     </form>
 
     <section class="jobs" id="jobList" aria-live="polite" aria-label="Job listings"></section>
@@ -482,6 +573,7 @@
 
   <script src="./runtime-config.js"></script>
   <script src="./platform.js"></script>
+  <script src="./i18n.js"></script>
   <script src="./map-config.js"></script>
   <script src="./location-map.js"></script>
   <script>
@@ -489,9 +581,15 @@
     let jobMapViewer = null;
     const jobList = document.getElementById("jobList");
     const jobSearchForm = document.getElementById("jobSearchForm");
+    const resetFiltersButton = document.getElementById("resetFilters");
+
+    function parseSalaryValue(salary) {
+      const match = String(salary || "").replace(/,/g, "").match(/\d+(\.\d+)?/);
+      return match ? Number(match[0]) : 0;
+    }
 
     async function loadJobs() {
-      if (window.StudentBridgePlatform && !StudentBridgePlatform.canReachBackend()) {
+      if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
         showStatus("Live jobs are available on the Tomcat or Render deployment. This GitHub Pages site is a static preview.");
         return;
       }
@@ -508,7 +606,6 @@
         jobs = await response.json();
         displayJobs(jobs);
       } catch (error) {
-        console.error(error);
         showStatus("Jobs could not be loaded. Please check Tomcat, MySQL, and the jobs table.");
       }
     }
@@ -536,10 +633,23 @@
         const article = document.createElement("article");
         article.className = "job-card";
 
-        const salary = document.createElement("p");
-        salary.className = "salary";
-        salary.innerHTML = '<i class="fa-solid fa-won-sign" aria-hidden="true"></i>';
-        salary.append(document.createTextNode(job.salary));
+        const heading = document.createElement("div");
+        heading.className = "job-heading";
+
+        const logo = document.createElement("div");
+        logo.className = "job-logo";
+
+        if (job.logoUrl) {
+          const image = document.createElement("img");
+          image.src = job.logoUrl;
+          image.alt = `${job.company} logo`;
+          image.loading = "lazy";
+          logo.appendChild(image);
+        } else {
+          logo.textContent = String(job.company || "S").slice(0, 1).toUpperCase();
+        }
+
+        const headingText = document.createElement("div");
 
         const title = document.createElement("h2");
         title.className = "job-title";
@@ -548,6 +658,14 @@
         const company = document.createElement("p");
         company.className = "company";
         company.textContent = job.company;
+
+        headingText.append(title, company);
+        heading.append(logo, headingText);
+
+        const salary = document.createElement("p");
+        salary.className = "salary";
+        salary.innerHTML = '<i class="fa-solid fa-won-sign" aria-hidden="true"></i>';
+        salary.append(document.createTextNode(job.salary));
 
         const location = document.createElement("p");
         location.className = "location";
@@ -573,6 +691,26 @@
         description.className = "desc";
         description.textContent = job.description;
 
+        const details = document.createElement("div");
+        details.className = "details";
+
+        [
+          ["fa-solid fa-clock", job.workingHours],
+          ["fa-solid fa-calendar", job.applicationDeadline ? `Deadline: ${job.applicationDeadline}` : ""],
+          ["fa-solid fa-phone", job.contactPhone],
+          ["fa-solid fa-envelope", job.contactEmail],
+          ["fa-solid fa-building", job.companyDetails]
+        ].forEach(([icon, text]) => {
+          if (!text) {
+            return;
+          }
+
+          const line = document.createElement("p");
+          line.innerHTML = `<i class="${icon}" aria-hidden="true"></i> `;
+          line.append(document.createTextNode(text));
+          details.appendChild(line);
+        });
+
         const applyButton = document.createElement("button");
         applyButton.type = "button";
         applyButton.className = "apply-btn";
@@ -589,7 +727,7 @@
           : "Map Not Added";
         mapButton.disabled = !StudentBridgeLocationMap.hasCoordinates(job.latitude, job.longitude);
 
-        article.append(salary, title, company, location, address, tags, description, mapButton, applyButton);
+        article.append(heading, salary, location, address, tags, description, details, mapButton, applyButton);
 
         fragment.appendChild(article);
       });
@@ -602,17 +740,28 @@
       const location = document.getElementById("location").value;
       const category = document.getElementById("category").value;
       const type = document.getElementById("type").value;
+      const salarySort = document.getElementById("salarySort").value;
+      const mapOnly = document.getElementById("mapOnly").value;
 
       const filtered = jobs.filter((job) =>
         (
           job.title.toLowerCase().includes(keyword) ||
           job.company.toLowerCase().includes(keyword) ||
-          job.description.toLowerCase().includes(keyword)
+          job.description.toLowerCase().includes(keyword) ||
+          String(job.companyDetails || "").toLowerCase().includes(keyword)
         ) &&
         (location === "" || job.location === location) &&
         (category === "" || job.category === category) &&
-        (type === "" || job.type === type)
+        (type === "" || job.type === type) &&
+        (mapOnly === "" || StudentBridgeLocationMap.hasCoordinates(job.latitude, job.longitude))
       );
+
+      if (salarySort) {
+        filtered.sort((a, b) => {
+          const difference = parseSalaryValue(a.salary) - parseSalaryValue(b.salary);
+          return salarySort === "high" ? -difference : difference;
+        });
+      }
 
       displayJobs(filtered);
     }
@@ -620,6 +769,11 @@
     jobSearchForm.addEventListener("submit", (event) => {
       event.preventDefault();
       filterJobs();
+    });
+
+    resetFiltersButton.addEventListener("click", () => {
+      jobSearchForm.reset();
+      displayJobs(jobs);
     });
 
     jobList.addEventListener("click", (event) => {

@@ -8,6 +8,10 @@ const App = {
     this.userMenuTrigger = document.querySelector("[data-user-menu-trigger]");
     this.userDropdown = document.querySelector("[data-user-dropdown]");
     this.userEmailElements = document.querySelectorAll("[data-user-email]");
+    this.userMailLink = document.querySelector("[data-user-mail]");
+    this.dropdownEmail = document.querySelector("[data-dropdown-email]");
+    this.employerLinks = document.querySelectorAll("[data-employer-link]");
+    this.studentLinks = document.querySelectorAll("[data-student-link]");
 
     this.logoutButton = document.querySelector("[data-logout-button]");
     this.languageButton = document.getElementById("languageButton");
@@ -46,13 +50,13 @@ document.querySelectorAll("[data-lang]")
 
     item.addEventListener("click", () => {
 
-      const selected =
-        item.dataset.lang;
+      const selected = item.dataset.lang;
 
-      localStorage.setItem(
-        "studentBridgeLanguage",
-        selected
-      );
+      if (window.StudentBridgeI18n) {
+        StudentBridgeI18n.setLanguage(selected);
+      } else {
+        localStorage.setItem("studentBridgeLanguage", selected);
+      }
 
       this.languageMenu
         .classList.remove("show");
@@ -87,16 +91,23 @@ document.querySelectorAll("[data-lang]")
     }
 
     const email = params.get("email");
+    const name = params.get("name") || "";
+    const accountType = params.get("accountType") || "";
 
     if (email) {
       localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({
         email,
+        name,
+        accountType,
         loggedIn: true
       }));
     }
 
     params.delete("login");
+    params.delete("registered");
     params.delete("email");
+    params.delete("name");
+    params.delete("accountType");
 
     const cleanQuery = params.toString();
     const cleanUrl = `${window.location.pathname}${cleanQuery ? `?${cleanQuery}` : ""}${window.location.hash}`;
@@ -118,21 +129,46 @@ document.querySelectorAll("[data-lang]")
 
     const auth = this.getAuthState();
     const isLoggedIn = auth.loggedIn && auth.email;
+    const accountType = String(auth.accountType || "").toLowerCase();
 
     this.guestActions.hidden = Boolean(isLoggedIn);
+    this.guestActions.style.display = isLoggedIn ? "none" : "";
     this.userMenu.hidden = !isLoggedIn;
+    this.userMenu.style.display = isLoggedIn ? "" : "none";
 
     if (!isLoggedIn) {
       return;
     }
 
     this.userEmailElements.forEach((element) => {
-      element.textContent = "👤";
+      element.textContent = "";
     });
+
+    if (this.userMenuTrigger) {
+      this.userMenuTrigger.setAttribute("aria-label", `Profile menu for ${auth.email}`);
+      this.userMenuTrigger.title = auth.email;
+    }
+
+    if (this.dropdownEmail) {
+      this.dropdownEmail.textContent = auth.email;
+    }
 
     if (this.userMailLink) {
       this.userMailLink.href = `mailto:${auth.email}`;
     }
+
+    if (this.userDropdown) {
+      this.userDropdown.hidden = true;
+      this.userDropdown.style.display = "none";
+    }
+
+    this.employerLinks.forEach((link) => {
+      link.hidden = accountType !== "employer";
+    });
+
+    this.studentLinks.forEach((link) => {
+      link.hidden = accountType === "employer";
+    });
   },
 
   toggleUserMenu() {
@@ -142,6 +178,7 @@ document.querySelectorAll("[data-lang]")
 
     const shouldOpen = this.userDropdown.hidden;
     this.userDropdown.hidden = !shouldOpen;
+    this.userDropdown.style.display = shouldOpen ? "block" : "none";
     this.userMenuTrigger.setAttribute("aria-expanded", String(shouldOpen));
   },
 
@@ -151,6 +188,7 @@ document.querySelectorAll("[data-lang]")
     }
 
     this.userDropdown.hidden = true;
+    this.userDropdown.style.display = "none";
     this.userMenuTrigger.setAttribute("aria-expanded", "false");
   },
 
