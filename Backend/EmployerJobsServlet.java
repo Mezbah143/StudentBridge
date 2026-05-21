@@ -47,6 +47,8 @@ public class EmployerJobsServlet extends HttpServlet {
                 return;
             }
 
+            DatabaseSchemaManager.ensureJobsTable(con);
+
             try {
                 writeJobs(con, response, employerEmail, true);
             } catch (SQLException e) {

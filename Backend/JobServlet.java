@@ -29,6 +29,8 @@ public class JobServlet extends HttpServlet {
                 return;
             }
 
+            DatabaseSchemaManager.ensureJobsTable(con);
+
             try {
                 writeJobsJson(con, response, true);
 

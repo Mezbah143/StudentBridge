@@ -9,12 +9,13 @@ StudentBridge deploys as a Docker-backed Tomcat web service. The app is served f
 
 ## 1. Prepare MySQL
 
-Render does not provision MySQL from `render.yaml`, so use an external MySQL database provider. Create a database named `studentbridge`, then run these SQL files:
+Render does not provision MySQL from `render.yaml`, so use an external MySQL database provider such as Railway. Create a database named `studentbridge`, then run the auth/profile schema:
 
 ```sql
 docs/database_update_auth.sql
-docs/database_jobs.sql
 ```
+
+For jobs, apply only the schema and ALTER statements from `docs/database_jobs.sql` in production. Do not run the sample `INSERT INTO jobs` rows against Railway unless you intentionally want duplicate demo listings.
 
 ## 2. Fill Render Environment Variables
 
@@ -25,6 +26,8 @@ When Render opens the Blueprint, fill these secrets:
 | `DB_URL` | `jdbc:mysql://host:3306/studentbridge?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8` |
 | `DB_USER` | `studentbridge_user` |
 | `DB_PASSWORD` | database password |
+
+The app also supports `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` instead of `DB_URL`. Render and Railway deployments must provide real database credentials through environment variables; do not commit them.
 
 If your database provider requires SSL, add the SSL option to `DB_URL`, for example:
 
