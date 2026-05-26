@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Employer dashboard for StudentBridge.">
-  <title>Employer Dashboard | StudentBridge</title>
+  <title data-i18n="title.employerDashboard">Employer Dashboard | StudentBridge</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="./post-job.css">
 </head>
@@ -14,140 +14,47 @@
       <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-bridge"></i></span>
       <span>StudentBridge</span>
     </a>
-    <nav class="nav-links" aria-label="Primary navigation">
-      <a href="../index.html">Home</a>
-      <a href="./jobsearch.html">Jobs</a>
-      <a href="./employer-dashboard.html" aria-current="page">Dashboard</a>
-      <a href="./post-job.html">Post Job</a>
+    <nav class="nav-links" aria-label="Primary navigation" data-i18n-aria-label="nav.primary">
+      <a href="../index.html" data-i18n="nav.home">Home</a>
+      <a href="./jobsearch.html" data-i18n="nav.jobs">Jobs</a>
+      <a href="./employer-dashboard.html" aria-current="page" data-i18n="nav.dashboard">Dashboard</a>
+      <a href="./post-job.html" data-i18n="nav.postJob">Post Job</a>
     </nav>
+    <div data-language-switcher></div>
   </header>
 
   <main class="page-shell">
     <section class="dashboard-hero" aria-labelledby="dashboard-title">
-      <p class="eyebrow"><i class="fa-solid fa-store" aria-hidden="true"></i> Employer dashboard</p>
-      <h1 id="dashboard-title">Manage your hiring from one place.</h1>
-      <p>Post student-friendly jobs, review your listings, and connect with international students in Korea.</p>
+      <p class="eyebrow"><i class="fa-solid fa-store" aria-hidden="true"></i> <span data-i18n="dashboard.eyebrow">Employer dashboard</span></p>
+      <h1 id="dashboard-title" data-i18n="dashboard.heading">Manage your hiring from one place.</h1>
+      <p data-i18n="dashboard.body">Post student-friendly jobs, review your listings, and connect with international students in Korea.</p>
       <a class="submit-btn dashboard-cta" href="./post-job.html">
         <i class="fa-solid fa-plus" aria-hidden="true"></i>
-        Post a Job
+        <span data-i18n="nav.postJob">Post a Job</span>
       </a>
     </section>
 
     <section class="dashboard-grid" aria-label="Employer actions">
       <article>
         <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
-        <h2>Create listings</h2>
-        <p>Add job title, salary, location, category, and details students need before applying.</p>
+        <h2 data-i18n="dashboard.createTitle">Create listings</h2>
+        <p data-i18n="dashboard.createBody">Add job title, salary, location, category, and details students need before applying.</p>
       </article>
 
       <article>
         <i class="fa-solid fa-magnifying-glass-chart" aria-hidden="true"></i>
-        <h2>Check visibility</h2>
-        <p>Use the public job search page to confirm that your new listing appears correctly.</p>
+        <h2 data-i18n="dashboard.visibilityTitle">Check visibility</h2>
+        <p data-i18n="dashboard.visibilityBody">Use the public job search page to confirm that your new listing appears correctly.</p>
       </article>
 
       <article>
         <i class="fa-solid fa-user-check" aria-hidden="true"></i>
-        <h2>Review applicants</h2>
-        <p>Applicant management can be connected next after the job application flow is added.</p>
+        <h2 data-i18n="dashboard.reviewTitle">Review applicants</h2>
+        <p data-i18n="dashboard.reviewBody">Applicant management can be connected next after the job application flow is added.</p>
       </article>
     </section>
-
-    <section class="form-card listing-panel" aria-labelledby="employer-listings-title">
-      <div class="form-header">
-        <div>
-          <h2 id="employer-listings-title">Your posted jobs</h2>
-          <p>Only listings created by the logged-in employer account appear here.</p>
-        </div>
-        <a href="./post-job.html">Post another job</a>
-      </div>
-
-      <p class="form-message show info" id="employerJobsStatus" role="status" aria-live="polite">Loading your listings...</p>
-      <div class="listing-grid" id="employerJobsList"></div>
-    </section>
   </main>
-
-  <script src="./runtime-config.js"></script>
-  <script src="./platform.js"></script>
+  <script src="./translations.js"></script>
   <script src="./i18n.js"></script>
-  <script>
-    const statusElement = document.getElementById("employerJobsStatus");
-    const jobsList = document.getElementById("employerJobsList");
-
-    function setStatus(message, type = "info") {
-      statusElement.textContent = message;
-      statusElement.className = `form-message show ${type}`;
-    }
-
-    function createInfoLine(icon, value) {
-      const line = document.createElement("p");
-      line.className = "listing-meta";
-      line.innerHTML = `<i class="${icon}" aria-hidden="true"></i> `;
-      line.append(document.createTextNode(value || "Not added yet"));
-      return line;
-    }
-
-    function renderJobs(jobs) {
-      jobsList.innerHTML = "";
-
-      if (!jobs.length) {
-        setStatus("No jobs posted yet. Use Post a Job to create your first listing.", "info");
-        return;
-      }
-
-      setStatus(`${jobs.length} listing${jobs.length === 1 ? "" : "s"} loaded.`, "success");
-
-      jobs.forEach((job) => {
-        const card = document.createElement("article");
-        card.className = "listing-card";
-
-        const heading = document.createElement("h3");
-        heading.textContent = job.title;
-
-        const salary = createInfoLine("fa-solid fa-won-sign", job.salary);
-        const location = createInfoLine("fa-solid fa-location-dot", `${job.location || "Location not added"} · ${job.type || "Type not added"}`);
-        const deadline = createInfoLine("fa-solid fa-calendar", job.applicationDeadline ? `Deadline: ${job.applicationDeadline}` : "No deadline added");
-        const contact = createInfoLine("fa-solid fa-envelope", job.contactEmail || job.contactPhone || "No contact added");
-
-        const description = document.createElement("p");
-        description.className = "listing-description";
-        description.textContent = job.description || "No description added.";
-
-        card.append(heading, salary, location, deadline, contact, description);
-        jobsList.appendChild(card);
-      });
-    }
-
-    async function loadEmployerJobs() {
-      if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
-        setStatus("Static preview: employer listings load on Tomcat or Render.", "info");
-        return;
-      }
-
-      try {
-        const response = await fetch(StudentBridgePlatform.toBackendUrl("EmployerJobsServlet"));
-
-        if (response.status === 401) {
-          setStatus("Please login with an employer account to view your posted jobs.", "error");
-          return;
-        }
-
-        if (response.status === 403) {
-          setStatus("Student accounts cannot view employer listings.", "error");
-          return;
-        }
-
-        if (!response.ok) {
-          throw new Error("Employer job load failed.");
-        }
-
-        renderJobs(await response.json());
-      } catch (error) {
-        setStatus("Employer listings could not be loaded. Please check Tomcat, MySQL, and your session.", "error");
-      }
-    }
-
-    loadEmployerJobs();
-  </script>
 </body>
 </html>
