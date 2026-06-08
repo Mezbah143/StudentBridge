@@ -29,7 +29,7 @@ public class LoginServlet extends HttpServlet {
         if (email == null || email.trim().isEmpty()
                 || password == null || password.trim().isEmpty()) {
 
-            resp.sendRedirect("frontend/login.html?error=empty");
+            redirectToLogin(req, resp, "empty");
             return;
         }
 
@@ -44,7 +44,7 @@ public class LoginServlet extends HttpServlet {
             // Check database connection
             if (con == null) {
 
-                resp.getWriter().println("Database connection failed.");
+                redirectToLogin(req, resp, "database");
                 return;
             }
 
@@ -60,9 +60,13 @@ public class LoginServlet extends HttpServlet {
 
                         HttpSession session = req.getSession();
 
-                        session.setAttribute("user", safeGetString(rs, "name"));
-                        session.setAttribute("userEmail", safeGetString(rs, "email"));
-                        session.setAttribute("accountType", safeGetString(rs, "account_type"));
+                        String userName = safeGetString(rs, "name");
+                        String userEmail = safeGetString(rs, "email");
+                        String accountType = getAccountType(rs);
+
+                        session.setAttribute("user", userName.isEmpty() ? userEmail : userName);
+                        session.setAttribute("userEmail", userEmail);
+                        session.setAttribute("accountType", accountType);
 
                         // Session timeout (30 minutes)
                         session.setMaxInactiveInterval(30 * 60);
@@ -72,7 +76,7 @@ public class LoginServlet extends HttpServlet {
                     } else {
 
                         // Invalid login
-                        resp.sendRedirect("frontend/login.html?error=invalid");
+                        redirectToLogin(req, resp, "invalid");
                     }
                 }
             }
@@ -81,14 +85,38 @@ public class LoginServlet extends HttpServlet {
 
             e.printStackTrace();
 
-            resp.sendRedirect("frontend/login.html?error=database");
+            redirectToLogin(req, resp, "database");
 
         } catch (Exception e) {
 
             e.printStackTrace();
 
-            resp.sendRedirect("frontend/login.html?error=server");
+            redirectToLogin(req, resp, "server");
         }
+    }
+
+    private void redirectToLogin(HttpServletRequest req,
+                                 HttpServletResponse resp,
+                                 String error)
+            throws IOException {
+
+        resp.sendRedirect(req.getContextPath()
+                + "/frontend/login.html?error=" + error);
+    }
+
+    private String getAccountType(ResultSet rs) {
+
+        String accountType = safeGetString(rs, "account_type");
+
+        if (accountType.isEmpty()) {
+            accountType = safeGetString(rs, "accountType");
+        }
+
+        if (accountType.isEmpty()) {
+            accountType = "Student";
+        }
+
+        return accountType;
     }
 
     // Safe column getter
