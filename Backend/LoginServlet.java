@@ -1,6 +1,4 @@
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -69,15 +67,7 @@ public class LoginServlet extends HttpServlet {
                         // Session timeout (30 minutes)
                         session.setMaxInactiveInterval(30 * 60);
 
-                        String encodedEmail = encode(safeGetString(rs, "email"));
-                        String encodedName = encode(safeGetString(rs, "name"));
-                        String encodedAccountType = encode(safeGetString(rs, "account_type"));
-
-                        resp.sendRedirect(
-                                "index.html?login=success&email=" + encodedEmail
-                                        + "&name=" + encodedName
-                                        + "&accountType=" + encodedAccountType
-                        );
+                        resp.sendRedirect(req.getContextPath() + "/index.html?login=success");
 
                     } else {
 
@@ -116,11 +106,4 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    private String encode(String value) {
-
-        return URLEncoder.encode(
-                value == null ? "" : value,
-                StandardCharsets.UTF_8
-        );
-    }
 }

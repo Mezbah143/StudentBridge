@@ -30,15 +30,16 @@
       <div class="user-menu" data-user-menu hidden>
         <button type="button" class="user-menu-trigger" data-user-menu-trigger aria-haspopup="true" aria-expanded="false">
           <span class="user-icon" aria-hidden="true"><i class="fa-solid fa-user"></i></span>
-          <span data-user-email>user@email.com</span>
+          <span class="sr-only" data-user-label>Account menu</span>
           <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
         </button>
 
         <div class="user-dropdown" data-user-dropdown hidden>
+          <p class="dropdown-user" data-user-name>Account</p>
           <a href="./frontend/employer-dashboard.html"><i class="fa-solid fa-table-columns" aria-hidden="true"></i> <span data-i18n="user.dashboard">Dashboard</span></a>
           <a href="./frontend/post-job.html"><i class="fa-solid fa-plus" aria-hidden="true"></i> <span data-i18n="user.postJob">Post Job</span></a>
           <a href="./frontend/student-profile.html"><i class="fa-solid fa-id-card" aria-hidden="true"></i> <span data-i18n="user.studentAddress">Student Address</span></a>
-          <a data-user-mail href="mailto:user@email.com"><i class="fa-solid fa-envelope" aria-hidden="true"></i> <span data-i18n="user.email">Email</span></a>
+          <a data-user-mail href="#"><i class="fa-solid fa-envelope" aria-hidden="true"></i> <span data-i18n="user.email">Email</span></a>
           <button type="button" data-logout-button><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> <span data-i18n="user.logout">Logout</span></button>
         </div>
       </div>

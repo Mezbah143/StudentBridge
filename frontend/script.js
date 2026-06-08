@@ -7,9 +7,9 @@ const App = {
     this.userMenu = document.querySelector("[data-user-menu]");
     this.userMenuTrigger = document.querySelector("[data-user-menu-trigger]");
     this.userDropdown = document.querySelector("[data-user-dropdown]");
-    this.userEmailElements = document.querySelectorAll("[data-user-email]");
+    this.userLabel = document.querySelector("[data-user-label]");
+    this.userNameElements = document.querySelectorAll("[data-user-name]");
     this.userMailLink = document.querySelector("[data-user-mail]");
-    this.dropdownEmail = document.querySelector("[data-dropdown-email]");
     this.employerLinks = document.querySelectorAll("[data-employer-link]");
     this.studentLinks = document.querySelectorAll("[data-student-link]");
 
@@ -18,8 +18,9 @@ const App = {
     this.languageMenu = document.getElementById("languageMenu");
     this.languageWrapper = document.querySelector(".language-wrapper");
 
-    this.syncLoginFromRedirect();
-    this.renderAuthState();
+    this.cleanAuthRedirectParams();
+    this.renderLoggedOutState();
+    this.loadSessionAuthState();
     this.initAnimations();
     this.bindEvents();
   },
@@ -34,76 +35,51 @@ const App = {
     if (this.logoutButton) {
       this.logoutButton.addEventListener("click", () => this.logout());
     }
-    if (this.languageButton) {
 
-  this.languageButton
-    .addEventListener("click", () => {
+    if (this.languageButton && this.languageMenu) {
+      this.languageButton.addEventListener("click", () => {
+        this.languageMenu.classList.toggle("show");
+      });
+    }
 
-      this.languageMenu
-        .classList.toggle("show");
+    document.querySelectorAll("[data-lang]").forEach((item) => {
+      item.addEventListener("click", () => {
+        const selected = item.dataset.lang;
 
+        if (window.StudentBridgeI18n) {
+          StudentBridgeI18n.setLanguage(selected);
+        } else {
+          localStorage.setItem("studentBridgeLanguage", selected);
+        }
+
+        if (this.languageMenu) {
+          this.languageMenu.classList.remove("show");
+        }
+      });
     });
-}
-
-document.querySelectorAll("[data-lang]")
-  .forEach((item) => {
-
-    item.addEventListener("click", () => {
-
-      const selected = item.dataset.lang;
-
-      if (window.StudentBridgeI18n) {
-        StudentBridgeI18n.setLanguage(selected);
-      } else {
-        localStorage.setItem("studentBridgeLanguage", selected);
-      }
-
-      this.languageMenu
-        .classList.remove("show");
-
-    });
-
-});
 
     document.addEventListener("click", (event) => {
-      if (!this.userMenu || this.userMenu.contains(event.target)) {
-        return;
+      if (this.userMenu && !this.userMenu.contains(event.target)) {
+        this.closeUserMenu();
       }
 
-      this.closeUserMenu();
-      if (
-  this.languageWrapper &&
-  !this.languageWrapper.contains(event.target)
-) {
-
-  this.languageMenu
-    .classList.remove("show");
-
-}
+      if (this.languageMenu
+          && this.languageWrapper
+          && !this.languageWrapper.contains(event.target)) {
+        this.languageMenu.classList.remove("show");
+      }
     });
   },
 
-  syncLoginFromRedirect() {
+  cleanAuthRedirectParams() {
     const params = new URLSearchParams(window.location.search);
 
-    if (params.get("login") !== "success") {
+    if (!params.has("login") && !params.has("logout") && !params.has("registered")) {
       return;
     }
 
-    const email = params.get("email");
-    const name = params.get("name") || "";
-    const accountType = params.get("accountType") || "";
-
-    if (email) {
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({
-        email,
-        name,
-        accountType,
-        loggedIn: true
-      }));
-    }
-
     params.delete("login");
+    params.delete("logout");
     params.delete("registered");
     params.delete("email");
     params.delete("name");
@@ -114,47 +90,79 @@ document.querySelectorAll("[data-lang]")
     window.history.replaceState({}, document.title, cleanUrl);
   },
 
-  getAuthState() {
+  async loadSessionAuthState() {
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+
+    if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
+      this.renderLoggedOutState();
+      return;
+    }
+
     try {
-      return JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY)) || {};
+      const response = await fetch(StudentBridgePlatform.toBackendUrl("AuthStatusServlet"), {
+        credentials: "same-origin",
+        cache: "no-store"
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to read authentication session.");
+      }
+
+      const auth = await response.json();
+      this.renderAuthState(auth);
     } catch (error) {
-      return {};
+      console.error(error);
+      this.renderLoggedOutState();
     }
   },
 
-  renderAuthState() {
+  renderLoggedOutState() {
     if (!this.guestActions || !this.userMenu) {
       return;
     }
 
-    const auth = this.getAuthState();
-    const isLoggedIn = auth.loggedIn && auth.email;
-    const accountType = String(auth.accountType || "").toLowerCase();
+    this.guestActions.hidden = false;
+    this.guestActions.style.display = "";
+    this.userMenu.hidden = true;
+    this.userMenu.style.display = "none";
+    this.closeUserMenu();
 
-    this.guestActions.hidden = Boolean(isLoggedIn);
-    this.guestActions.style.display = isLoggedIn ? "none" : "";
-    this.userMenu.hidden = !isLoggedIn;
-    this.userMenu.style.display = isLoggedIn ? "" : "none";
+    if (this.userMailLink) {
+      this.userMailLink.href = "#";
+      this.userMailLink.hidden = true;
+    }
+  },
 
-    if (!isLoggedIn) {
+  renderAuthState(auth) {
+    if (!auth || !auth.loggedIn) {
+      this.renderLoggedOutState();
       return;
     }
 
-    this.userEmailElements.forEach((element) => {
-      element.textContent = "";
+    const accountType = String(auth.accountType || "").toLowerCase();
+    const displayName = auth.name || "Account";
+
+    this.guestActions.hidden = true;
+    this.guestActions.style.display = "none";
+    this.userMenu.hidden = false;
+    this.userMenu.style.display = "";
+
+    this.userNameElements.forEach((element) => {
+      element.textContent = displayName;
     });
 
     if (this.userMenuTrigger) {
-      this.userMenuTrigger.setAttribute("aria-label", `Profile menu for ${auth.email}`);
-      this.userMenuTrigger.title = auth.email;
+      this.userMenuTrigger.setAttribute("aria-label", `Profile menu for ${displayName}`);
+      this.userMenuTrigger.title = "Profile menu";
     }
 
-    if (this.dropdownEmail) {
-      this.dropdownEmail.textContent = auth.email;
+    if (this.userLabel) {
+      this.userLabel.textContent = `Profile menu for ${displayName}`;
     }
 
     if (this.userMailLink) {
-      this.userMailLink.href = `mailto:${auth.email}`;
+      this.userMailLink.hidden = !auth.email;
+      this.userMailLink.href = auth.email ? `mailto:${auth.email}` : "#";
     }
 
     if (this.userDropdown) {
@@ -197,7 +205,7 @@ document.querySelectorAll("[data-lang]")
     this.closeUserMenu();
 
     if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
-      this.renderAuthState();
+      this.renderLoggedOutState();
       return;
     }
 

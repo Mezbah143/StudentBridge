@@ -209,12 +209,6 @@ a {
   cursor: pointer;
 }
 
-.user-menu-trigger [data-user-email] {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .user-icon {
   display: grid;
   width: 30px;
@@ -237,11 +231,11 @@ a {
   box-shadow: 0 24px 60px rgba(2, 6, 23, 0.22);
 }
 
-.dropdown-email {
+.dropdown-user {
   margin: 4px 6px 8px;
   padding: 8px 10px;
   border-radius: 10px;
-  color: var(--muted);
+  color: var(--text);
   background: #f8fafc;
   font-size: 13px;
   font-weight: 800;

@@ -1,6 +1,4 @@
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -133,11 +131,7 @@ public class RegisterServlet extends HttpServlet {
             session.setMaxInactiveInterval(30 * 60);
 
             response.sendRedirect(
-                    "index.html?login=success"
-                            + "&registered=1"
-                            + "&email=" + encode(nameOrEmpty(email))
-                            + "&name=" + encode(nameOrEmpty(name))
-                            + "&accountType=" + encode(nameOrEmpty(accountType))
+                    request.getContextPath() + "/index.html?login=success&registered=1"
             );
 
         } catch (Exception e) {
@@ -398,11 +392,4 @@ public class RegisterServlet extends HttpServlet {
                 || message.contains("account_type");
     }
 
-    private String nameOrEmpty(String value) {
-        return value == null ? "" : value;
-    }
-
-    private String encode(String value) {
-        return URLEncoder.encode(value, StandardCharsets.UTF_8);
-    }
 }
