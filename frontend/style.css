@@ -54,6 +54,11 @@ body {
   line-height: 1.6;
 }
 
+body[data-auth-state="checking"] [data-guest-actions],
+body[data-auth-state="checking"] [data-user-menu] {
+  display: none !important;
+}
+
 a {
   color: inherit;
 }

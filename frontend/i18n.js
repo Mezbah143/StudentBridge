@@ -76,13 +76,19 @@
     });
   }
 
-  function createLanguageSwitcher(container) {
-    const wrapper = document.createElement("label");
-    wrapper.className = "language-switcher";
+	  function createLanguageSwitcher(container) {
+	    const wrapper = document.createElement("label");
+	    wrapper.className = "language-switcher";
 
-    const text = document.createElement("span");
-    text.setAttribute("data-i18n", "language.label");
-    text.textContent = translate("language.label");
+	    const icon = document.createElement("span");
+	    icon.className = "language-switcher-icon";
+	    icon.setAttribute("aria-hidden", "true");
+	    icon.innerHTML = '<i class="fa-solid fa-language"></i>';
+
+	    const text = document.createElement("span");
+	    text.className = "sr-only";
+	    text.setAttribute("data-i18n", "language.label");
+	    text.textContent = translate("language.label");
 
     const select = document.createElement("select");
     select.setAttribute("data-language-select", "");
@@ -99,9 +105,9 @@
     select.value = getLanguage();
     select.addEventListener("change", () => setLanguage(select.value));
 
-    wrapper.append(text, select);
-    container.replaceChildren(wrapper);
-  }
+	    wrapper.append(icon, text, select);
+	    container.replaceChildren(wrapper);
+	  }
 
   function injectStyles() {
     if (document.getElementById("studentbridge-i18n-styles")) {
@@ -111,20 +117,32 @@
     const style = document.createElement("style");
     style.id = "studentbridge-i18n-styles";
     style.textContent = `
-      .language-switcher {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        min-height: 40px;
-        padding: 6px 10px;
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        border-radius: 999px;
-        color: #e2e8f0;
+	      .language-switcher {
+	        display: inline-flex;
+	        align-items: center;
+	        gap: 7px;
+	        min-height: 42px;
+	        padding: 6px 8px;
+	        border: 1px solid rgba(255, 255, 255, 0.16);
+	        border-radius: 999px;
+	        color: #e2e8f0;
         background: rgba(255, 255, 255, 0.08);
         font-size: 13px;
         font-weight: 800;
-        white-space: nowrap;
-      }
+	        white-space: nowrap;
+	      }
+
+	      .language-switcher-icon {
+	        display: grid;
+	        width: 28px;
+	        height: 28px;
+	        place-items: center;
+	        border-radius: 50%;
+	        color: #ffffff;
+	        background: rgba(255, 255, 255, 0.12);
+	        font-size: 14px;
+	        flex: 0 0 auto;
+	      }
 
       .language-switcher select {
         min-height: 30px;

@@ -1,8 +1,8 @@
 const AUTH_STORAGE_KEY = "studentBridgeAuth";
 
 const App = {
-  init() {
-    this.navbar = document.querySelector(".navbar");
+	  init() {
+	    this.navbar = document.querySelector(".navbar");
     this.guestActions = document.querySelector("[data-guest-actions]");
     this.userMenu = document.querySelector("[data-user-menu]");
     this.userMenuTrigger = document.querySelector("[data-user-menu-trigger]");
@@ -18,12 +18,15 @@ const App = {
     this.languageMenu = document.getElementById("languageMenu");
     this.languageWrapper = document.querySelector(".language-wrapper");
 
-    this.cleanAuthRedirectParams();
-    this.renderLoggedOutState();
-    this.loadSessionAuthState();
-    this.initAnimations();
-    this.bindEvents();
-  },
+	    const redirectParams = new URLSearchParams(window.location.search);
+	    this.hasRecentLoginRedirect = redirectParams.get("login") === "success";
+
+	    this.setAuthState("checking");
+	    this.cleanAuthRedirectParams();
+	    this.loadSessionAuthState();
+	    this.initAnimations();
+	    this.bindEvents();
+	  },
 
   bindEvents() {
     window.addEventListener("scroll", () => this.handleScroll());
@@ -90,8 +93,8 @@ const App = {
     window.history.replaceState({}, document.title, cleanUrl);
   },
 
-  async loadSessionAuthState() {
-    localStorage.removeItem(AUTH_STORAGE_KEY);
+	  async loadSessionAuthState() {
+	    localStorage.removeItem(AUTH_STORAGE_KEY);
 
     if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
       this.renderLoggedOutState();
@@ -108,18 +111,33 @@ const App = {
         throw new Error("Unable to read authentication session.");
       }
 
-      const auth = await response.json();
-      this.renderAuthState(auth);
-    } catch (error) {
-      console.error(error);
+	      let auth = await response.json();
+
+	      if ((!auth || !auth.loggedIn) && this.hasRecentLoginRedirect) {
+	        await new Promise((resolve) => setTimeout(resolve, 500));
+	        const retryResponse = await fetch(StudentBridgePlatform.toBackendUrl("AuthStatusServlet"), {
+	          credentials: "same-origin",
+	          cache: "no-store"
+	        });
+
+	        if (retryResponse.ok) {
+	          auth = await retryResponse.json();
+	        }
+	      }
+
+	      this.renderAuthState(auth);
+	    } catch (error) {
+	      console.error(error);
       this.renderLoggedOutState();
     }
   },
 
-  renderLoggedOutState() {
-    if (!this.guestActions || !this.userMenu) {
-      return;
-    }
+	  renderLoggedOutState() {
+	    this.setAuthState("guest");
+
+	    if (!this.guestActions || !this.userMenu) {
+	      return;
+	    }
 
     this.guestActions.hidden = false;
     this.guestActions.style.display = "";
@@ -133,11 +151,13 @@ const App = {
     }
   },
 
-  renderAuthState(auth) {
-    if (!auth || !auth.loggedIn) {
-      this.renderLoggedOutState();
-      return;
-    }
+	  renderAuthState(auth) {
+	    if (!auth || !auth.loggedIn) {
+	      this.renderLoggedOutState();
+	      return;
+	    }
+
+	    this.setAuthState("user");
 
     const accountType = String(auth.accountType || "").toLowerCase();
     const displayName = auth.name || "Account";
@@ -177,7 +197,13 @@ const App = {
     this.studentLinks.forEach((link) => {
       link.hidden = accountType === "employer";
     });
-  },
+	  },
+
+	  setAuthState(state) {
+	    if (document.body) {
+	      document.body.dataset.authState = state;
+	    }
+	  },
 
   toggleUserMenu() {
     if (!this.userDropdown || !this.userMenuTrigger) {
