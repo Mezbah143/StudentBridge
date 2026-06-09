@@ -362,6 +362,8 @@
 
       if (loginSource === "studentAddress") {
         showLoginMessage("login.studentAddressRequired", "error");
+      } else if (loginSource === "apply") {
+        showLoginMessage("login.applyRequired", "error");
       } else {
         showLoginMessage("login.postJobRequired", "error");
       }

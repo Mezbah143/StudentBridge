@@ -225,32 +225,40 @@ public class RegisterServlet extends HttpServlet {
                 "INSERT INTO student_profiles " +
                 "(user_email, university_name, major, student_id, " +
                 "preferred_job_category, available_working_time, " +
-                "korean_language_level) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                "korean_language_level, cv_link) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try {
 
-            ps.setString(1, email);
-            ps.setString(2,
-                    clean(request.getParameter("universityName")));
+            DatabaseSchemaManager.ensureStudentProfilesCvColumn(con);
 
-            ps.setString(3,
-                    clean(request.getParameter("major")));
+            try (PreparedStatement ps =
+                         con.prepareStatement(sql)) {
 
-            ps.setString(4,
-                    clean(request.getParameter("studentId")));
+                ps.setString(1, email);
+                ps.setString(2,
+                        clean(request.getParameter("universityName")));
 
-            ps.setString(5,
-                    clean(request.getParameter("preferredJobCategory")));
+                ps.setString(3,
+                        clean(request.getParameter("major")));
 
-            ps.setString(6,
-                    clean(request.getParameter("availableWorkingTime")));
+                ps.setString(4,
+                        clean(request.getParameter("studentId")));
 
-            ps.setString(7,
-                    clean(request.getParameter("koreanLanguageLevel")));
+                ps.setString(5,
+                        clean(request.getParameter("preferredJobCategory")));
 
-            ps.executeUpdate();
+                ps.setString(6,
+                        clean(request.getParameter("availableWorkingTime")));
+
+                ps.setString(7,
+                        clean(request.getParameter("koreanLanguageLevel")));
+
+                ps.setString(8,
+                        clean(request.getParameter("cvLink")));
+
+                ps.executeUpdate();
+            }
 
         } catch (SQLException e) {
 

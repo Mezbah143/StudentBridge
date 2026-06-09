@@ -13,3 +13,74 @@ CREATE TABLE IF NOT EXISTS users (
   account_type VARCHAR(20) NOT NULL DEFAULT 'Student',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS student_profiles (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_email VARCHAR(255) NOT NULL,
+  university_name VARCHAR(255),
+  major VARCHAR(255),
+  student_id VARCHAR(100),
+  preferred_job_category VARCHAR(100),
+  available_working_time VARCHAR(100),
+  korean_language_level VARCHAR(100),
+  cv_link VARCHAR(500),
+  address VARCHAR(255),
+  latitude DECIMAL(10, 7),
+  longitude DECIMAL(10, 7),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_student_profiles_coordinates (latitude, longitude),
+  INDEX idx_student_profiles_user_email (user_email)
+);
+
+CREATE TABLE IF NOT EXISTS employer_profiles (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_email VARCHAR(255) NOT NULL,
+  business_name VARCHAR(255),
+  manager_name VARCHAR(255),
+  business_location VARCHAR(255),
+  business_type VARCHAR(100),
+  job_posting_category VARCHAR(100),
+  company_registration_number VARCHAR(100),
+  company_description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_employer_profiles_user_email (user_email)
+);
+
+CREATE TABLE IF NOT EXISTS jobs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(150) NOT NULL,
+  company VARCHAR(150) NOT NULL,
+  location VARCHAR(100) NOT NULL,
+  category VARCHAR(100) NOT NULL,
+  type VARCHAR(50) NOT NULL,
+  salary VARCHAR(100) NOT NULL,
+  description TEXT NOT NULL,
+  employer_email VARCHAR(255),
+  working_hours VARCHAR(150),
+  requirements TEXT,
+  contact_email VARCHAR(255),
+  contact_phone VARCHAR(50),
+  company_details TEXT,
+  application_deadline DATE,
+  logo_url VARCHAR(500),
+  address VARCHAR(255),
+  latitude DECIMAL(10, 7),
+  longitude DECIMAL(10, 7),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_jobs_employer_email (employer_email),
+  INDEX idx_jobs_coordinates (latitude, longitude),
+  INDEX idx_jobs_location (location),
+  INDEX idx_jobs_category (category),
+  INDEX idx_jobs_type (type)
+);
+
+CREATE TABLE IF NOT EXISTS applications (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  job_id INT NOT NULL,
+  student_email VARCHAR(255) NOT NULL,
+  cv_link VARCHAR(500) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY unique_application (job_id, student_email),
+  INDEX idx_applications_job_id (job_id),
+  INDEX idx_applications_student_email (student_email)
+);
