@@ -460,24 +460,33 @@
     }
 
     .job-modal {
-      width: min(960px, 100%);
-      max-height: min(88vh, 840px);
+      width: min(920px, 100%);
+      max-height: min(88vh, 780px);
       display: grid;
-      grid-template-rows: auto minmax(0, 1fr) auto;
+      grid-template-rows: auto auto auto auto;
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.7);
-      border-radius: 24px;
-      background: #ffffff;
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
       box-shadow: 0 34px 90px rgba(2, 6, 23, 0.42);
     }
 
     .modal-header {
       position: relative;
-      padding: 28px 28px 20px;
+      padding: 30px 32px 22px;
       border-bottom: 1px solid var(--line);
       background:
-        linear-gradient(135deg, rgba(47, 109, 246, 0.12), rgba(34, 211, 238, 0.08)),
+        linear-gradient(135deg, rgba(47, 109, 246, 0.13), rgba(248, 184, 78, 0.08)),
         #ffffff;
+    }
+
+    .modal-header .salary {
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      color: #0f766e;
+      background: rgba(204, 251, 241, 0.92);
+      box-shadow: 0 10px 24px rgba(15, 118, 110, 0.10);
     }
 
     .modal-close {
@@ -503,46 +512,67 @@
     }
 
     .modal-header h2 {
-      max-width: 760px;
-      margin: 10px 48px 8px 0;
-      font-size: clamp(28px, 4vw, 42px);
-      line-height: 1.08;
+      max-width: 720px;
+      margin: 8px 52px 14px 0;
+      font-size: clamp(26px, 3.2vw, 38px);
+      line-height: 1.12;
       letter-spacing: 0;
+      overflow-wrap: anywhere;
     }
 
     .modal-subtitle {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px 14px;
+      gap: 9px;
       color: #334155;
-      font-weight: 800;
+      font-weight: 900;
     }
 
     .modal-subtitle span {
       display: inline-flex;
       align-items: center;
       gap: 7px;
+      padding: 8px 11px;
+      border: 1px solid rgba(184, 199, 227, 0.78);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.78);
+      font-size: 13px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
     }
 
     .modal-body {
-      min-height: 0;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 300px;
-      gap: 22px;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 330px);
+      gap: 18px;
       overflow-y: auto;
-      padding: 24px 28px;
+      max-height: 54vh;
+      padding: 22px 32px;
+      background: #f8fafc;
+    }
+
+    .modal-main {
+      display: grid;
+      gap: 14px;
     }
 
     .detail-section + .detail-section {
-      margin-top: 22px;
+      margin-top: 0;
     }
 
     .detail-section h3,
     .quick-facts h3 {
-      margin-bottom: 10px;
+      margin-bottom: 9px;
       color: #0f172a;
       font-size: 16px;
       font-weight: 900;
+    }
+
+    .detail-section {
+      padding: 18px;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
     }
 
     .detail-section p {
@@ -553,23 +583,49 @@
 
     .quick-facts {
       align-self: start;
+      position: sticky;
+      top: 0;
       padding: 18px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: #f8fafc;
+      border: 1px solid #dbe4f0;
+      border-radius: 20px;
+      background: #ffffff;
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.08);
     }
 
     .fact-list {
       display: grid;
-      gap: 12px;
+      gap: 9px;
     }
 
     .fact-item {
       display: grid;
-      gap: 3px;
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #f8fafc;
     }
 
-    .fact-item span {
+    .fact-icon {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 12px;
+      color: var(--primary-dark);
+      background: #eaf1ff;
+      font-size: 15px;
+    }
+
+    .fact-copy {
+      min-width: 0;
+      display: grid;
+      gap: 2px;
+    }
+
+    .fact-copy span {
       color: var(--muted);
       font-size: 12px;
       font-weight: 900;
@@ -580,10 +636,11 @@
       color: #0f172a;
       font-size: 14px;
       line-height: 1.45;
+      overflow-wrap: anywhere;
     }
 
     .modal-apply-message {
-      margin: 0;
+      margin: 0 32px 16px;
       box-shadow: none;
     }
 
@@ -593,12 +650,14 @@
     }
 
     .modal-actions {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto auto;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
       gap: 10px;
-      padding: 18px 28px;
+      padding: 18px 32px 22px;
       border-top: 1px solid var(--line);
-      background: #ffffff;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 -14px 32px rgba(15, 23, 42, 0.05);
     }
 
     .modal-primary-btn,
@@ -616,6 +675,7 @@
       color: #ffffff;
       background: linear-gradient(135deg, var(--primary), #65a8ff);
       box-shadow: 0 16px 34px rgba(47, 109, 246, 0.28);
+      min-width: min(360px, 100%);
     }
 
     .modal-secondary-btn {
@@ -690,6 +750,7 @@
       }
 
       .modal-actions {
+        display: grid;
         grid-template-columns: 1fr;
       }
     }
@@ -781,7 +842,7 @@
       </header>
 
       <div class="modal-body">
-        <div>
+        <div class="modal-main">
           <section class="detail-section" aria-labelledby="jobModalDescriptionHeading">
             <h3 id="jobModalDescriptionHeading" data-i18n="jobs.descriptionLabel">Job description</h3>
             <p id="jobModalDescription"></p>
@@ -938,7 +999,7 @@
       return wrapper;
     }
 
-    function addFact(labelKey, value) {
+    function addFact(labelKey, value, iconClass) {
       const cleanedValue = cleanValue(value);
 
       if (!cleanedValue) {
@@ -948,13 +1009,24 @@
       const item = document.createElement("div");
       item.className = "fact-item";
 
+      const iconBox = document.createElement("span");
+      iconBox.className = "fact-icon";
+      const icon = document.createElement("i");
+      icon.className = iconClass || "fa-solid fa-circle-info";
+      icon.setAttribute("aria-hidden", "true");
+      iconBox.appendChild(icon);
+
+      const copy = document.createElement("div");
+      copy.className = "fact-copy";
+
       const label = document.createElement("span");
       label.textContent = t(labelKey);
 
       const content = document.createElement("strong");
       content.textContent = cleanedValue;
 
-      item.append(label, content);
+      copy.append(label, content);
+      item.append(iconBox, copy);
       jobModalFacts.appendChild(item);
     }
 
@@ -973,6 +1045,24 @@
 
       const body = document.createElement("p");
       body.textContent = cleanedValue;
+
+      section.append(heading, body);
+      jobModalSections.appendChild(section);
+    }
+
+    function addOptionalDetailsFallback() {
+      if (jobModalSections.children.length > 0) {
+        return;
+      }
+
+      const section = document.createElement("section");
+      section.className = "detail-section";
+
+      const heading = document.createElement("h3");
+      heading.textContent = t("jobs.nextStepLabel");
+
+      const body = document.createElement("p");
+      body.textContent = t("jobs.nextStepBody");
 
       section.append(heading, body);
       jobModalSections.appendChild(section);
@@ -998,17 +1088,18 @@
       jobModalSections.innerHTML = "";
       addDetailSection("jobs.requirementsLabel", job.requirements);
       addDetailSection("jobs.companyDetailsLabel", job.companyDetails);
+      addOptionalDetailsFallback();
 
       jobModalFacts.innerHTML = "";
-      addFact("jobs.companyLabel", job.company);
-      addFact("jobs.salaryLabel", job.salary);
-      addFact("jobs.location", job.location);
-      addFact("jobs.type", job.type);
-      addFact("jobs.category", job.category);
-      addFact("jobs.addressLabel", job.address || t("jobs.addressMissing"));
-      addFact("jobs.workingHoursLabel", job.workingHours);
-      addFact("jobs.deadlineLabel", job.applicationDeadline);
-      addFact("jobs.contactEmailLabel", job.contactEmail);
+      addFact("jobs.companyLabel", job.company, "fa-solid fa-building");
+      addFact("jobs.salaryLabel", job.salary, "fa-solid fa-won-sign");
+      addFact("jobs.location", job.location, "fa-solid fa-location-dot");
+      addFact("jobs.type", job.type, "fa-solid fa-clock");
+      addFact("jobs.category", job.category, "fa-solid fa-layer-group");
+      addFact("jobs.addressLabel", job.address || t("jobs.addressMissing"), "fa-solid fa-map-pin");
+      addFact("jobs.workingHoursLabel", job.workingHours, "fa-solid fa-calendar-days");
+      addFact("jobs.deadlineLabel", job.applicationDeadline, "fa-solid fa-hourglass-half");
+      addFact("jobs.contactEmailLabel", job.contactEmail, "fa-solid fa-envelope");
 
       jobModalMapBtn.hidden = !hasJobCoordinates(job);
       jobModalApplyBtn.disabled = false;
