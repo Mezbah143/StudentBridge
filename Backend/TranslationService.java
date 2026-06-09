@@ -40,7 +40,7 @@ public class TranslationService {
         }
 
         String hash = sha256(text);
-        String cachedTranslation = findCachedTranslation(con, hash, normalizedLanguage);
+        String cachedTranslation = findCachedTranslation(con, hash, text, normalizedLanguage);
 
         if (cachedTranslation != null && !cachedTranslation.isBlank()) {
             return cachedTranslation;
@@ -53,7 +53,9 @@ public class TranslationService {
                 return text;
             }
 
-            saveCachedTranslation(con, hash, text, normalizedLanguage, translatedText);
+            if (!translatedText.equals(text)) {
+                saveCachedTranslation(con, hash, text, normalizedLanguage, translatedText);
+            }
             return translatedText;
         } catch (Exception e) {
             System.out.println("Translation failed. Returning original text.");
@@ -83,7 +85,9 @@ public class TranslationService {
                 return text;
             }
 
-            MEMORY_CACHE.put(cacheKey, translatedText);
+            if (!translatedText.equals(text)) {
+                MEMORY_CACHE.put(cacheKey, translatedText);
+            }
             return translatedText;
         } catch (Exception e) {
             System.out.println("LibreTranslate request failed. Returning original text.");
@@ -92,7 +96,7 @@ public class TranslationService {
         }
     }
 
-    private String findCachedTranslation(Connection con, String hash, String targetLanguage) {
+    private String findCachedTranslation(Connection con, String hash, String sourceText, String targetLanguage) {
         String sql = "SELECT translated_text FROM translation_cache "
                 + "WHERE source_text_hash = ? AND source_lang = ? AND target_lang = ? LIMIT 1";
 
@@ -103,7 +107,8 @@ public class TranslationService {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getString("translated_text");
+                    String translatedText = rs.getString("translated_text");
+                    return sourceText.equals(translatedText) ? null : translatedText;
                 }
             }
         } catch (SQLException e) {
