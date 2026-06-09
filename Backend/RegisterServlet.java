@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
@@ -34,7 +35,9 @@ public class RegisterServlet extends HttpServlet {
         );
 
         // Validate account type
-        if (accountType.isEmpty()) {
+        if (accountType.isEmpty()
+                || (!"Student".equalsIgnoreCase(accountType)
+                && !"Employer".equalsIgnoreCase(accountType))) {
 
             response.sendRedirect(
                     "frontend/register.html?error=accountType"
@@ -121,8 +124,14 @@ public class RegisterServlet extends HttpServlet {
 
             con.commit();
 
+            HttpSession session = request.getSession(true);
+            session.setAttribute("user", name);
+            session.setAttribute("userEmail", email);
+            session.setAttribute("accountType", accountType);
+            session.setMaxInactiveInterval(30 * 60);
+
             response.sendRedirect(
-                    "frontend/login.html?registered=1"
+                    request.getContextPath() + "/index.html?login=success&registered=1"
             );
 
         } catch (Exception e) {
@@ -382,4 +391,5 @@ public class RegisterServlet extends HttpServlet {
         return "42S22".equals(e.getSQLState())
                 || message.contains("account_type");
     }
+
 }

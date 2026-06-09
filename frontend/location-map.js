@@ -16,11 +16,23 @@
   }
 
   function getKakaoKey() {
-    return (window.STUDENTBRIDGE_KAKAO_MAP_KEY || "").trim();
+    return typeof window.STUDENTBRIDGE_KAKAO_MAP_KEY === "string"
+      ? window.STUDENTBRIDGE_KAKAO_MAP_KEY.trim()
+      : "";
+  }
+
+  function getLoadFailureMessage(kind) {
+    if (!getKakaoKey()) {
+      return kind === "viewer"
+        ? "Add your Kakao JavaScript key in frontend/map-config.js to enable job map previews."
+        : "Add your Kakao JavaScript key in frontend/map-config.js to enable the map.";
+    }
+
+    return "Kakao map could not load. Check that this exact domain is registered in Kakao Developers.";
   }
 
   function loadKakaoMaps() {
-    if (window.kakao && window.kakao.maps) {
+    if (window.kakao && window.kakao.maps && window.kakao.maps.Map) {
       return Promise.resolve(window.kakao);
     }
 
@@ -36,14 +48,34 @@
 
     kakaoLoaderPromise = new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${encodeURIComponent(appKey)}&libraries=services&autoload=false`;
+      const timeoutId = window.setTimeout(() => {
+        kakaoLoaderPromise = null;
+        reject(new Error("Kakao Maps request timed out."));
+      }, 12000);
+
+      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${encodeURIComponent(appKey)}&libraries=services&autoload=false`;
       script.async = true;
+      script.dataset.studentbridgeKakaoMap = "true";
 
       script.onload = () => {
-        window.kakao.maps.load(() => resolve(window.kakao));
+        if (!window.kakao || !window.kakao.maps || typeof window.kakao.maps.load !== "function") {
+          window.clearTimeout(timeoutId);
+          kakaoLoaderPromise = null;
+          reject(new Error("Kakao Maps SDK loaded but did not initialize."));
+          return;
+        }
+
+        window.kakao.maps.load(() => {
+          window.clearTimeout(timeoutId);
+          resolve(window.kakao);
+        });
       };
 
-      script.onerror = () => reject(new Error("Kakao Maps could not be loaded."));
+      script.onerror = () => {
+        window.clearTimeout(timeoutId);
+        kakaoLoaderPromise = null;
+        reject(new Error("Kakao Maps SDK could not be loaded."));
+      };
 
       document.head.appendChild(script);
     });
@@ -56,7 +88,14 @@
   }
 
   function hasCoordinates(latitude, longitude) {
-    return latitude !== "" && longitude !== "" && !Number.isNaN(Number(latitude)) && !Number.isNaN(Number(longitude));
+    return latitude !== null
+      && longitude !== null
+      && latitude !== undefined
+      && longitude !== undefined
+      && String(latitude).trim() !== ""
+      && String(longitude).trim() !== ""
+      && !Number.isNaN(Number(latitude))
+      && !Number.isNaN(Number(longitude));
   }
 
   async function initPicker(options) {
@@ -122,7 +161,8 @@
 
       setStatus(statusElement, "Search an address or click the map to choose the exact location.", "info");
     } catch (error) {
-      setStatus(statusElement, "Add your Kakao JavaScript key in frontend/map-config.js to enable the map.", "error");
+      console.error("StudentBridge map setup failed:", error);
+      setStatus(statusElement, getLoadFailureMessage("picker"), "error");
     }
   }
 
@@ -167,7 +207,8 @@
         }
       };
     } catch (error) {
-      setStatus(statusElement, "Add your Kakao JavaScript key in frontend/map-config.js to enable job map previews.", "error");
+      console.error("StudentBridge job map setup failed:", error);
+      setStatus(statusElement, getLoadFailureMessage("viewer"), "error");
       return null;
     }
   }
