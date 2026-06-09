@@ -30,7 +30,12 @@
       : pathname;
 
     const lastSlash = normalizedPath.lastIndexOf("/");
-    return lastSlash > 0 ? normalizedPath.slice(0, lastSlash) : "";
+
+    if (lastSlash > 0) {
+      return normalizedPath.slice(0, lastSlash);
+    }
+
+    return normalizedPath.length > 1 ? normalizedPath : "";
   }
 
   function getBackendBase() {
