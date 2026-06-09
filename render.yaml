@@ -25,7 +25,7 @@ services:
       - key: LT_PORT
         value: 5000
       - key: LT_LOAD_ONLY
-        value: en,ko,bn,ne
+        value: en,ko,bn
       - key: LT_DISABLE_FILES_TRANSLATION
         value: "true"
       - key: LT_UPDATE_MODELS
