@@ -21,25 +21,44 @@ public class ApplyServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
+        boolean jsonResponse = wantsJsonResponse(request);
 
         HttpSession session = request.getSession(false);
 
         if (session == null || session.getAttribute("userEmail") == null) {
-            response.sendRedirect("frontend/login.html?error=loginRequired&source=apply");
+            sendApplyResponse(
+                    response,
+                    jsonResponse,
+                    "loginRequired",
+                    "frontend/login.html?error=loginRequired&source=apply",
+                    HttpServletResponse.SC_UNAUTHORIZED
+            );
             return;
         }
 
         String accountType = clean((String) session.getAttribute("accountType"));
 
         if (!"Student".equalsIgnoreCase(accountType)) {
-            response.sendRedirect("frontend/jobsearch.html?apply=notStudent");
+            sendApplyResponse(
+                    response,
+                    jsonResponse,
+                    "notStudent",
+                    "frontend/jobsearch.html?apply=notStudent",
+                    HttpServletResponse.SC_FORBIDDEN
+            );
             return;
         }
 
         int jobId = parseJobId(request.getParameter("jobId"));
 
         if (jobId <= 0) {
-            response.sendRedirect("frontend/jobsearch.html?apply=missingJob");
+            sendApplyResponse(
+                    response,
+                    jsonResponse,
+                    "missingJob",
+                    "frontend/jobsearch.html?apply=missingJob",
+                    HttpServletResponse.SC_BAD_REQUEST
+            );
             return;
         }
 
@@ -47,39 +66,81 @@ public class ApplyServlet extends HttpServlet {
 
         try (Connection con = DBConnection.getConnection()) {
             if (con == null) {
-                response.sendRedirect("frontend/jobsearch.html?apply=db");
+                sendApplyResponse(
+                        response,
+                        jsonResponse,
+                        "database",
+                        "frontend/jobsearch.html?apply=db",
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR
+                );
                 return;
             }
 
             DatabaseSchemaManager.ensureApplicationsTable(con);
 
             if (!jobExists(con, jobId)) {
-                response.sendRedirect("frontend/jobsearch.html?apply=missingJob");
+                sendApplyResponse(
+                        response,
+                        jsonResponse,
+                        "missingJob",
+                        "frontend/jobsearch.html?apply=missingJob",
+                        HttpServletResponse.SC_NOT_FOUND
+                );
                 return;
             }
 
             String cvLink = getStudentCvLink(con, studentEmail);
 
             if (cvLink.isEmpty()) {
-                response.sendRedirect("frontend/student-profile.html?error=cvRequired");
+                sendApplyResponse(
+                        response,
+                        jsonResponse,
+                        "missingCv",
+                        "frontend/student-profile.html?error=cvRequired",
+                        HttpServletResponse.SC_BAD_REQUEST
+                );
                 return;
             }
 
             if (alreadyApplied(con, jobId, studentEmail)) {
-                response.sendRedirect("frontend/jobsearch.html?apply=duplicate");
+                sendApplyResponse(
+                        response,
+                        jsonResponse,
+                        "duplicate",
+                        "frontend/jobsearch.html?apply=duplicate",
+                        HttpServletResponse.SC_CONFLICT
+                );
                 return;
             }
 
             saveApplication(con, jobId, studentEmail, cvLink);
-            response.sendRedirect("frontend/jobsearch.html?apply=success");
+            sendApplyResponse(
+                    response,
+                    jsonResponse,
+                    "success",
+                    "frontend/jobsearch.html?apply=success",
+                    HttpServletResponse.SC_OK
+            );
 
         } catch (SQLException e) {
             e.printStackTrace();
 
             if (isDuplicateApplication(e)) {
-                response.sendRedirect("frontend/jobsearch.html?apply=duplicate");
+                sendApplyResponse(
+                        response,
+                        jsonResponse,
+                        "duplicate",
+                        "frontend/jobsearch.html?apply=duplicate",
+                        HttpServletResponse.SC_CONFLICT
+                );
             } else {
-                response.sendRedirect("frontend/jobsearch.html?apply=database");
+                sendApplyResponse(
+                        response,
+                        jsonResponse,
+                        "database",
+                        "frontend/jobsearch.html?apply=database",
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR
+                );
             }
         }
     }
@@ -168,6 +229,46 @@ public class ApplyServlet extends HttpServlet {
     private boolean isDuplicateApplication(SQLException e) {
         String message = e.getMessage() == null ? "" : e.getMessage().toLowerCase();
         return "23000".equals(e.getSQLState()) && message.contains("duplicate");
+    }
+
+    private boolean wantsJsonResponse(HttpServletRequest request) {
+        String requestedWith = clean(request.getHeader("X-Requested-With"));
+        String accept = clean(request.getHeader("Accept")).toLowerCase();
+        String format = clean(request.getParameter("format"));
+
+        return "XMLHttpRequest".equalsIgnoreCase(requestedWith)
+                || accept.contains("application/json")
+                || "json".equalsIgnoreCase(format);
+    }
+
+    private void sendApplyResponse(HttpServletResponse response,
+                                   boolean jsonResponse,
+                                   String status,
+                                   String redirectUrl,
+                                   int statusCode) throws IOException {
+
+        if (!jsonResponse) {
+            response.sendRedirect(redirectUrl);
+            return;
+        }
+
+        response.setStatus(statusCode);
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write(
+                "{\"status\":\"" + escapeJson(status) + "\","
+                        + "\"redirect\":\"" + escapeJson(redirectUrl) + "\"}"
+        );
+    }
+
+    private String escapeJson(String value) {
+        return clean(value)
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\b", "\\b")
+                .replace("\f", "\\f")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
     }
 
     private String clean(String value) {

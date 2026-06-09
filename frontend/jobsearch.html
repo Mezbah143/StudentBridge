@@ -440,6 +440,205 @@
       border: 1px solid #bfdbfe;
     }
 
+    .job-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(7, 18, 38, 0.72);
+      backdrop-filter: blur(10px);
+    }
+
+    .job-modal-backdrop[hidden] {
+      display: none;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    .job-modal {
+      width: min(960px, 100%);
+      max-height: min(88vh, 840px);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 24px;
+      background: #ffffff;
+      box-shadow: 0 34px 90px rgba(2, 6, 23, 0.42);
+    }
+
+    .modal-header {
+      position: relative;
+      padding: 28px 28px 20px;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(135deg, rgba(47, 109, 246, 0.12), rgba(34, 211, 238, 0.08)),
+        #ffffff;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: #ffffff;
+      cursor: pointer;
+      transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+
+    .modal-close:hover {
+      color: var(--text);
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .modal-header h2 {
+      max-width: 760px;
+      margin: 10px 48px 8px 0;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .modal-subtitle {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      color: #334155;
+      font-weight: 800;
+    }
+
+    .modal-subtitle span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .modal-body {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 22px;
+      overflow-y: auto;
+      padding: 24px 28px;
+    }
+
+    .detail-section + .detail-section {
+      margin-top: 22px;
+    }
+
+    .detail-section h3,
+    .quick-facts h3 {
+      margin-bottom: 10px;
+      color: #0f172a;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .detail-section p {
+      color: #475569;
+      line-height: 1.7;
+      white-space: pre-line;
+    }
+
+    .quick-facts {
+      align-self: start;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #f8fafc;
+    }
+
+    .fact-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .fact-item {
+      display: grid;
+      gap: 3px;
+    }
+
+    .fact-item span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .fact-item strong {
+      color: #0f172a;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .modal-apply-message {
+      margin: 0;
+      box-shadow: none;
+    }
+
+    .modal-apply-message a {
+      color: inherit;
+      text-decoration: underline;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 10px;
+      padding: 18px 28px;
+      border-top: 1px solid var(--line);
+      background: #ffffff;
+    }
+
+    .modal-primary-btn,
+    .modal-secondary-btn {
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .modal-primary-btn {
+      border: 0;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--primary), #65a8ff);
+      box-shadow: 0 16px 34px rgba(47, 109, 246, 0.28);
+    }
+
+    .modal-secondary-btn {
+      border: 1px solid #b8c7e3;
+      color: var(--primary-dark);
+      background: #ffffff;
+    }
+
+    .modal-primary-btn:hover,
+    .modal-secondary-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .modal-primary-btn:disabled,
+    .modal-secondary-btn:disabled {
+      color: #94a3b8;
+      background: #e2e8f0;
+      border-color: #e2e8f0;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     @media (max-width: 980px) {
       .search-container {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -447,6 +646,14 @@
 
       .search-container button {
         grid-column: 1 / -1;
+      }
+
+      .modal-body {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-facts {
+        order: -1;
       }
     }
 
@@ -461,6 +668,28 @@
       }
 
       .search-container {
+        grid-template-columns: 1fr;
+      }
+
+      .job-modal-backdrop {
+        align-items: end;
+        padding: 0;
+      }
+
+      .job-modal {
+        width: 100%;
+        max-height: 94vh;
+        border-radius: 22px 22px 0 0;
+      }
+
+      .modal-header,
+      .modal-body,
+      .modal-actions {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .modal-actions {
         grid-template-columns: 1fr;
       }
     }
@@ -540,6 +769,48 @@
     </section>
   </main>
 
+  <div class="job-modal-backdrop" id="jobDetailModal" hidden>
+    <section class="job-modal" role="dialog" aria-modal="true" aria-labelledby="jobModalTitle">
+      <header class="modal-header">
+        <button type="button" class="modal-close" id="jobModalClose" aria-label="Close job details" data-i18n-aria-label="jobs.closeDetails">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+        <p class="salary" id="jobModalSalary"></p>
+        <h2 id="jobModalTitle"></h2>
+        <p class="modal-subtitle" id="jobModalSubtitle"></p>
+      </header>
+
+      <div class="modal-body">
+        <div>
+          <section class="detail-section" aria-labelledby="jobModalDescriptionHeading">
+            <h3 id="jobModalDescriptionHeading" data-i18n="jobs.descriptionLabel">Job description</h3>
+            <p id="jobModalDescription"></p>
+          </section>
+          <div id="jobModalSections"></div>
+        </div>
+
+        <aside class="quick-facts" aria-labelledby="jobModalFactsHeading">
+          <h3 id="jobModalFactsHeading" data-i18n="jobs.quickFacts">Quick facts</h3>
+          <div class="fact-list" id="jobModalFacts"></div>
+        </aside>
+      </div>
+
+      <p class="apply-message modal-apply-message" id="jobModalMessage" role="status" aria-live="polite"></p>
+
+      <footer class="modal-actions">
+        <button type="button" class="modal-primary-btn" id="jobModalApplyBtn">
+          <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+          <span data-i18n="jobs.applyWithCv">Apply with Saved CV</span>
+        </button>
+        <button type="button" class="modal-secondary-btn" id="jobModalMapBtn">
+          <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i>
+          <span data-i18n="jobs.viewMap">View on Map</span>
+        </button>
+        <button type="button" class="modal-secondary-btn" id="jobModalCloseFooter" data-i18n="jobs.closeDetails">Close</button>
+      </footer>
+    </section>
+  </div>
+
   <script src="./runtime-config.js"></script>
   <script src="./platform.js"></script>
   <script src="./translations.js"></script>
@@ -552,6 +823,19 @@
     const jobList = document.getElementById("jobList");
     const jobSearchForm = document.getElementById("jobSearchForm");
     const jobApplyMessage = document.getElementById("jobApplyMessage");
+    const jobDetailModal = document.getElementById("jobDetailModal");
+    const jobModalClose = document.getElementById("jobModalClose");
+    const jobModalCloseFooter = document.getElementById("jobModalCloseFooter");
+    const jobModalApplyBtn = document.getElementById("jobModalApplyBtn");
+    const jobModalMapBtn = document.getElementById("jobModalMapBtn");
+    const jobModalMessage = document.getElementById("jobModalMessage");
+    const jobModalSalary = document.getElementById("jobModalSalary");
+    const jobModalTitle = document.getElementById("jobModalTitle");
+    const jobModalSubtitle = document.getElementById("jobModalSubtitle");
+    const jobModalDescription = document.getElementById("jobModalDescription");
+    const jobModalSections = document.getElementById("jobModalSections");
+    const jobModalFacts = document.getElementById("jobModalFacts");
+    let selectedJob = null;
 
     function t(key) {
       return window.StudentBridgeI18n ? StudentBridgeI18n.t(key) : key;
@@ -559,6 +843,14 @@
 
     function currentLanguage() {
       return window.StudentBridgeI18n ? StudentBridgeI18n.getLanguage() : "en";
+    }
+
+    function hasJobCoordinates(job) {
+      return StudentBridgeLocationMap.hasCoordinates(job.latitude, job.longitude);
+    }
+
+    function cleanValue(value) {
+      return String(value || "").trim();
     }
 
     async function loadJobs() {
@@ -614,6 +906,124 @@
       if (messages[status]) {
         showApplyMessage(messages[status][0], messages[status][1]);
       }
+    }
+
+    function showModalMessage(messageKey, type, linkUrl, linkKey) {
+      jobModalMessage.textContent = "";
+      jobModalMessage.className = `apply-message modal-apply-message show ${type}`;
+
+      const text = document.createElement("span");
+      text.textContent = t(messageKey);
+      jobModalMessage.appendChild(text);
+
+      if (linkUrl && linkKey) {
+        const link = document.createElement("a");
+        link.href = linkUrl;
+        link.textContent = ` ${t(linkKey)}`;
+        jobModalMessage.appendChild(link);
+      }
+    }
+
+    function clearModalMessage() {
+      jobModalMessage.textContent = "";
+      jobModalMessage.className = "apply-message modal-apply-message";
+    }
+
+    function createIconText(iconClass, text) {
+      const wrapper = document.createElement("span");
+      const icon = document.createElement("i");
+      icon.className = iconClass;
+      icon.setAttribute("aria-hidden", "true");
+      wrapper.append(icon, document.createTextNode(text));
+      return wrapper;
+    }
+
+    function addFact(labelKey, value) {
+      const cleanedValue = cleanValue(value);
+
+      if (!cleanedValue) {
+        return;
+      }
+
+      const item = document.createElement("div");
+      item.className = "fact-item";
+
+      const label = document.createElement("span");
+      label.textContent = t(labelKey);
+
+      const content = document.createElement("strong");
+      content.textContent = cleanedValue;
+
+      item.append(label, content);
+      jobModalFacts.appendChild(item);
+    }
+
+    function addDetailSection(headingKey, value) {
+      const cleanedValue = cleanValue(value);
+
+      if (!cleanedValue) {
+        return;
+      }
+
+      const section = document.createElement("section");
+      section.className = "detail-section";
+
+      const heading = document.createElement("h3");
+      heading.textContent = t(headingKey);
+
+      const body = document.createElement("p");
+      body.textContent = cleanedValue;
+
+      section.append(heading, body);
+      jobModalSections.appendChild(section);
+    }
+
+    function openJobDetails(job) {
+      selectedJob = job;
+      clearModalMessage();
+
+      jobModalSalary.innerHTML = '<i class="fa-solid fa-won-sign" aria-hidden="true"></i>';
+      jobModalSalary.append(document.createTextNode(job.salary || t("jobs.notProvided")));
+
+      jobModalTitle.textContent = job.title || t("jobs.notProvided");
+      jobModalSubtitle.textContent = "";
+      jobModalSubtitle.append(
+        createIconText("fa-solid fa-building", job.company || t("jobs.notProvided")),
+        createIconText("fa-solid fa-location-dot", job.location || t("jobs.notProvided")),
+        createIconText("fa-solid fa-clock", job.type || t("jobs.notProvided"))
+      );
+
+      jobModalDescription.textContent = job.description || t("jobs.noDescription");
+
+      jobModalSections.innerHTML = "";
+      addDetailSection("jobs.requirementsLabel", job.requirements);
+      addDetailSection("jobs.companyDetailsLabel", job.companyDetails);
+
+      jobModalFacts.innerHTML = "";
+      addFact("jobs.companyLabel", job.company);
+      addFact("jobs.salaryLabel", job.salary);
+      addFact("jobs.location", job.location);
+      addFact("jobs.type", job.type);
+      addFact("jobs.category", job.category);
+      addFact("jobs.addressLabel", job.address || t("jobs.addressMissing"));
+      addFact("jobs.workingHoursLabel", job.workingHours);
+      addFact("jobs.deadlineLabel", job.applicationDeadline);
+      addFact("jobs.contactEmailLabel", job.contactEmail);
+
+      jobModalMapBtn.hidden = !hasJobCoordinates(job);
+      jobModalApplyBtn.disabled = false;
+      jobModalApplyBtn.innerHTML = `<i class="fa-solid fa-paper-plane" aria-hidden="true"></i> ${t("jobs.applyWithCv")}`;
+
+      jobDetailModal.hidden = false;
+      document.body.classList.add("modal-open");
+      jobModalApplyBtn.focus();
+    }
+
+    function closeJobDetails() {
+      jobDetailModal.hidden = true;
+      document.body.classList.remove("modal-open");
+      selectedJob = null;
+      clearModalMessage();
     }
 
     function displayJobs(list) {
@@ -749,43 +1159,139 @@
       const applyButton = event.target.closest(".apply-btn");
 
       if (applyButton) {
-        submitApplication(applyButton);
+        const job = jobs.find((item) => String(item.id) === String(applyButton.dataset.jobId));
+
+        if (job) {
+          openJobDetails(job);
+        } else {
+          showApplyMessage("jobs.applyMissingJob", "error");
+        }
+
         return;
       }
     });
 
-    function submitApplication(button) {
-      const jobId = button.dataset.jobId;
+    function clientRedirectUrl(redirectUrl) {
+      const value = cleanValue(redirectUrl);
+
+      if (value.startsWith("frontend/")) {
+        return `./${value.slice("frontend/".length)}`;
+      }
+
+      return value || "./jobsearch.html";
+    }
+
+    async function submitApplicationFromModal() {
+      const jobId = selectedJob ? selectedJob.id : "";
 
       if (!jobId) {
-        showApplyMessage("jobs.applyMissingJob", "error");
+        showModalMessage("jobs.applyMissingJob", "error");
         return;
       }
 
       if (window.StudentBridgePlatform && !StudentBridgePlatform.canReachBackend()) {
-        showApplyMessage("jobs.staticPreview", "info");
+        showModalMessage("jobs.staticPreview", "info");
         return;
       }
 
-      button.disabled = true;
-      button.textContent = t("jobs.applying");
+      jobModalApplyBtn.disabled = true;
+      jobModalApplyBtn.textContent = t("jobs.applying");
 
-      const form = document.createElement("form");
-      form.method = "post";
-      form.action = window.StudentBridgePlatform
-        ? StudentBridgePlatform.toBackendUrl("ApplyServlet")
-        : "../ApplyServlet";
-      form.style.display = "none";
+      const body = new URLSearchParams();
+      body.set("jobId", jobId);
+      body.set("format", "json");
 
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = "jobId";
-      input.value = jobId;
+      try {
+        const response = await fetch(StudentBridgePlatform.toBackendUrl("ApplyServlet"), {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          body
+        });
 
-      form.appendChild(input);
-      document.body.appendChild(form);
-      form.submit();
+        const result = await response.json();
+
+        if (result.status === "success") {
+          showModalMessage("jobs.applySuccess", "success");
+          showApplyMessage("jobs.applySuccess", "success");
+          jobModalApplyBtn.textContent = t("jobs.applied");
+          jobModalApplyBtn.disabled = true;
+          return;
+        }
+
+        if (result.status === "duplicate") {
+          showModalMessage("jobs.applyDuplicate", "info");
+          jobModalApplyBtn.textContent = t("jobs.applied");
+          jobModalApplyBtn.disabled = true;
+          return;
+        }
+
+        if (result.status === "loginRequired") {
+          window.location.href = clientRedirectUrl(result.redirect);
+          return;
+        }
+
+        if (result.status === "missingCv") {
+          showModalMessage(
+            "jobs.applyMissingCv",
+            "error",
+            clientRedirectUrl(result.redirect),
+            "jobs.addCvLink"
+          );
+          jobModalApplyBtn.disabled = false;
+          jobModalApplyBtn.innerHTML = `<i class="fa-solid fa-paper-plane" aria-hidden="true"></i> ${t("jobs.applyWithCv")}`;
+          return;
+        }
+
+        if (result.status === "notStudent") {
+          showModalMessage("jobs.applyNotStudent", "error");
+        } else if (result.status === "missingJob") {
+          showModalMessage("jobs.applyMissingJob", "error");
+        } else {
+          showModalMessage("jobs.applyDbError", "error");
+        }
+
+        jobModalApplyBtn.disabled = false;
+        jobModalApplyBtn.innerHTML = `<i class="fa-solid fa-paper-plane" aria-hidden="true"></i> ${t("jobs.applyWithCv")}`;
+      } catch (error) {
+        console.error(error);
+        showModalMessage("jobs.applyDbError", "error");
+        jobModalApplyBtn.disabled = false;
+        jobModalApplyBtn.innerHTML = `<i class="fa-solid fa-paper-plane" aria-hidden="true"></i> ${t("jobs.applyWithCv")}`;
+      }
     }
+
+    jobModalApplyBtn.addEventListener("click", submitApplicationFromModal);
+
+    jobModalMapBtn.addEventListener("click", () => {
+      if (!selectedJob || !jobMapViewer || !hasJobCoordinates(selectedJob)) {
+        return;
+      }
+
+      const job = selectedJob;
+      closeJobDetails();
+      jobMapViewer.showLocation(job);
+      document.getElementById("jobMap").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    jobModalClose.addEventListener("click", closeJobDetails);
+    jobModalCloseFooter.addEventListener("click", closeJobDetails);
+
+    jobDetailModal.addEventListener("click", (event) => {
+      if (event.target === jobDetailModal) {
+        closeJobDetails();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !jobDetailModal.hidden) {
+        closeJobDetails();
+      }
+    });
 
     StudentBridgeLocationMap.initViewer({
       mapId: "jobMap",
@@ -795,6 +1301,10 @@
     });
 
     window.addEventListener("studentbridge:languagechange", () => {
+      if (!jobDetailModal.hidden) {
+        closeJobDetails();
+      }
+
       showApplyMessageFromUrl();
       loadJobs();
     });

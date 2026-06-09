@@ -27,6 +27,8 @@ public class JobServlet extends HttpServlet {
                 return;
             }
 
+            DatabaseSchemaManager.ensureJobsTable(con);
+
             try {
                 writeJobsJson(con, response, true, language);
             } catch (SQLException e) {
@@ -52,7 +54,9 @@ public class JobServlet extends HttpServlet {
             throws SQLException, IOException {
 
         String sql = includeMapColumns
-                ? "SELECT id, title, company, location, category, type, salary, description, address, latitude, longitude FROM jobs ORDER BY id DESC"
+                ? "SELECT id, title, company, location, category, type, salary, description, "
+                        + "working_hours, requirements, contact_email, application_deadline, "
+                        + "company_details, address, latitude, longitude FROM jobs ORDER BY id DESC"
                 : "SELECT id, title, company, location, category, type, salary, description FROM jobs ORDER BY id DESC";
         TranslationService translationService = new TranslationService();
 
@@ -75,6 +79,11 @@ public class JobServlet extends HttpServlet {
                 String type = rs.getString("type");
                 String description = rs.getString("description");
                 String address = includeMapColumns ? rs.getString("address") : "";
+                String workingHours = includeMapColumns ? rs.getString("working_hours") : "";
+                String requirements = includeMapColumns ? rs.getString("requirements") : "";
+                String contactEmail = includeMapColumns ? rs.getString("contact_email") : "";
+                String applicationDeadline = includeMapColumns ? rs.getString("application_deadline") : "";
+                String companyDetails = includeMapColumns ? rs.getString("company_details") : "";
 
                 String translatedTitle = translationService.translate(con, title, language);
                 String translatedLocation = translationService.translate(con, location, language);
@@ -82,6 +91,9 @@ public class JobServlet extends HttpServlet {
                 String translatedType = translationService.translate(con, type, language);
                 String translatedDescription = translationService.translate(con, description, language);
                 String translatedAddress = translationService.translate(con, address, language);
+                String translatedWorkingHours = translationService.translate(con, workingHours, language);
+                String translatedRequirements = translationService.translate(con, requirements, language);
+                String translatedCompanyDetails = translationService.translate(con, companyDetails, language);
 
                 json.append("{")
                         .append("\"id\":").append(rs.getInt("id")).append(",")
@@ -97,6 +109,14 @@ public class JobServlet extends HttpServlet {
                         .append("\"salary\":\"").append(escapeJson(rs.getString("salary"))).append("\",")
                         .append("\"description\":\"").append(escapeJson(translatedDescription)).append("\",")
                         .append("\"originalDescription\":\"").append(escapeJson(description)).append("\",")
+                        .append("\"workingHours\":\"").append(escapeJson(translatedWorkingHours)).append("\",")
+                        .append("\"originalWorkingHours\":\"").append(escapeJson(workingHours)).append("\",")
+                        .append("\"requirements\":\"").append(escapeJson(translatedRequirements)).append("\",")
+                        .append("\"originalRequirements\":\"").append(escapeJson(requirements)).append("\",")
+                        .append("\"contactEmail\":\"").append(escapeJson(contactEmail)).append("\",")
+                        .append("\"applicationDeadline\":\"").append(escapeJson(applicationDeadline)).append("\",")
+                        .append("\"companyDetails\":\"").append(escapeJson(translatedCompanyDetails)).append("\",")
+                        .append("\"originalCompanyDetails\":\"").append(escapeJson(companyDetails)).append("\",")
                         .append("\"address\":\"").append(escapeJson(translatedAddress)).append("\",")
                         .append("\"originalAddress\":\"").append(escapeJson(address)).append("\",")
                         .append("\"latitude\":").append(decimalOrNull(includeMapColumns ? rs.getString("latitude") : null)).append(",")
