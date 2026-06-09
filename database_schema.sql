@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS student_profiles (
   preferred_job_category VARCHAR(100),
   available_working_time VARCHAR(100),
   korean_language_level VARCHAR(100),
+  cv_link VARCHAR(500),
   address VARCHAR(255),
   latitude DECIMAL(10, 7),
   longitude DECIMAL(10, 7),
@@ -71,4 +72,15 @@ CREATE TABLE IF NOT EXISTS jobs (
   INDEX idx_jobs_location (location),
   INDEX idx_jobs_category (category),
   INDEX idx_jobs_type (type)
+);
+
+CREATE TABLE IF NOT EXISTS applications (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  job_id INT NOT NULL,
+  student_email VARCHAR(255) NOT NULL,
+  cv_link VARCHAR(500) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY unique_application (job_id, student_email),
+  INDEX idx_applications_job_id (job_id),
+  INDEX idx_applications_student_email (student_email)
 );

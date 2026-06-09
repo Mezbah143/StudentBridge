@@ -69,11 +69,28 @@ public class StudentLocationServlet extends HttpServlet {
                 request.getParameter("studentLongitude")
         );
 
+        String cvLink = clean(
+                request.getParameter("cvLink")
+        );
+
         // Validation
-        if (address.isEmpty()) {
+        boolean hasAddress = !address.isEmpty();
+        boolean hasCoordinates = latitude != null && longitude != null;
+        boolean hasCvLink = !cvLink.isEmpty();
+
+        if (!hasAddress && !hasCvLink) {
 
             response.sendRedirect(
-                    "frontend/student-profile.html?error=address"
+                    "frontend/student-profile.html?error=missing"
+            );
+
+            return;
+        }
+
+        if (hasAddress && !hasCoordinates) {
+
+            response.sendRedirect(
+                    "frontend/student-profile.html?error=mapRequired"
             );
 
             return;
@@ -92,12 +109,15 @@ public class StudentLocationServlet extends HttpServlet {
 
             con.setAutoCommit(false);
 
-            saveStudentLocation(
+            DatabaseSchemaManager.ensureStudentProfilesCvColumn(con);
+
+            saveStudentProfile(
                     con,
                     userEmail,
                     address,
                     latitude,
-                    longitude
+                    longitude,
+                    cvLink
             );
 
             con.commit();
@@ -116,43 +136,80 @@ public class StudentLocationServlet extends HttpServlet {
         }
     }
 
-    private void saveStudentLocation(
+    private void saveStudentProfile(
             Connection con,
             String userEmail,
             String address,
             BigDecimal latitude,
-            BigDecimal longitude
+            BigDecimal longitude,
+            String cvLink
     ) throws SQLException {
 
-        // Try update first
-        String updateSql =
-                "UPDATE student_profiles " +
-                "SET address = ?, latitude = ?, longitude = ? " +
-                "WHERE user_email = ?";
+        if (!profileExists(con, userEmail)) {
+            insertStudentProfile(con, userEmail, address, latitude, longitude, cvLink);
+            return;
+        }
 
-        try (PreparedStatement ps =
-                     con.prepareStatement(updateSql)) {
+        if (!cvLink.isEmpty()) {
+            String updateCvSql =
+                    "UPDATE student_profiles SET cv_link = ? WHERE user_email = ?";
 
-            ps.setString(1, address);
+            try (PreparedStatement ps =
+                         con.prepareStatement(updateCvSql)) {
 
-            setNullableDecimal(ps, 2, latitude);
-            setNullableDecimal(ps, 3, longitude);
-
-            ps.setString(4, userEmail);
-
-            int rows = ps.executeUpdate();
-
-            // Already updated
-            if (rows > 0) {
-                return;
+                ps.setString(1, cvLink);
+                ps.setString(2, userEmail);
+                ps.executeUpdate();
             }
         }
 
-        // Insert if profile does not exist
+        if (!address.isEmpty()) {
+            String updateLocationSql =
+                    "UPDATE student_profiles " +
+                    "SET address = ?, latitude = ?, longitude = ? " +
+                    "WHERE user_email = ?";
+
+            try (PreparedStatement ps =
+                         con.prepareStatement(updateLocationSql)) {
+
+                ps.setString(1, address);
+                setNullableDecimal(ps, 2, latitude);
+                setNullableDecimal(ps, 3, longitude);
+                ps.setString(4, userEmail);
+                ps.executeUpdate();
+            }
+        }
+    }
+
+    private boolean profileExists(Connection con,
+                                  String userEmail) throws SQLException {
+
+        String sql = "SELECT id FROM student_profiles WHERE user_email = ? LIMIT 1";
+
+        try (PreparedStatement ps =
+                     con.prepareStatement(sql)) {
+
+            ps.setString(1, userEmail);
+
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    private void insertStudentProfile(
+            Connection con,
+            String userEmail,
+            String address,
+            BigDecimal latitude,
+            BigDecimal longitude,
+            String cvLink
+    ) throws SQLException {
+
         String insertSql =
                 "INSERT INTO student_profiles " +
-                "(user_email, address, latitude, longitude) " +
-                "VALUES (?, ?, ?, ?)";
+                "(user_email, address, latitude, longitude, cv_link) " +
+                "VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps =
                      con.prepareStatement(insertSql)) {
@@ -162,6 +219,7 @@ public class StudentLocationServlet extends HttpServlet {
 
             setNullableDecimal(ps, 3, latitude);
             setNullableDecimal(ps, 4, longitude);
+            ps.setString(5, cvLink);
 
             ps.executeUpdate();
         }

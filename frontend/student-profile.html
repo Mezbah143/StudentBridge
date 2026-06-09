@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Manage your StudentBridge student profile and saved address.">
+  <meta name="description" content="Manage your StudentBridge student profile, CV link, and saved address.">
   <title data-i18n="title.studentProfile">Student Profile | StudentBridge</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="./post-job.css">
@@ -24,16 +24,16 @@
 
   <main class="page-shell">
     <section class="page-heading" aria-labelledby="student-profile-title">
-      <p class="eyebrow"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> <span data-i18n="student.eyebrow">Student location</span></p>
-      <h1 id="student-profile-title" data-i18n="student.heading">Save your address for nearby jobs.</h1>
-      <p data-i18n="student.body">Add your real location so StudentBridge can support better job matching and future distance-based search.</p>
+      <p class="eyebrow"><i class="fa-solid fa-id-card" aria-hidden="true"></i> <span data-i18n="student.eyebrow">Student profile</span></p>
+      <h1 id="student-profile-title" data-i18n="student.heading">Save your CV and address for job applications.</h1>
+      <p data-i18n="student.body">Add your CV link for one-click applications and save your real location for better job matching.</p>
     </section>
 
     <section class="form-card" aria-labelledby="student-address-title">
       <div class="form-header">
         <div>
-          <h2 id="student-address-title" data-i18n="student.formTitle">Your address</h2>
-          <p data-i18n="student.formBody">Search your address or click the map to set a precise point.</p>
+          <h2 id="student-address-title" data-i18n="student.formTitle">Your profile details</h2>
+          <p data-i18n="student.formBody">Paste your CV link, then optionally search your address or click the map to set a precise point.</p>
         </div>
         <a href="./jobsearch.html" data-i18n="common.findJobs">Find jobs</a>
       </div>
@@ -43,9 +43,15 @@
       <form action="../StudentLocationServlet" method="post" id="studentLocationForm">
         <div class="form-grid">
           <div class="input-group full-width">
-            <label for="studentAddress" data-i18n="student.address">Real address *</label>
+            <label for="studentCvLink" data-i18n="student.cvLink">CV / Resume Link</label>
+            <input type="url" id="studentCvLink" name="cvLink" placeholder="https://drive.google.com/your-resume" data-i18n-placeholder="student.cvLinkPlaceholder">
+            <p class="field-help" data-i18n="student.cvLinkHelp">Use a shareable Google Drive, Notion, PDF, or portfolio link. Employers will receive this link when you apply.</p>
+          </div>
+
+          <div class="input-group full-width">
+            <label for="studentAddress" data-i18n="student.address">Real address</label>
             <div class="location-search-row">
-              <input type="text" id="studentAddress" name="studentAddress" placeholder="울산 남구 대학로 93" data-i18n-placeholder="student.addressPlaceholder" required>
+              <input type="text" id="studentAddress" name="studentAddress" placeholder="울산 남구 대학로 93" data-i18n-placeholder="student.addressPlaceholder">
               <button type="button" class="secondary-btn" id="findStudentAddressBtn">
                 <i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i>
                 <span data-i18n="student.findMap">Find on Map</span>
@@ -74,18 +80,25 @@
 
         <button type="submit" class="submit-btn">
           <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
-          <span data-i18n="student.save">Save Student Address</span>
+          <span data-i18n="student.save">Save Student Profile</span>
         </button>
       </form>
     </section>
   </main>
 
+  <script src="./runtime-config.js"></script>
+  <script src="./platform.js"></script>
   <script src="./translations.js"></script>
   <script src="./i18n.js?v=20260609-navbar-fix"></script>
   <script src="./map-config.js?v=20260609-map-fix"></script>
   <script src="./location-map.js?v=20260609-map-fix"></script>
   <script>
     const message = document.getElementById("studentLocationMessage");
+    const studentLocationForm = document.getElementById("studentLocationForm");
+    const cvLinkInput = document.getElementById("studentCvLink");
+    const addressInput = document.getElementById("studentAddress");
+    const latitudeInput = document.getElementById("studentLatitude");
+    const longitudeInput = document.getElementById("studentLongitude");
     const params = new URLSearchParams(window.location.search);
 
     function showMessage(text, type) {
@@ -97,7 +110,9 @@
       showMessage("student.success", "success");
     }
 
-    if (params.get("error") === "missing") {
+    if (params.get("error") === "cvRequired") {
+      showMessage("student.cvRequired", "error");
+    } else if (params.get("error") === "missing") {
       showMessage("student.missing", "error");
     } else if (params.get("error") === "mapRequired") {
       showMessage("student.mapRequired", "error");
@@ -107,25 +122,66 @@
       showMessage("student.dbError", "error");
     }
 
-    document.getElementById("studentLocationForm").addEventListener("submit", (event) => {
-      const latitude = document.getElementById("studentLatitude").value.trim();
-      const longitude = document.getElementById("studentLongitude").value.trim();
+    if (window.StudentBridgePlatform && StudentBridgePlatform.canReachBackend()) {
+      studentLocationForm.action = StudentBridgePlatform.toBackendUrl("StudentLocationServlet");
+    }
 
-      if (latitude && longitude) {
+    async function loadStudentProfile() {
+      if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
+        return;
+      }
+
+      try {
+        const response = await fetch(StudentBridgePlatform.toBackendUrl("StudentProfileServlet"), {
+          credentials: "include"
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const profile = await response.json();
+        cvLinkInput.value = profile.cvLink || "";
+        addressInput.value = profile.address || "";
+        latitudeInput.value = profile.latitude || "";
+        longitudeInput.value = profile.longitude || "";
+      } catch (error) {
+        console.error("Unable to load student profile.", error);
+      }
+    }
+
+    studentLocationForm.addEventListener("submit", (event) => {
+      const cvLink = cvLinkInput.value.trim();
+      const address = addressInput.value.trim();
+      const latitude = latitudeInput.value.trim();
+      const longitude = longitudeInput.value.trim();
+
+      if (cvLink) {
+        return;
+      }
+
+      if (address && latitude && longitude) {
         return;
       }
 
       event.preventDefault();
-      showMessage("student.mapRequired", "error");
+
+      if (address) {
+        showMessage("student.mapRequired", "error");
+      } else {
+        showMessage("student.missing", "error");
+      }
     });
 
-    StudentBridgeLocationMap.initPicker({
-      mapId: "studentLocationMap",
-      addressInputId: "studentAddress",
-      latitudeInputId: "studentLatitude",
-      longitudeInputId: "studentLongitude",
-      searchButtonId: "findStudentAddressBtn",
-      statusId: "studentMapStatus"
+    loadStudentProfile().finally(() => {
+      StudentBridgeLocationMap.initPicker({
+        mapId: "studentLocationMap",
+        addressInputId: "studentAddress",
+        latitudeInputId: "studentLatitude",
+        longitudeInputId: "studentLongitude",
+        searchButtonId: "findStudentAddressBtn",
+        statusId: "studentMapStatus"
+      });
     });
   </script>
 </body>

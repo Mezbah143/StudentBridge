@@ -48,6 +48,7 @@ public class StudentProfileServlet extends HttpServlet {
                 return;
             }
 
+            DatabaseSchemaManager.ensureStudentProfilesCvColumn(con);
             writeProfile(con, response, userEmail, userName, accountType);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -65,7 +66,7 @@ public class StudentProfileServlet extends HttpServlet {
 
         String sql = "SELECT university_name, major, student_id, preferred_job_category, " +
                 "available_working_time, korean_language_level, address, latitude, longitude, " +
-                "created_at FROM student_profiles WHERE user_email = ? ORDER BY id DESC LIMIT 1";
+                "cv_link, created_at FROM student_profiles WHERE user_email = ? ORDER BY id DESC LIMIT 1";
 
         try (PreparedStatement ps = con.prepareStatement(sql);
              PrintWriter out = response.getWriter()) {
@@ -86,6 +87,7 @@ public class StudentProfileServlet extends HttpServlet {
                     json.append("\"preferredJobCategory\":\"").append(escapeJson(rs.getString("preferred_job_category"))).append("\",");
                     json.append("\"availableWorkingTime\":\"").append(escapeJson(rs.getString("available_working_time"))).append("\",");
                     json.append("\"koreanLanguageLevel\":\"").append(escapeJson(rs.getString("korean_language_level"))).append("\",");
+                    json.append("\"cvLink\":\"").append(escapeJson(rs.getString("cv_link"))).append("\",");
                     json.append("\"address\":\"").append(escapeJson(rs.getString("address"))).append("\",");
                     json.append("\"latitude\":").append(decimalOrNull(rs.getString("latitude"))).append(",");
                     json.append("\"longitude\":").append(decimalOrNull(rs.getString("longitude"))).append(",");
@@ -97,6 +99,7 @@ public class StudentProfileServlet extends HttpServlet {
                     json.append("\"preferredJobCategory\":\"\",");
                     json.append("\"availableWorkingTime\":\"\",");
                     json.append("\"koreanLanguageLevel\":\"\",");
+                    json.append("\"cvLink\":\"\",");
                     json.append("\"address\":\"\",");
                     json.append("\"latitude\":null,");
                     json.append("\"longitude\":null,");

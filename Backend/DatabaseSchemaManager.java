@@ -57,16 +57,41 @@ public final class DatabaseSchemaManager {
         ensureIndex(con, "idx_jobs_type", "type");
     }
 
+    public static void ensureStudentProfilesCvColumn(Connection con) throws SQLException {
+        ensureColumn(con, "student_profiles", "cv_link", "VARCHAR(500)");
+        ensureIndex(con, "student_profiles", "idx_student_profiles_user_email", "user_email");
+    }
+
+    public static void ensureApplicationsTable(Connection con) throws SQLException {
+        ensureStudentProfilesCvColumn(con);
+
+        try (Statement statement = con.createStatement()) {
+            statement.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS applications (" +
+                            "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                            "job_id INT NOT NULL, " +
+                            "student_email VARCHAR(255) NOT NULL, " +
+                            "cv_link VARCHAR(500) NOT NULL, " +
+                            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                            "UNIQUE KEY unique_application (job_id, student_email), " +
+                            "INDEX idx_applications_job_id (job_id), " +
+                            "INDEX idx_applications_student_email (student_email)" +
+                            ")"
+            );
+        }
+    }
+
     private static void ensureColumn(Connection con,
+                                     String tableName,
                                      String columnName,
                                      String definition) throws SQLException {
-        if (columnExists(con, columnName)) {
+        if (columnExists(con, tableName, columnName)) {
             return;
         }
 
         try (Statement statement = con.createStatement()) {
             statement.executeUpdate(
-                    "ALTER TABLE jobs ADD COLUMN " + columnName + " " + definition
+                    "ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + definition
             );
         } catch (SQLException e) {
             if (!isDuplicateColumn(e)) {
@@ -75,15 +100,23 @@ public final class DatabaseSchemaManager {
         }
     }
 
+    private static void ensureColumn(Connection con,
+                                     String columnName,
+                                     String definition) throws SQLException {
+        ensureColumn(con, "jobs", columnName, definition);
+    }
+
     private static boolean columnExists(Connection con,
+                                        String tableName,
                                         String columnName) throws SQLException {
         String sql = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
                 "WHERE TABLE_SCHEMA = DATABASE() " +
-                "AND TABLE_NAME = 'jobs' " +
+                "AND TABLE_NAME = ? " +
                 "AND COLUMN_NAME = ?";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, columnName);
+            ps.setString(1, tableName);
+            ps.setString(2, columnName);
 
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() && rs.getInt(1) > 0;
@@ -92,15 +125,16 @@ public final class DatabaseSchemaManager {
     }
 
     private static void ensureIndex(Connection con,
+                                    String tableName,
                                     String indexName,
                                     String columns) throws SQLException {
-        if (indexExists(con, indexName)) {
+        if (indexExists(con, tableName, indexName)) {
             return;
         }
 
         try (Statement statement = con.createStatement()) {
             statement.executeUpdate(
-                    "CREATE INDEX " + indexName + " ON jobs (" + columns + ")"
+                    "CREATE INDEX " + indexName + " ON " + tableName + " (" + columns + ")"
             );
         } catch (SQLException e) {
             if (!isDuplicateIndex(e)) {
@@ -109,15 +143,23 @@ public final class DatabaseSchemaManager {
         }
     }
 
+    private static void ensureIndex(Connection con,
+                                    String indexName,
+                                    String columns) throws SQLException {
+        ensureIndex(con, "jobs", indexName, columns);
+    }
+
     private static boolean indexExists(Connection con,
+                                       String tableName,
                                        String indexName) throws SQLException {
         String sql = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS " +
                 "WHERE TABLE_SCHEMA = DATABASE() " +
-                "AND TABLE_NAME = 'jobs' " +
+                "AND TABLE_NAME = ? " +
                 "AND INDEX_NAME = ?";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, indexName);
+            ps.setString(1, tableName);
+            ps.setString(2, indexName);
 
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() && rs.getInt(1) > 0;

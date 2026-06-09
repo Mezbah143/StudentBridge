@@ -245,6 +245,27 @@
       font-weight: 700;
     }
 
+    .job-meta {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .job-meta p {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #334155;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .job-meta i {
+      width: 16px;
+      color: var(--primary);
+      text-align: center;
+    }
+
     .location {
       margin-top: 8px;
       color: #334155;
@@ -279,7 +300,6 @@
     .apply-btn {
       width: 100%;
       min-height: 46px;
-      margin-top: 16px;
       border: 0;
       border-radius: 999px;
       color: #ffffff;
@@ -299,6 +319,12 @@
       background: #e2e8f0;
       cursor: not-allowed;
       transform: none;
+    }
+
+    .job-actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
     }
 
     .empty-state {
@@ -359,7 +385,6 @@
     .map-btn {
       width: 100%;
       min-height: 42px;
-      margin-top: 10px;
       border: 1px solid #b8c7e3;
       border-radius: 999px;
       color: var(--primary-dark);
@@ -381,6 +406,38 @@
       cursor: not-allowed;
       transform: none;
       box-shadow: none;
+    }
+
+    .apply-message {
+      display: none;
+      max-width: 1120px;
+      margin: 0 auto 20px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      font-weight: 800;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    .apply-message.show {
+      display: block;
+    }
+
+    .apply-message.success {
+      color: #0f766e;
+      background: #ccfbf1;
+      border: 1px solid #99f6e4;
+    }
+
+    .apply-message.error {
+      color: #b42318;
+      background: #fff1f0;
+      border: 1px solid #fecaca;
+    }
+
+    .apply-message.info {
+      color: var(--primary-dark);
+      background: #eaf1ff;
+      border: 1px solid #bfdbfe;
     }
 
     @media (max-width: 980px) {
@@ -472,6 +529,8 @@
       <button type="submit"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> <span data-i18n="jobs.search">Search</span></button>
     </form>
 
+    <p class="apply-message" id="jobApplyMessage" role="status" aria-live="polite"></p>
+
     <section class="jobs" id="jobList" aria-live="polite" aria-label="Job listings" data-i18n-aria-label="jobs.listLabel"></section>
 
     <section class="map-preview-card" aria-labelledby="job-map-title">
@@ -492,6 +551,7 @@
     let jobMapViewer = null;
     const jobList = document.getElementById("jobList");
     const jobSearchForm = document.getElementById("jobSearchForm");
+    const jobApplyMessage = document.getElementById("jobApplyMessage");
 
     function t(key) {
       return window.StudentBridgeI18n ? StudentBridgeI18n.t(key) : key;
@@ -533,6 +593,29 @@
       jobList.appendChild(status);
     }
 
+    function showApplyMessage(messageKey, type) {
+      jobApplyMessage.textContent = t(messageKey);
+      jobApplyMessage.className = `apply-message show ${type}`;
+    }
+
+    function showApplyMessageFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const status = params.get("apply");
+
+      const messages = {
+        success: ["jobs.applySuccess", "success"],
+        duplicate: ["jobs.applyDuplicate", "info"],
+        notStudent: ["jobs.applyNotStudent", "error"],
+        missingJob: ["jobs.applyMissingJob", "error"],
+        db: ["jobs.applyDbError", "error"],
+        database: ["jobs.applyDbError", "error"]
+      };
+
+      if (messages[status]) {
+        showApplyMessage(messages[status][0], messages[status][1]);
+      }
+    }
+
     function displayJobs(list) {
       jobList.innerHTML = "";
 
@@ -560,15 +643,26 @@
         company.className = "company";
         company.textContent = job.company;
 
+        const meta = document.createElement("div");
+        meta.className = "job-meta";
+
         const location = document.createElement("p");
-        location.className = "location";
-        location.innerHTML = '<i class="fa-solid fa-location-dot" aria-hidden="true"></i> ';
-        location.append(document.createTextNode(`${job.location} · ${job.type}`));
+        location.innerHTML = '<i class="fa-solid fa-location-dot" aria-hidden="true"></i>';
+        location.append(document.createTextNode(job.location));
+
+        const jobType = document.createElement("p");
+        jobType.innerHTML = '<i class="fa-solid fa-clock" aria-hidden="true"></i>';
+        jobType.append(document.createTextNode(job.type));
+
+        const category = document.createElement("p");
+        category.innerHTML = '<i class="fa-solid fa-layer-group" aria-hidden="true"></i>';
+        category.append(document.createTextNode(job.category));
 
         const address = document.createElement("p");
-        address.className = "location";
-        address.innerHTML = '<i class="fa-solid fa-map-pin" aria-hidden="true"></i> ';
+        address.innerHTML = '<i class="fa-solid fa-map-pin" aria-hidden="true"></i>';
         address.append(document.createTextNode(job.address || t("jobs.addressMissing")));
+
+        meta.append(location, jobType, category, address);
 
         const tags = document.createElement("div");
         tags.className = "tags";
@@ -588,8 +682,7 @@
         applyButton.type = "button";
         applyButton.className = "apply-btn";
         applyButton.dataset.jobId = job.id;
-        applyButton.textContent = t("jobs.applySoon");
-        applyButton.disabled = true;
+        applyButton.innerHTML = `<i class="fa-solid fa-paper-plane" aria-hidden="true"></i> ${t("jobs.applyNow")}`;
 
         const mapButton = document.createElement("button");
         mapButton.type = "button";
@@ -600,7 +693,11 @@
           : t("jobs.mapMissing");
         mapButton.disabled = !StudentBridgeLocationMap.hasCoordinates(job.latitude, job.longitude);
 
-        article.append(salary, title, company, location, address, tags, description, mapButton, applyButton);
+        const actions = document.createElement("div");
+        actions.className = "job-actions";
+        actions.append(applyButton, mapButton);
+
+        article.append(salary, title, company, meta, tags, description, actions);
 
         fragment.appendChild(article);
       });
@@ -652,9 +749,43 @@
       const applyButton = event.target.closest(".apply-btn");
 
       if (applyButton) {
+        submitApplication(applyButton);
         return;
       }
     });
+
+    function submitApplication(button) {
+      const jobId = button.dataset.jobId;
+
+      if (!jobId) {
+        showApplyMessage("jobs.applyMissingJob", "error");
+        return;
+      }
+
+      if (window.StudentBridgePlatform && !StudentBridgePlatform.canReachBackend()) {
+        showApplyMessage("jobs.staticPreview", "info");
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = t("jobs.applying");
+
+      const form = document.createElement("form");
+      form.method = "post";
+      form.action = window.StudentBridgePlatform
+        ? StudentBridgePlatform.toBackendUrl("ApplyServlet")
+        : "../ApplyServlet";
+      form.style.display = "none";
+
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "jobId";
+      input.value = jobId;
+
+      form.appendChild(input);
+      document.body.appendChild(form);
+      form.submit();
+    }
 
     StudentBridgeLocationMap.initViewer({
       mapId: "jobMap",
@@ -664,9 +795,11 @@
     });
 
     window.addEventListener("studentbridge:languagechange", () => {
+      showApplyMessageFromUrl();
       loadJobs();
     });
 
+    showApplyMessageFromUrl();
     loadJobs();
   </script>
 </body>
