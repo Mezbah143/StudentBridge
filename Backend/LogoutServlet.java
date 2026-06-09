@@ -27,20 +27,11 @@ public class LogoutServlet extends HttpServlet {
             session.invalidate();
         }
 
-        // Optional: Clear cookies
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies != null) {
-
-            for (Cookie cookie : cookies) {
-
-                cookie.setValue("");
-                cookie.setPath("/");
-                cookie.setMaxAge(0);
-
-                response.addCookie(cookie);
-            }
-        }
+        Cookie sessionCookie = new Cookie("JSESSIONID", "");
+        sessionCookie.setPath(getCookiePath(request));
+        sessionCookie.setHttpOnly(true);
+        sessionCookie.setMaxAge(0);
+        response.addCookie(sessionCookie);
 
         // Prevent browser caching after logout
         response.setHeader("Cache-Control",
@@ -50,8 +41,7 @@ public class LogoutServlet extends HttpServlet {
 
         response.setDateHeader("Expires", 0);
 
-        // Redirect to login page
-        response.sendRedirect("frontend/login.html?logout=success");
+        response.sendRedirect(request.getContextPath() + "/index.html?logout=success");
     }
 
     @Override
@@ -60,5 +50,10 @@ public class LogoutServlet extends HttpServlet {
             throws ServletException, IOException {
 
         doGet(request, response);
+    }
+
+    private String getCookiePath(HttpServletRequest request) {
+        String contextPath = request.getContextPath();
+        return contextPath == null || contextPath.isEmpty() ? "/" : contextPath;
     }
 }

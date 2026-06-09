@@ -1,24 +1,32 @@
 const AUTH_STORAGE_KEY = "studentBridgeAuth";
 
 const App = {
-  init() {
-    this.navbar = document.querySelector(".navbar");
+	  init() {
+	    this.navbar = document.querySelector(".navbar");
     this.guestActions = document.querySelector("[data-guest-actions]");
     this.userMenu = document.querySelector("[data-user-menu]");
     this.userMenuTrigger = document.querySelector("[data-user-menu-trigger]");
     this.userDropdown = document.querySelector("[data-user-dropdown]");
-    this.userEmailElements = document.querySelectorAll("[data-user-email]");
+    this.userLabel = document.querySelector("[data-user-label]");
+    this.userNameElements = document.querySelectorAll("[data-user-name]");
+    this.userMailLink = document.querySelector("[data-user-mail]");
+    this.employerLinks = document.querySelectorAll("[data-employer-link]");
+    this.studentLinks = document.querySelectorAll("[data-student-link]");
 
     this.logoutButton = document.querySelector("[data-logout-button]");
     this.languageButton = document.getElementById("languageButton");
     this.languageMenu = document.getElementById("languageMenu");
     this.languageWrapper = document.querySelector(".language-wrapper");
 
-    this.syncLoginFromRedirect();
-    this.renderAuthState();
-    this.initAnimations();
-    this.bindEvents();
-  },
+	    const redirectParams = new URLSearchParams(window.location.search);
+	    this.hasRecentLoginRedirect = redirectParams.get("login") === "success";
+
+	    this.setAuthState("checking");
+	    this.cleanAuthRedirectParams();
+	    this.loadSessionAuthState();
+	    this.initAnimations();
+	    this.bindEvents();
+	  },
 
   bindEvents() {
     window.addEventListener("scroll", () => this.handleScroll());
@@ -30,110 +38,172 @@ const App = {
     if (this.logoutButton) {
       this.logoutButton.addEventListener("click", () => this.logout());
     }
-    if (this.languageButton) {
 
-  this.languageButton
-    .addEventListener("click", () => {
+    if (this.languageButton && this.languageMenu) {
+      this.languageButton.addEventListener("click", () => {
+        this.languageMenu.classList.toggle("show");
+      });
+    }
 
-      this.languageMenu
-        .classList.toggle("show");
+    document.querySelectorAll("[data-lang]").forEach((item) => {
+      item.addEventListener("click", () => {
+        const selected = item.dataset.lang;
 
+        if (window.StudentBridgeI18n) {
+          StudentBridgeI18n.setLanguage(selected);
+        } else {
+          localStorage.setItem("studentBridgeLanguage", selected);
+        }
+
+        if (this.languageMenu) {
+          this.languageMenu.classList.remove("show");
+        }
+      });
     });
-}
-
-document.querySelectorAll("[data-lang]")
-  .forEach((item) => {
-
-    item.addEventListener("click", () => {
-
-      const selected =
-        item.dataset.lang;
-
-      localStorage.setItem(
-        "studentBridgeLanguage",
-        selected
-      );
-
-      this.languageMenu
-        .classList.remove("show");
-
-    });
-
-});
 
     document.addEventListener("click", (event) => {
-      if (!this.userMenu || this.userMenu.contains(event.target)) {
-        return;
+      if (this.userMenu && !this.userMenu.contains(event.target)) {
+        this.closeUserMenu();
       }
 
-      this.closeUserMenu();
-      if (
-  this.languageWrapper &&
-  !this.languageWrapper.contains(event.target)
-) {
-
-  this.languageMenu
-    .classList.remove("show");
-
-}
+      if (this.languageMenu
+          && this.languageWrapper
+          && !this.languageWrapper.contains(event.target)) {
+        this.languageMenu.classList.remove("show");
+      }
     });
   },
 
-  syncLoginFromRedirect() {
+  cleanAuthRedirectParams() {
     const params = new URLSearchParams(window.location.search);
 
-    if (params.get("login") !== "success") {
+    if (!params.has("login") && !params.has("logout") && !params.has("registered")) {
       return;
     }
 
-    const email = params.get("email");
-
-    if (email) {
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({
-        email,
-        loggedIn: true
-      }));
-    }
-
     params.delete("login");
+    params.delete("logout");
+    params.delete("registered");
     params.delete("email");
+    params.delete("name");
+    params.delete("accountType");
 
     const cleanQuery = params.toString();
     const cleanUrl = `${window.location.pathname}${cleanQuery ? `?${cleanQuery}` : ""}${window.location.hash}`;
     window.history.replaceState({}, document.title, cleanUrl);
   },
 
-  getAuthState() {
+	  async loadSessionAuthState() {
+	    localStorage.removeItem(AUTH_STORAGE_KEY);
+
+    if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
+      this.renderLoggedOutState();
+      return;
+    }
+
     try {
-      return JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY)) || {};
-    } catch (error) {
-      return {};
+      const response = await fetch(StudentBridgePlatform.toBackendUrl("AuthStatusServlet"), {
+        credentials: "same-origin",
+        cache: "no-store"
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to read authentication session.");
+      }
+
+	      let auth = await response.json();
+
+	      if ((!auth || !auth.loggedIn) && this.hasRecentLoginRedirect) {
+	        await new Promise((resolve) => setTimeout(resolve, 500));
+	        const retryResponse = await fetch(StudentBridgePlatform.toBackendUrl("AuthStatusServlet"), {
+	          credentials: "same-origin",
+	          cache: "no-store"
+	        });
+
+	        if (retryResponse.ok) {
+	          auth = await retryResponse.json();
+	        }
+	      }
+
+	      this.renderAuthState(auth);
+	    } catch (error) {
+	      console.error(error);
+      this.renderLoggedOutState();
     }
   },
 
-  renderAuthState() {
-    if (!this.guestActions || !this.userMenu) {
-      return;
-    }
+	  renderLoggedOutState() {
+	    this.setAuthState("guest");
 
-    const auth = this.getAuthState();
-    const isLoggedIn = auth.loggedIn && auth.email;
+	    if (!this.guestActions || !this.userMenu) {
+	      return;
+	    }
 
-    this.guestActions.hidden = Boolean(isLoggedIn);
-    this.userMenu.hidden = !isLoggedIn;
-
-    if (!isLoggedIn) {
-      return;
-    }
-
-    this.userEmailElements.forEach((element) => {
-      element.textContent = "👤";
-    });
+    this.guestActions.hidden = false;
+    this.guestActions.style.display = "";
+    this.userMenu.hidden = true;
+    this.userMenu.style.display = "none";
+    this.closeUserMenu();
 
     if (this.userMailLink) {
-      this.userMailLink.href = `mailto:${auth.email}`;
+      this.userMailLink.href = "#";
+      this.userMailLink.hidden = true;
     }
   },
+
+	  renderAuthState(auth) {
+	    if (!auth || !auth.loggedIn) {
+	      this.renderLoggedOutState();
+	      return;
+	    }
+
+	    this.setAuthState("user");
+
+    const accountType = String(auth.accountType || "").toLowerCase();
+    const displayName = auth.name || "Account";
+
+    this.guestActions.hidden = true;
+    this.guestActions.style.display = "none";
+    this.userMenu.hidden = false;
+    this.userMenu.style.display = "";
+
+    this.userNameElements.forEach((element) => {
+      element.textContent = displayName;
+    });
+
+    if (this.userMenuTrigger) {
+      this.userMenuTrigger.setAttribute("aria-label", `Profile menu for ${displayName}`);
+      this.userMenuTrigger.title = "Profile menu";
+    }
+
+    if (this.userLabel) {
+      this.userLabel.textContent = `Profile menu for ${displayName}`;
+    }
+
+    if (this.userMailLink) {
+      this.userMailLink.hidden = !auth.email;
+      this.userMailLink.href = auth.email ? `mailto:${auth.email}` : "#";
+    }
+
+    if (this.userDropdown) {
+      this.userDropdown.hidden = true;
+      this.userDropdown.style.display = "none";
+    }
+
+    this.employerLinks.forEach((link) => {
+      link.hidden = accountType !== "employer";
+    });
+
+    this.studentLinks.forEach((link) => {
+      link.hidden = accountType === "employer";
+    });
+	  },
+
+	  setAuthState(state) {
+	    if (document.body) {
+	      document.body.dataset.authState = state;
+	    }
+	  },
 
   toggleUserMenu() {
     if (!this.userDropdown || !this.userMenuTrigger) {
@@ -142,6 +212,7 @@ document.querySelectorAll("[data-lang]")
 
     const shouldOpen = this.userDropdown.hidden;
     this.userDropdown.hidden = !shouldOpen;
+    this.userDropdown.style.display = shouldOpen ? "block" : "none";
     this.userMenuTrigger.setAttribute("aria-expanded", String(shouldOpen));
   },
 
@@ -151,6 +222,7 @@ document.querySelectorAll("[data-lang]")
     }
 
     this.userDropdown.hidden = true;
+    this.userDropdown.style.display = "none";
     this.userMenuTrigger.setAttribute("aria-expanded", "false");
   },
 
@@ -159,7 +231,7 @@ document.querySelectorAll("[data-lang]")
     this.closeUserMenu();
 
     if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
-      this.renderAuthState();
+      this.renderLoggedOutState();
       return;
     }
 
