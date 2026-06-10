@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -22,6 +23,7 @@ public class TranslationService {
     private static final String SOURCE_LANGUAGE = "en";
     private static final Set<String> SUPPORTED_LANGUAGES = Set.of("en", "ko", "ne", "bn");
     private static final Map<String, String> MEMORY_CACHE = new ConcurrentHashMap<>();
+    private static final int MAX_TRANSLATION_ATTEMPTS = 2;
 
     public static String normalizeLanguage(String requestedLanguage) {
         if (requestedLanguage == null || requestedLanguage.isBlank()) {
@@ -141,6 +143,24 @@ public class TranslationService {
     }
 
     private String requestLibreTranslation(String text, String targetLanguage) throws IOException {
+        IOException lastException = null;
+
+        for (int attempt = 1; attempt <= MAX_TRANSLATION_ATTEMPTS; attempt++) {
+            try {
+                return requestLibreTranslationOnce(text, targetLanguage);
+            } catch (IOException e) {
+                lastException = e;
+
+                if (attempt < MAX_TRANSLATION_ATTEMPTS) {
+                    waitBeforeRetry();
+                }
+            }
+        }
+
+        throw lastException;
+    }
+
+    private String requestLibreTranslationOnce(String text, String targetLanguage) throws IOException {
         URI uri = URI.create(getTranslateApiUrl());
         String body = "q=" + URLEncoder.encode(text, StandardCharsets.UTF_8)
                 + "&source=" + URLEncoder.encode(SOURCE_LANGUAGE, StandardCharsets.UTF_8)
@@ -151,8 +171,10 @@ public class TranslationService {
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-        connection.setConnectTimeout(5000);
-        connection.setReadTimeout(8000);
+        connection.setRequestProperty("Accept", "application/json");
+        connection.setRequestProperty("User-Agent", "StudentBridge/1.0");
+        connection.setConnectTimeout(10000);
+        connection.setReadTimeout(30000);
 
         try (OutputStream outputStream = connection.getOutputStream()) {
             outputStream.write(body.getBytes(StandardCharsets.UTF_8));
@@ -162,10 +184,18 @@ public class TranslationService {
         String responseBody = readResponse(connection, statusCode);
 
         if (statusCode < 200 || statusCode >= 300) {
-            throw new IOException("LibreTranslate API returned " + statusCode + ": " + responseBody);
+            throw new IOException("LibreTranslate API returned " + statusCode + ": " + truncate(responseBody, 300));
         }
 
         return decodeBasicHtmlEntities(extractTranslatedText(responseBody));
+    }
+
+    private void waitBeforeRetry() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private String getTranslateApiUrl() {
@@ -179,9 +209,15 @@ public class TranslationService {
     }
 
     private String readResponse(HttpURLConnection connection, int statusCode) throws IOException {
-        InputStreamReader inputStreamReader = statusCode >= 200 && statusCode < 300
-                ? new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)
-                : new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8);
+        InputStream responseStream = statusCode >= 200 && statusCode < 300
+                ? connection.getInputStream()
+                : connection.getErrorStream();
+
+        if (responseStream == null) {
+            return "";
+        }
+
+        InputStreamReader inputStreamReader = new InputStreamReader(responseStream, StandardCharsets.UTF_8);
 
         try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
             StringBuilder response = new StringBuilder();
@@ -287,6 +323,14 @@ public class TranslationService {
                 .replace("&gt;", ">")
                 .replace("&quot;", "\"")
                 .replace("&#39;", "'");
+    }
+
+    private String truncate(String value, int maxLength) {
+        if (value == null || value.length() <= maxLength) {
+            return value == null ? "" : value;
+        }
+
+        return value.substring(0, maxLength) + "...";
     }
 
     private String sha256(String value) {
