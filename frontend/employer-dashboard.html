@@ -6,25 +6,60 @@
   <meta name="description" content="Employer dashboard for StudentBridge.">
   <title data-i18n="title.employerDashboard">Employer Dashboard | StudentBridge</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="./style.css?v=20260610-clean-navbar">
   <link rel="stylesheet" href="./post-job.css">
   <link rel="stylesheet" href="./notifications.css?v=20260609-notifications">
   <link rel="stylesheet" href="./messages.css?v=20260609-messages">
 </head>
-<body>
+<body data-auth-state="checking">
   <header class="navbar">
-    <a class="logo" href="../index.html">
-      <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-bridge"></i></span>
+    <a class="logo" href="../index.html" aria-label="StudentBridge home">
+      <span class="logo-mark" aria-hidden="true"><i class="fa-solid fa-bridge"></i></span>
       <span>StudentBridge</span>
     </a>
-    <nav class="nav-links" aria-label="Primary navigation" data-i18n-aria-label="nav.primary">
+
+    <button type="button" class="nav-toggle" data-nav-toggle aria-label="Open menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav class="nav-center" aria-label="Primary navigation" data-i18n-aria-label="nav.primary" data-primary-nav>
       <a href="../index.html" data-i18n="nav.home">Home</a>
       <a href="./jobsearch.html" data-i18n="nav.jobs">Jobs</a>
-      <a href="./employer-dashboard.html" aria-current="page" data-i18n="nav.dashboard">Dashboard</a>
-      <a href="./post-job.html" data-i18n="nav.postJob">Post Job</a>
+      <a href="./employer-dashboard.html" aria-current="page" data-employer-link data-i18n="nav.dashboard">Dashboard</a>
+      <a href="./post-job.html" data-employer-link data-i18n="nav.postJob">Post Job</a>
+      <a class="mobile-auth-link" href="./login.html" data-i18n="nav.login">Login</a>
+      <a class="mobile-auth-link" href="./register.html" data-i18n="nav.register">Register</a>
     </nav>
-    <div data-language-switcher></div>
-    <div data-message-root hidden></div>
-    <div data-notification-root hidden></div>
+
+    <div class="nav-right" aria-label="Account actions">
+      <div data-language-switcher></div>
+      <div data-message-root hidden></div>
+      <div data-notification-root hidden></div>
+      <div class="guest-actions" data-guest-actions>
+        <a href="./login.html" class="btn btn-outline" data-i18n="nav.login">Login</a>
+        <a href="./register.html" class="btn btn-primary" data-i18n="nav.register">Register</a>
+      </div>
+
+      <div class="user-menu" data-user-menu hidden>
+        <button type="button" class="user-menu-trigger" data-user-menu-trigger aria-haspopup="true" aria-expanded="false">
+          <span class="user-icon" aria-hidden="true"><i class="fa-solid fa-user"></i></span>
+          <span class="sr-only" data-user-label>Account menu</span>
+          <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+        </button>
+
+        <div class="user-dropdown" data-user-dropdown hidden>
+          <p class="dropdown-user" data-user-name>Account</p>
+          <a href="./employer-dashboard.html" data-employer-link><i class="fa-solid fa-table-columns" aria-hidden="true"></i> <span data-i18n="user.dashboard">Dashboard</span></a>
+          <a href="./messages.html"><i class="fa-solid fa-message" aria-hidden="true"></i> <span data-i18n="messages.label">Messages</span></a>
+          <a href="./post-job.html" data-employer-link><i class="fa-solid fa-plus" aria-hidden="true"></i> <span data-i18n="user.postJob">Post Job</span></a>
+          <a href="./student-profile.html" data-student-link><i class="fa-solid fa-id-card" aria-hidden="true"></i> <span data-i18n="user.studentAddress">Student Address</span></a>
+          <a data-user-mail href="#"><i class="fa-solid fa-envelope" aria-hidden="true"></i> <span data-i18n="user.email">Email</span></a>
+          <button type="button" data-logout-button><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> <span data-i18n="user.logout">Logout</span></button>
+        </div>
+      </div>
+    </div>
   </header>
 
   <main class="page-shell">
@@ -75,5 +110,6 @@
   <script src="./i18n.js?v=20260609-navbar-fix"></script>
   <script src="./notifications.js?v=20260609-notifications"></script>
   <script src="./messages.js?v=20260609-messages"></script>
+  <script src="./script.js?v=20260610-clean-navbar"></script>
 </body>
 </html>

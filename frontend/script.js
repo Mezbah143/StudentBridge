@@ -3,6 +3,8 @@ const AUTH_STORAGE_KEY = "studentBridgeAuth";
 const App = {
 	  init() {
 	    this.navbar = document.querySelector(".navbar");
+    this.navToggle = document.querySelector("[data-nav-toggle]");
+    this.primaryNav = document.querySelector("[data-primary-nav]");
     this.guestActions = document.querySelector("[data-guest-actions]");
     this.userMenu = document.querySelector("[data-user-menu]");
     this.userMenuTrigger = document.querySelector("[data-user-menu-trigger]");
@@ -30,6 +32,19 @@ const App = {
 
   bindEvents() {
     window.addEventListener("scroll", () => this.handleScroll());
+    window.addEventListener("resize", () => this.closeMobileNav());
+
+    if (this.navToggle) {
+      this.navToggle.addEventListener("click", () => this.toggleMobileNav());
+    }
+
+    if (this.primaryNav) {
+      this.primaryNav.addEventListener("click", (event) => {
+        if (event.target.closest("a")) {
+          this.closeMobileNav();
+        }
+      });
+    }
 
     if (this.userMenuTrigger) {
       this.userMenuTrigger.addEventListener("click", () => this.toggleUserMenu());
@@ -62,6 +77,12 @@ const App = {
     });
 
     document.addEventListener("click", (event) => {
+      if (this.navbar
+          && this.navToggle
+          && !this.navbar.contains(event.target)) {
+        this.closeMobileNav();
+      }
+
       if (this.userMenu && !this.userMenu.contains(event.target)) {
         this.closeUserMenu();
       }
@@ -69,6 +90,19 @@ const App = {
       if (this.languageMenu
           && this.languageWrapper
           && !this.languageWrapper.contains(event.target)) {
+        this.languageMenu.classList.remove("show");
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") {
+        return;
+      }
+
+      this.closeMobileNav();
+      this.closeUserMenu();
+
+      if (this.languageMenu) {
         this.languageMenu.classList.remove("show");
       }
     });
@@ -224,6 +258,27 @@ const App = {
     this.userDropdown.hidden = true;
     this.userDropdown.style.display = "none";
     this.userMenuTrigger.setAttribute("aria-expanded", "false");
+  },
+
+  toggleMobileNav() {
+    if (!this.navbar || !this.navToggle) {
+      return;
+    }
+
+    const shouldOpen = !this.navbar.classList.contains("nav-open");
+    this.navbar.classList.toggle("nav-open", shouldOpen);
+    this.navToggle.setAttribute("aria-expanded", String(shouldOpen));
+    this.navToggle.setAttribute("aria-label", shouldOpen ? "Close menu" : "Open menu");
+  },
+
+  closeMobileNav() {
+    if (!this.navbar || !this.navToggle) {
+      return;
+    }
+
+    this.navbar.classList.remove("nav-open");
+    this.navToggle.setAttribute("aria-expanded", "false");
+    this.navToggle.setAttribute("aria-label", "Open menu");
   },
 
   logout() {
