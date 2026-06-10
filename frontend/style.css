@@ -117,24 +117,33 @@ a {
 
 .navbar {
   position: sticky;
-  top: 0;
+  top: 12px;
   z-index: 90;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  min-height: 74px;
-  padding: 14px clamp(20px, 5vw, 72px);
-  background: rgba(7, 18, 38, 0.86);
+  width: min(1180px, calc(100% - 32px));
+  min-height: 70px;
+  margin: 12px auto 0;
+  padding: 11px 14px 11px 18px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.055)),
+    rgba(8, 18, 38, 0.82);
   color: var(--text-light);
-  backdrop-filter: blur(18px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  transition: box-shadow 0.25s ease, background 0.25s ease;
+  backdrop-filter: blur(22px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 24px;
+  box-shadow: 0 18px 60px rgba(2, 6, 23, 0.28);
+  transition: box-shadow 0.25s ease, background 0.25s ease, transform 0.25s ease;
 }
 
 .navbar.scrolled {
-  background: rgba(7, 18, 38, 0.95);
-  box-shadow: 0 12px 30px rgba(2, 6, 23, 0.24);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06)),
+    rgba(7, 18, 38, 0.92);
+  box-shadow: 0 22px 70px rgba(2, 6, 23, 0.34);
+  transform: translateY(-2px);
 }
 
 .logo {
@@ -144,20 +153,23 @@ a {
   align-items: center;
   gap: 10px;
   color: var(--text-light);
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 800;
   text-decoration: none;
   letter-spacing: 0;
+  min-width: max-content;
 }
 
 .logo-mark {
   display: grid;
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   place-items: center;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--secondary), var(--primary));
-  box-shadow: 0 10px 24px rgba(34, 211, 238, 0.28);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.62), transparent 24%),
+    linear-gradient(135deg, var(--secondary), var(--primary));
+  box-shadow: 0 14px 30px rgba(47, 109, 246, 0.34);
 }
 
 .nav-toggle {
@@ -168,7 +180,7 @@ a {
   place-items: center;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.105);
   color: #ffffff;
   cursor: pointer;
   grid-template-rows: repeat(3, 2px);
@@ -209,15 +221,16 @@ a {
   order: 2;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(3, 10, 24, 0.34);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .nav-center a {
-  padding: 9px 14px;
+  padding: 9px 15px;
   border-radius: 999px;
   color: #cbd5e1;
   font-size: 14px;
@@ -230,9 +243,10 @@ a {
 .nav-center a:focus-visible,
 .nav-center .active,
 .nav-center a[aria-current="page"] {
-  background: rgba(47, 109, 246, 0.24);
+  background: linear-gradient(135deg, rgba(47, 109, 246, 0.72), rgba(101, 168, 255, 0.56));
   color: #ffffff;
   outline: none;
+  box-shadow: 0 8px 24px rgba(47, 109, 246, 0.25);
 }
 
 .nav-right {
@@ -240,12 +254,12 @@ a {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .guest-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .mobile-auth-link {
@@ -262,11 +276,11 @@ a {
   gap: 10px;
   max-width: 280px;
   min-height: 44px;
-  padding: 8px 12px;
+  padding: 7px 11px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 999px;
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.105);
   font: inherit;
   font-weight: 800;
   cursor: pointer;
@@ -344,8 +358,8 @@ a {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 44px;
-  padding: 11px 18px;
+  min-height: 42px;
+  padding: 10px 16px;
   border-radius: 999px;
   font-weight: 800;
   text-decoration: none;
@@ -777,7 +791,11 @@ a {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto auto;
     gap: 10px;
-    padding: 12px 18px;
+    top: 10px;
+    width: min(100% - 24px, 1180px);
+    margin-top: 10px;
+    padding: 10px 12px 10px 14px;
+    border-radius: 20px;
   }
 
   .logo {
@@ -797,15 +815,17 @@ a {
   .nav-center {
     position: absolute;
     top: calc(100% + 10px);
-    left: 18px;
-    right: 18px;
+    left: 0;
+    right: 0;
     display: none;
     grid-template-columns: 1fr;
     gap: 6px;
     padding: 10px;
     border-color: rgba(255, 255, 255, 0.12);
-    border-radius: 18px;
-    background: rgba(8, 20, 42, 0.98);
+    border-radius: 20px;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04)),
+      rgba(8, 20, 42, 0.98);
     box-shadow: 0 26px 70px rgba(2, 6, 23, 0.34);
   }
 
