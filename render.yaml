@@ -24,6 +24,8 @@ services:
         value: 0.0.0.0
       - key: LT_PORT
         value: 5000
+      - key: LT_THREADS
+        value: 1
       - key: LT_LOAD_ONLY
         value: en,ko,bn
       - key: LT_DISABLE_FILES_TRANSLATION
