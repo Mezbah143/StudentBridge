@@ -35,7 +35,7 @@
       return normalizedPath.slice(0, lastSlash);
     }
 
-    return normalizedPath.length > 1 ? normalizedPath : "";
+    return "";
   }
 
   function getBackendBase() {
