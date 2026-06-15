@@ -221,6 +221,26 @@ textarea {
   background: #fff1f0;
 }
 
+.map-fallback-link {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: 10px;
+  color: var(--primary-dark);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.map-status .map-fallback-link {
+  margin-top: 0;
+  margin-left: 8px;
+}
+
+.map-fallback-link:hover {
+  text-decoration: underline;
+}
+
 .coordinate-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -328,6 +328,26 @@
       background: #fff1f0;
     }
 
+    .map-fallback-link {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin-top: 10px;
+      color: var(--primary-dark);
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .map-status .map-fallback-link {
+      margin-top: 0;
+      margin-left: 8px;
+    }
+
+    .map-fallback-link:hover {
+      text-decoration: underline;
+    }
+
     .map-btn {
       width: 100%;
       min-height: 42px;
@@ -850,8 +870,8 @@
   <script src="./notifications.js?v=20260609-notifications"></script>
   <script src="./messages.js?v=20260609-messages"></script>
   <script src="./script.js?v=20260616-profile"></script>
-  <script src="./map-config.js?v=20260615-demo-flow"></script>
-  <script src="./location-map.js?v=20260615-demo-flow"></script>
+  <script src="./map-config.js?v=20260616-kakao-map"></script>
+  <script src="./location-map.js?v=20260616-kakao-map"></script>
   <script>
     let jobs = [];
     let jobMapViewer = null;
@@ -1159,18 +1179,18 @@
         applyButton.dataset.jobId = job.id;
         applyButton.innerHTML = `<i class="fa-solid fa-paper-plane" aria-hidden="true"></i> ${t("jobs.applyNow")}`;
 
-        const mapButton = document.createElement("button");
-        mapButton.type = "button";
-        mapButton.className = "map-btn";
-        mapButton.dataset.mapJobId = job.id;
-        mapButton.textContent = StudentBridgeLocationMap.hasCoordinates(job.latitude, job.longitude)
-          ? t("jobs.viewMap")
-          : t("jobs.mapMissing");
-        mapButton.disabled = !StudentBridgeLocationMap.hasCoordinates(job.latitude, job.longitude);
-
         const actions = document.createElement("div");
         actions.className = "job-actions";
-        actions.append(applyButton, mapButton);
+        actions.appendChild(applyButton);
+
+        if (StudentBridgeLocationMap.hasCoordinates(job.latitude, job.longitude)) {
+          const mapButton = document.createElement("button");
+          mapButton.type = "button";
+          mapButton.className = "map-btn";
+          mapButton.dataset.mapJobId = job.id;
+          mapButton.textContent = t("jobs.viewMap");
+          actions.appendChild(mapButton);
+        }
 
         article.append(salary, title, company, meta, tags, description, actions);
 

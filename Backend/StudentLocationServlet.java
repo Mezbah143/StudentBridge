@@ -75,22 +75,12 @@ public class StudentLocationServlet extends HttpServlet {
 
         // Validation
         boolean hasAddress = !address.isEmpty();
-        boolean hasCoordinates = latitude != null && longitude != null;
         boolean hasCvLink = !cvLink.isEmpty();
 
         if (!hasAddress && !hasCvLink) {
 
             response.sendRedirect(
                     "frontend/student-profile.html?error=missing"
-            );
-
-            return;
-        }
-
-        if (hasAddress && !hasCoordinates) {
-
-            response.sendRedirect(
-                    "frontend/student-profile.html?error=mapRequired"
             );
 
             return;

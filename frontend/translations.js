@@ -24,6 +24,8 @@ window.StudentBridgeTranslations = {
       "map.addressNotFound": "Address not found. Try a more specific Korean road address.",
       "map.locationSelected": "Location found. The address will be saved with this form.",
       "map.markerMoved": "Location updated.",
+      "map.searching": "Searching for this address...",
+      "map.openInKakao": "Open address in Kakao Map",
       "map.searchOrClick": "Enter an address, then use Search Location to show it on the map.",
       "map.selectJob": "Select a job with saved coordinates to preview it on the map.",
       "map.noCoordinates": "This job does not have saved map coordinates yet.",

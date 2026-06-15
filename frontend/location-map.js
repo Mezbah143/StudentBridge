@@ -13,6 +13,8 @@
     "map.enterAddress": "Please enter a full address first.",
     "map.addressNotFound": "Address not found. Try a more specific Korean road address.",
     "map.locationSelected": "Location found. The address will be saved with this form.",
+    "map.searching": "Searching for this address...",
+    "map.openInKakao": "Open address in Kakao Map",
     "map.searchOrClick": "Enter an address, then use Search Location to show it on the map.",
     "map.selectJob": "Select a job with saved coordinates to preview it on the map.",
     "map.noCoordinates": "This job does not have saved map coordinates yet."
@@ -44,6 +46,43 @@
     element.dataset.mapStatusKey = key;
     element.textContent = t(key);
     element.className = `map-status ${type}`;
+  }
+
+  function buildKakaoSearchUrl(address) {
+    const cleanAddress = String(address || "").trim();
+
+    if (!cleanAddress) {
+      return "";
+    }
+
+    return `https://map.kakao.com/link/search/${encodeURIComponent(cleanAddress)}`;
+  }
+
+  function ensureFallbackLink(statusElement, addressInput) {
+    if (!statusElement || !addressInput) {
+      return null;
+    }
+
+    const link = document.createElement("a");
+    link.className = "map-fallback-link";
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.hidden = true;
+    link.textContent = t("map.openInKakao");
+    statusElement.insertAdjacentElement("afterend", link);
+
+    function refresh() {
+      const href = buildKakaoSearchUrl(addressInput.value);
+      link.hidden = !href;
+      link.href = href || "#";
+    }
+
+    refresh();
+
+    return {
+      element: link,
+      refresh
+    };
   }
 
   function getKakaoKey() {
@@ -141,6 +180,51 @@
       return;
     }
 
+    const fallbackLink = ensureFallbackLink(statusElement, addressInput);
+
+    function refreshFallbackLink() {
+      if (fallbackLink) {
+        fallbackLink.refresh();
+      }
+    }
+
+    function clearCoordinatesAfterAddressEdit() {
+      latitudeInput.value = "";
+      longitudeInput.value = "";
+      refreshFallbackLink();
+      setStatusKey(statusElement, "map.searchOrClick", "info");
+    }
+
+    let runAddressSearch = null;
+
+    searchButton.addEventListener("click", () => {
+      const address = addressInput.value.trim();
+      refreshFallbackLink();
+
+      if (!address) {
+        setStatusKey(statusElement, "map.enterAddress", "error");
+        addressInput.focus();
+        return;
+      }
+
+      if (!runAddressSearch) {
+        setStatusKey(statusElement, getLoadFailureMessage("picker"), "error");
+        return;
+      }
+
+      runAddressSearch(address);
+    });
+
+    addressInput.addEventListener("input", clearCoordinatesAfterAddressEdit);
+    addressInput.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") {
+        return;
+      }
+
+      event.preventDefault();
+      searchButton.click();
+    });
+
     try {
       const kakao = await loadKakaoMaps();
       const geocoder = new kakao.maps.services.Geocoder();
@@ -163,20 +247,18 @@
         map.setCenter(latlng);
         latitudeInput.value = latlng.getLat().toFixed(7);
         longitudeInput.value = latlng.getLng().toFixed(7);
+        refreshFallbackLink();
         setStatus(statusElement, message, "success");
       }
 
-      searchButton.addEventListener("click", () => {
-        const address = addressInput.value.trim();
-
-        if (!address) {
-          setStatusKey(statusElement, "map.enterAddress", "error");
-          addressInput.focus();
-          return;
-        }
+      runAddressSearch = (address) => {
+        setStatusKey(statusElement, "map.searching", "info");
 
         geocoder.addressSearch(address, (result, status) => {
           if (status !== kakao.maps.services.Status.OK || result.length === 0) {
+            latitudeInput.value = "";
+            longitudeInput.value = "";
+            refreshFallbackLink();
             setStatusKey(statusElement, "map.addressNotFound", "error");
             return;
           }
@@ -187,11 +269,12 @@
             statusElement.dataset.mapStatusKey = "map.locationSelected";
           }
         });
-      });
+      };
 
       setStatusKey(statusElement, "map.searchOrClick", "info");
     } catch (error) {
       console.warn("StudentBridge map setup failed:", error);
+      refreshFallbackLink();
       setStatusKey(statusElement, getLoadFailureMessage("picker"), "error");
     }
   }
@@ -233,7 +316,19 @@
           map.setCenter(position);
           infoWindow.setContent(`<div style="padding:8px 10px;font-weight:700;">${escapeHtml(job.title)}</div>`);
           infoWindow.open(map, marker);
-          setStatus(statusElement, job.address || `${job.location} · ${job.company}`, "success");
+          const address = job.address || `${job.location} · ${job.company}`;
+          setStatus(statusElement, address, "success");
+
+          if (statusElement && job.address) {
+            const link = document.createElement("a");
+            link.className = "map-fallback-link";
+            link.href = buildKakaoSearchUrl(job.address);
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = t("map.openInKakao");
+            statusElement.append(" ");
+            statusElement.appendChild(link);
+          }
         }
       };
     } catch (error) {
