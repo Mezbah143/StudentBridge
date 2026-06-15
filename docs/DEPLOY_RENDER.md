@@ -13,6 +13,8 @@ Render does not provision MySQL from `render.yaml`, so use an external MySQL dat
 
 ```sql
 docs/database_update_auth.sql
+docs/database_jobs.sql
+docs/database_final_demo_flow.sql
 ```
 
 For jobs, apply only the schema and ALTER statements from `docs/database_jobs.sql` in production. Do not run the sample `INSERT INTO jobs` rows against Railway unless you intentionally want duplicate demo listings.
@@ -60,4 +62,7 @@ After deploy finishes, open the Render URL and test:
 1. Homepage loads at `/`.
 2. Job search page loads at `/frontend/jobsearch.html`.
 3. Register submits without a database connection error.
-4. Login works for a registered test user.
+4. Employer can post a job with an address.
+5. Student can apply once and sees the duplicate-application message on the second try.
+6. Employer can view the applicant and send a message.
+7. Student can open Messages and see the employer message.

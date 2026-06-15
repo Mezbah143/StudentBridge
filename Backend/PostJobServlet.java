@@ -80,6 +80,7 @@ public class PostJobServlet extends HttpServlet {
         String employerEmail = clean(
                 (String) session.getAttribute("userEmail")
         );
+        int employerId = parseSessionInt(session.getAttribute("userId"));
 
         // Required field validation
         if (title.isEmpty()
@@ -120,6 +121,7 @@ public class PostJobServlet extends HttpServlet {
                     type,
                     salary,
                     description,
+                    employerId,
                     employerEmail,
                     workingHours,
                     requirements,
@@ -156,6 +158,7 @@ public class PostJobServlet extends HttpServlet {
             String type,
             String salary,
             String description,
+            int employerId,
             String employerEmail,
             String workingHours,
             String requirements,
@@ -172,10 +175,10 @@ public class PostJobServlet extends HttpServlet {
         String extendedSql =
                 "INSERT INTO jobs " +
                 "(title, company, location, category, type, salary, " +
-                "description, employer_email, working_hours, requirements, " +
+                "description, employer_id, employer_email, working_hours, requirements, " +
                 "contact_email, contact_phone, company_details, application_deadline, " +
                 "logo_url, address, latitude, longitude) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps =
                      con.prepareStatement(extendedSql)) {
@@ -188,19 +191,24 @@ public class PostJobServlet extends HttpServlet {
             ps.setString(6, salary);
             ps.setString(7, description);
 
-            ps.setString(8, employerEmail);
-            ps.setString(9, workingHours);
-            ps.setString(10, requirements);
-            ps.setString(11, contactEmail);
-            ps.setString(12, contactPhone);
-            ps.setString(13, companyDetails);
-            ps.setString(14, applicationDeadline.isEmpty() ? null : applicationDeadline);
-            ps.setString(15, logoUrl);
+            if (employerId > 0) {
+                ps.setInt(8, employerId);
+            } else {
+                ps.setNull(8, Types.INTEGER);
+            }
+            ps.setString(9, employerEmail);
+            ps.setString(10, workingHours);
+            ps.setString(11, requirements);
+            ps.setString(12, contactEmail);
+            ps.setString(13, contactPhone);
+            ps.setString(14, companyDetails);
+            ps.setString(15, applicationDeadline.isEmpty() ? null : applicationDeadline);
+            ps.setString(16, logoUrl);
 
-            ps.setString(16, address);
+            ps.setString(17, address);
 
-            setNullableDecimal(ps, 17, latitude);
-            setNullableDecimal(ps, 18, longitude);
+            setNullableDecimal(ps, 18, latitude);
+            setNullableDecimal(ps, 19, longitude);
 
             ps.executeUpdate();
 
@@ -242,6 +250,7 @@ public class PostJobServlet extends HttpServlet {
                 : e.getMessage().toLowerCase();
 
         return "42S22".equals(e.getSQLState())
+                || message.contains("employer_id")
                 || message.contains("employer_email")
                 || message.contains("working_hours")
                 || message.contains("requirements")
@@ -277,6 +286,18 @@ public class PostJobServlet extends HttpServlet {
         } catch (NumberFormatException e) {
 
             return null;
+        }
+    }
+
+    private int parseSessionInt(Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+
+        try {
+            return Integer.parseInt(clean(value == null ? "" : String.valueOf(value)));
+        } catch (NumberFormatException e) {
+            return -1;
         }
     }
 

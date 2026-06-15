@@ -1,8 +1,9 @@
 const AUTH_STORAGE_KEY = "studentBridgeAuth";
 
 const App = {
-	  init() {
-	    this.navbar = document.querySelector(".navbar");
+  init() {
+    this.navbar = document.querySelector(".navbar");
+    this.ensureSharedNavbar();
     this.navToggle = document.querySelector("[data-nav-toggle]");
     this.primaryNav = document.querySelector("[data-primary-nav]");
     this.guestActions = document.querySelector("[data-guest-actions]");
@@ -20,15 +21,98 @@ const App = {
     this.languageMenu = document.getElementById("languageMenu");
     this.languageWrapper = document.querySelector(".language-wrapper");
 
-	    const redirectParams = new URLSearchParams(window.location.search);
-	    this.hasRecentLoginRedirect = redirectParams.get("login") === "success";
+    const redirectParams = new URLSearchParams(window.location.search);
+    this.hasRecentLoginRedirect = redirectParams.get("login") === "success";
 
-	    this.setAuthState("checking");
-	    this.cleanAuthRedirectParams();
-	    this.loadSessionAuthState();
-	    this.initAnimations();
-	    this.bindEvents();
-	  },
+    this.setAuthState("checking");
+    this.cleanAuthRedirectParams();
+    this.loadSessionAuthState();
+    this.initAnimations();
+    this.bindEvents();
+  },
+
+  ensureSharedNavbar() {
+    if (!this.navbar) {
+      return;
+    }
+
+    const isFrontendPage = window.location.pathname.includes("/frontend/");
+    const frontendPrefix = isFrontendPage ? "./" : "./frontend/";
+    const homeHref = isFrontendPage ? "../index.html" : "./index.html";
+    const nav = this.navbar.querySelector(".nav-links, .nav-center");
+
+    if (nav) {
+      nav.querySelectorAll('a[href$="login.html"], a[href$="register.html"]').forEach((link) => {
+        link.remove();
+      });
+    }
+
+    let navRight = this.navbar.querySelector(".nav-right");
+
+    if (!navRight) {
+      navRight = document.createElement("div");
+      navRight.className = "nav-right";
+      navRight.setAttribute("aria-label", "Account actions");
+
+      ["[data-language-switcher]", "[data-message-root]", "[data-notification-root]"].forEach((selector) => {
+        const element = this.navbar.querySelector(selector);
+
+        if (element) {
+          navRight.appendChild(element);
+        }
+      });
+
+      this.navbar.appendChild(navRight);
+    }
+
+    if (!navRight.querySelector("[data-guest-actions]")) {
+      const guestActions = document.createElement("div");
+      guestActions.className = "guest-actions";
+      guestActions.dataset.guestActions = "";
+      guestActions.innerHTML = `
+        <a href="${frontendPrefix}login.html" class="btn btn-outline" data-i18n="nav.login">Login</a>
+        <a href="${frontendPrefix}register.html" class="btn btn-primary" data-i18n="nav.register">Register</a>
+      `;
+      navRight.appendChild(guestActions);
+    }
+
+    if (!navRight.querySelector("[data-user-menu]")) {
+      const userMenu = document.createElement("div");
+      userMenu.className = "user-menu";
+      userMenu.dataset.userMenu = "";
+      userMenu.hidden = true;
+      userMenu.innerHTML = `
+        <button type="button" class="user-menu-trigger" data-user-menu-trigger aria-haspopup="true" aria-expanded="false">
+          <span class="user-icon" aria-hidden="true"><i class="fa-solid fa-user"></i></span>
+          <span class="sr-only" data-user-label>Account menu</span>
+          <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+        </button>
+        <div class="user-dropdown" data-user-dropdown hidden>
+          <p class="dropdown-user" data-user-name>Account</p>
+          <a href="${frontendPrefix}employer-dashboard.html" data-employer-link><i class="fa-solid fa-table-columns" aria-hidden="true"></i> <span data-i18n="user.dashboard">Dashboard</span></a>
+          <a href="${frontendPrefix}messages.html"><i class="fa-solid fa-message" aria-hidden="true"></i> <span data-i18n="messages.label">Messages</span></a>
+          <a href="${frontendPrefix}post-job.html" data-employer-link><i class="fa-solid fa-plus" aria-hidden="true"></i> <span data-i18n="user.postJob">Post Job</span></a>
+          <a href="${frontendPrefix}student-profile.html" data-student-link><i class="fa-solid fa-id-card" aria-hidden="true"></i> <span data-i18n="user.studentAddress">Student Profile</span></a>
+          <button type="button" data-logout-button><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> <span data-i18n="user.logout">Logout</span></button>
+        </div>
+      `;
+      navRight.appendChild(userMenu);
+    }
+
+    this.navbar.querySelectorAll('a[href*="employer-dashboard.html"], a[href*="post-job.html"]').forEach((link) => {
+      link.dataset.employerLink = "";
+    });
+
+    this.navbar.querySelectorAll('a[href*="student-profile.html"]').forEach((link) => {
+      link.dataset.studentLink = "";
+    });
+
+    const logo = this.navbar.querySelector(".logo");
+
+    if (logo && !logo.getAttribute("href")) {
+      logo.href = homeHref;
+    }
+  },
 
   bindEvents() {
     window.addEventListener("scroll", () => this.handleScroll());
@@ -215,8 +299,8 @@ const App = {
     }
 
     if (this.userMailLink) {
-      this.userMailLink.hidden = !auth.email;
-      this.userMailLink.href = auth.email ? `mailto:${auth.email}` : "#";
+      this.userMailLink.hidden = true;
+      this.userMailLink.href = "#";
     }
 
     if (this.userDropdown) {
