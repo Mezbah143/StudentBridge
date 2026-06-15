@@ -73,7 +73,7 @@ public class LoginServlet extends HttpServlet {
                         // Session timeout (30 minutes)
                         session.setMaxInactiveInterval(30 * 60);
 
-                        resp.sendRedirect(req.getContextPath() + "/index.html?login=success");
+                        resp.sendRedirect(getLoginSuccessRedirect(req, accountType));
 
                     } else {
 
@@ -104,6 +104,17 @@ public class LoginServlet extends HttpServlet {
 
         resp.sendRedirect(req.getContextPath()
                 + "/frontend/login.html?error=" + error);
+    }
+
+    private String getLoginSuccessRedirect(HttpServletRequest req,
+                                           String accountType) {
+        String base = req.getContextPath() + "/frontend/";
+
+        if ("Employer".equalsIgnoreCase(accountType)) {
+            return base + "employer-dashboard.html?login=success";
+        }
+
+        return base + "jobsearch.html?login=success";
     }
 
     private String getAccountType(ResultSet rs) {

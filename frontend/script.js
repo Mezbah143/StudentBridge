@@ -15,6 +15,7 @@ const App = {
     this.userMailLink = document.querySelector("[data-user-mail]");
     this.employerLinks = document.querySelectorAll("[data-employer-link]");
     this.studentLinks = document.querySelectorAll("[data-student-link]");
+    this.mobileAuthLinks = document.querySelectorAll(".mobile-auth-link");
 
     this.logoutButton = document.querySelector("[data-logout-button]");
     this.languageButton = document.getElementById("languageButton");
@@ -229,25 +230,36 @@ const App = {
         throw new Error("Unable to read authentication session.");
       }
 
-	      let auth = await response.json();
+      let auth = await response.json();
 
-	      if ((!auth || !auth.loggedIn) && this.hasRecentLoginRedirect) {
-	        await new Promise((resolve) => setTimeout(resolve, 500));
-	        const retryResponse = await fetch(StudentBridgePlatform.toBackendUrl("AuthStatusServlet"), {
-	          credentials: "same-origin",
-	          cache: "no-store"
-	        });
+      if ((!auth || !auth.loggedIn) && this.hasRecentLoginRedirect) {
+        auth = await this.retrySessionAuthState(auth);
+      }
 
-	        if (retryResponse.ok) {
-	          auth = await retryResponse.json();
-	        }
-	      }
-
-	      this.renderAuthState(auth);
-	    } catch (error) {
-	      console.error(error);
+      this.renderAuthState(auth);
+    } catch (error) {
+      console.error(error);
       this.renderLoggedOutState();
     }
+  },
+
+  async retrySessionAuthState(currentAuth) {
+    let auth = currentAuth;
+
+    for (let attempt = 0; attempt < 4 && (!auth || !auth.loggedIn); attempt += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 350 * (attempt + 1)));
+
+      const retryResponse = await fetch(StudentBridgePlatform.toBackendUrl("AuthStatusServlet"), {
+        credentials: "same-origin",
+        cache: "no-store"
+      });
+
+      if (retryResponse.ok) {
+        auth = await retryResponse.json();
+      }
+    }
+
+    return auth;
   },
 
 	  renderLoggedOutState() {
@@ -262,6 +274,11 @@ const App = {
     this.userMenu.hidden = true;
     this.userMenu.style.display = "none";
     this.closeUserMenu();
+
+    this.mobileAuthLinks.forEach((link) => {
+      link.hidden = false;
+      link.style.display = "";
+    });
 
     if (this.userMailLink) {
       this.userMailLink.href = "#";
@@ -284,6 +301,12 @@ const App = {
     this.guestActions.style.display = "none";
     this.userMenu.hidden = false;
     this.userMenu.style.display = "";
+    this.closeMobileNav();
+
+    this.mobileAuthLinks.forEach((link) => {
+      link.hidden = true;
+      link.style.display = "none";
+    });
 
     this.userNameElements.forEach((element) => {
       element.textContent = displayName;

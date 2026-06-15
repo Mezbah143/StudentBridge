@@ -131,9 +131,7 @@ public class RegisterServlet extends HttpServlet {
             session.setAttribute("accountType", accountType);
             session.setMaxInactiveInterval(30 * 60);
 
-            response.sendRedirect(
-                    request.getContextPath() + "/index.html?login=success&registered=1"
-            );
+            response.sendRedirect(getRegistrationSuccessRedirect(request, accountType));
 
         } catch (Exception e) {
 
@@ -143,6 +141,17 @@ public class RegisterServlet extends HttpServlet {
                     "frontend/register.html?error=server"
             );
         }
+    }
+
+    private String getRegistrationSuccessRedirect(HttpServletRequest request,
+                                                  String accountType) {
+        String base = request.getContextPath() + "/frontend/";
+
+        if ("Employer".equalsIgnoreCase(accountType)) {
+            return base + "employer-dashboard.html?login=success&registered=1";
+        }
+
+        return base + "jobsearch.html?login=success&registered=1";
     }
 
     private int insertUser(
