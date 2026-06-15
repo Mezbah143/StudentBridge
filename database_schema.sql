@@ -132,3 +132,27 @@ CREATE TABLE IF NOT EXISTS messages (
   INDEX idx_messages_conversation (conversation_id, created_at),
   INDEX idx_messages_unread (conversation_id, sender_email, read_at)
 );
+
+CREATE TABLE IF NOT EXISTS profile_documents (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_email VARCHAR(255) NOT NULL,
+  account_type VARCHAR(20) NOT NULL,
+  document_type VARCHAR(60) NOT NULL,
+  file_name VARCHAR(255) NOT NULL,
+  content_type VARCHAR(120) NOT NULL,
+  file_size BIGINT NOT NULL,
+  file_data LONGBLOB NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_profile_documents_user (user_email, account_type),
+  INDEX idx_profile_documents_type (document_type)
+);
+
+CREATE TABLE IF NOT EXISTS saved_jobs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  student_email VARCHAR(255) NOT NULL,
+  job_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY unique_saved_job (student_email, job_id),
+  INDEX idx_saved_jobs_student (student_email),
+  INDEX idx_saved_jobs_job (job_id)
+);

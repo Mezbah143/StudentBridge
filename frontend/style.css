@@ -284,6 +284,15 @@ a {
   font: inherit;
   font-weight: 800;
   cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.user-menu-trigger:hover,
+.user-menu-trigger:focus-visible {
+  border-color: rgba(96, 165, 250, 0.66);
+  background: rgba(255, 255, 255, 0.16);
+  transform: translateY(-1px);
 }
 
 .user-icon {
@@ -294,6 +303,31 @@ a {
   border-radius: 50%;
   color: #ffffff;
   background: linear-gradient(135deg, var(--secondary), var(--primary));
+}
+
+.user-chip-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  line-height: 1.1;
+  text-align: left;
+}
+
+.user-chip-kicker {
+  color: #bfdbfe;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.user-chip-copy strong {
+  max-width: 130px;
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .user-dropdown {
@@ -891,6 +925,10 @@ a {
   .user-menu-trigger {
     min-height: 40px;
     padding: 5px;
+  }
+
+  .user-chip-copy {
+    display: none;
   }
 
   .user-menu-trigger > .fa-chevron-down {

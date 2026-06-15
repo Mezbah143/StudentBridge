@@ -108,13 +108,7 @@ public class LoginServlet extends HttpServlet {
 
     private String getLoginSuccessRedirect(HttpServletRequest req,
                                            String accountType) {
-        String base = req.getContextPath() + "/frontend/";
-
-        if ("Employer".equalsIgnoreCase(accountType)) {
-            return base + "employer-dashboard.html?login=success";
-        }
-
-        return base + "jobsearch.html?login=success";
+        return req.getContextPath() + "/frontend/profile.html?login=success";
     }
 
     private String getAccountType(ResultSet rs) {

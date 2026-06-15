@@ -145,13 +145,7 @@ public class RegisterServlet extends HttpServlet {
 
     private String getRegistrationSuccessRedirect(HttpServletRequest request,
                                                   String accountType) {
-        String base = request.getContextPath() + "/frontend/";
-
-        if ("Employer".equalsIgnoreCase(accountType)) {
-            return base + "employer-dashboard.html?login=success&registered=1";
-        }
-
-        return base + "jobsearch.html?login=success&registered=1";
+        return request.getContextPath() + "/frontend/profile.html?login=success&registered=1";
     }
 
     private int insertUser(

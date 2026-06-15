@@ -62,6 +62,50 @@ public final class DatabaseSchemaManager {
         ensureIndex(con, "employer_profiles", "idx_employer_profiles_user_email", "user_email");
     }
 
+    public static void ensureProfileFeatureTables(Connection con) throws SQLException {
+        ensureStudentProfilesTable(con);
+        ensureEmployerProfilesTable(con);
+        ensureJobsTable(con);
+        ensureApplicationsTable(con);
+        ensureMessagingTables(con);
+
+        try (Statement statement = con.createStatement()) {
+            statement.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS profile_documents (" +
+                            "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                            "user_email VARCHAR(255) NOT NULL, " +
+                            "account_type VARCHAR(20) NOT NULL, " +
+                            "document_type VARCHAR(60) NOT NULL, " +
+                            "file_name VARCHAR(255) NOT NULL, " +
+                            "content_type VARCHAR(120) NOT NULL, " +
+                            "file_size BIGINT NOT NULL, " +
+                            "file_data LONGBLOB NOT NULL, " +
+                            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                            "INDEX idx_profile_documents_user (user_email, account_type), " +
+                            "INDEX idx_profile_documents_type (document_type)" +
+                            ")"
+            );
+
+            statement.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS saved_jobs (" +
+                            "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                            "student_email VARCHAR(255) NOT NULL, " +
+                            "job_id INT NOT NULL, " +
+                            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                            "UNIQUE KEY unique_saved_job (student_email, job_id), " +
+                            "INDEX idx_saved_jobs_student (student_email), " +
+                            "INDEX idx_saved_jobs_job (job_id)" +
+                            ")"
+            );
+        }
+
+        ensureIndex(con, "profile_documents", "idx_profile_documents_user",
+                "user_email, account_type");
+        ensureIndex(con, "profile_documents", "idx_profile_documents_type", "document_type");
+        ensureIndex(con, "saved_jobs", "idx_saved_jobs_student", "student_email");
+        ensureIndex(con, "saved_jobs", "idx_saved_jobs_job", "job_id");
+    }
+
     public static void ensureJobsTable(Connection con) throws SQLException {
         try (Statement statement = con.createStatement()) {
             statement.executeUpdate(

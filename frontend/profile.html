@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="StudentBridge profile dashboard for students and employers.">
+  <title>Profile | StudentBridge</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="./style.css?v=20260616-profile">
+  <link rel="stylesheet" href="./notifications.css?v=20260609-notifications">
+  <link rel="stylesheet" href="./messages.css?v=20260609-messages">
+  <link rel="stylesheet" href="./navbar-auth.css?v=20260616-profile">
+  <link rel="stylesheet" href="./profile.css?v=20260616-profile">
+</head>
+<body data-auth-state="checking">
+  <header class="navbar">
+    <a class="logo" href="../index.html" aria-label="StudentBridge home">
+      <span class="logo-mark" aria-hidden="true"><i class="fa-solid fa-bridge"></i></span>
+      <span>StudentBridge</span>
+    </a>
+
+    <button type="button" class="nav-toggle" data-nav-toggle aria-label="Open menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav class="nav-center" aria-label="Primary navigation" data-primary-nav>
+      <a href="../index.html">Home</a>
+      <a href="./jobsearch.html">Jobs</a>
+      <a href="./profile.html" aria-current="page">Profile</a>
+      <a href="./login.html" class="mobile-auth-link">Login</a>
+      <a href="./register.html" class="mobile-auth-link">Register</a>
+    </nav>
+
+    <div class="nav-right" aria-label="Account actions">
+      <div data-language-switcher></div>
+      <div data-message-root hidden></div>
+      <div data-notification-root hidden></div>
+      <div class="guest-actions" data-guest-actions>
+        <a href="./login.html" class="btn btn-outline">Login</a>
+        <a href="./register.html" class="btn btn-primary">Register</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="profile-shell">
+    <p class="profile-message" data-profile-message role="status" aria-live="polite"></p>
+
+    <section class="profile-hero-card" aria-labelledby="profileName">
+      <div class="profile-avatar" aria-hidden="true">
+        <i class="fa-solid fa-user"></i>
+      </div>
+
+      <div class="profile-identity">
+        <p class="profile-eyebrow" data-profile-role>Dashboard</p>
+        <h1 id="profileName" data-profile-name>Loading profile...</h1>
+        <p data-profile-subtitle>StudentBridge account</p>
+
+        <div class="profile-contact-grid">
+          <span><i class="fa-solid fa-envelope" aria-hidden="true"></i> <strong>Email</strong> <span data-profile-email>-</span></span>
+          <span><i class="fa-solid fa-phone" aria-hidden="true"></i> <strong>Phone</strong> <span data-profile-phone>-</span></span>
+          <span><i class="fa-solid fa-location-dot" aria-hidden="true"></i> <strong>Address</strong> <span data-profile-address>-</span></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="profile-stats" aria-label="Quick stats">
+      <article>
+        <span class="profile-stat-icon"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i></span>
+        <strong data-stat-primary>0</strong>
+        <p data-stat-primary-label>Applied Jobs</p>
+      </article>
+      <article>
+        <span class="profile-stat-icon"><i class="fa-solid fa-bookmark" aria-hidden="true"></i></span>
+        <strong data-stat-secondary>0</strong>
+        <p data-stat-secondary-label>Saved Jobs</p>
+      </article>
+      <article>
+        <span class="profile-stat-icon"><i class="fa-solid fa-comments" aria-hidden="true"></i></span>
+        <strong data-stat-messages>0</strong>
+        <p>Messages</p>
+      </article>
+    </section>
+
+    <section class="profile-grid">
+      <article class="profile-panel">
+        <div class="profile-panel-heading">
+          <div>
+            <p class="profile-eyebrow">My Documents</p>
+            <h2>Upload important files</h2>
+          </div>
+          <span class="profile-pill">Max 5 MB each</span>
+        </div>
+
+        <div class="document-list" data-document-list>
+          <p class="document-empty">No documents uploaded yet.</p>
+        </div>
+
+        <form class="document-upload-form" data-document-form>
+          <label for="documentType">Document type</label>
+          <select id="documentType" name="documentType" data-document-type required></select>
+
+          <label for="documentFile">Choose file</label>
+          <input id="documentFile" name="documentFile" type="file" data-document-file required>
+
+          <button type="submit" class="profile-primary-action">
+            <i class="fa-solid fa-upload" aria-hidden="true"></i>
+            <span>Upload Document</span>
+          </button>
+        </form>
+      </article>
+
+      <article class="profile-panel">
+        <div class="profile-panel-heading">
+          <div>
+            <p class="profile-eyebrow">Quick Actions</p>
+            <h2>Go where you need</h2>
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <a href="./student-profile.html" data-action-edit>
+            <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+            <span>Edit Profile</span>
+          </a>
+          <a href="./jobsearch.html" data-action-primary>
+            <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+            <span>My Applications</span>
+          </a>
+          <a href="./jobsearch.html" data-action-secondary>
+            <i class="fa-solid fa-bookmark" aria-hidden="true"></i>
+            <span>Saved Jobs</span>
+          </a>
+          <a href="./messages.html">
+            <i class="fa-solid fa-message" aria-hidden="true"></i>
+            <span>Messages</span>
+          </a>
+          <button type="button" data-logout-button>
+            <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script src="./runtime-config.js"></script>
+  <script src="./platform.js"></script>
+  <script src="./translations.js"></script>
+  <script src="./i18n.js?v=20260609-navbar-fix"></script>
+  <script src="./notifications.js?v=20260609-notifications"></script>
+  <script src="./messages.js?v=20260609-messages"></script>
+  <script src="./script.js?v=20260616-profile"></script>
+  <script src="./profile.js?v=20260616-profile"></script>
+</body>
+</html>

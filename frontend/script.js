@@ -77,28 +77,22 @@ const App = {
       navRight.appendChild(guestActions);
     }
 
-    if (!navRight.querySelector("[data-user-menu]")) {
-      const userMenu = document.createElement("div");
-      userMenu.className = "user-menu";
-      userMenu.dataset.userMenu = "";
-      userMenu.hidden = true;
-      userMenu.innerHTML = `
-        <button type="button" class="user-menu-trigger" data-user-menu-trigger aria-haspopup="true" aria-expanded="false">
-          <span class="user-icon" aria-hidden="true"><i class="fa-solid fa-user"></i></span>
-          <span class="sr-only" data-user-label>Account menu</span>
-          <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
-        </button>
-        <div class="user-dropdown" data-user-dropdown hidden>
-          <p class="dropdown-user" data-user-name>Account</p>
-          <a href="${frontendPrefix}employer-dashboard.html" data-employer-link><i class="fa-solid fa-table-columns" aria-hidden="true"></i> <span data-i18n="user.dashboard">Dashboard</span></a>
-          <a href="${frontendPrefix}messages.html"><i class="fa-solid fa-message" aria-hidden="true"></i> <span data-i18n="messages.label">Messages</span></a>
-          <a href="${frontendPrefix}post-job.html" data-employer-link><i class="fa-solid fa-plus" aria-hidden="true"></i> <span data-i18n="user.postJob">Post Job</span></a>
-          <a href="${frontendPrefix}student-profile.html" data-student-link><i class="fa-solid fa-id-card" aria-hidden="true"></i> <span data-i18n="user.studentAddress">Student Profile</span></a>
-          <button type="button" data-logout-button><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> <span data-i18n="user.logout">Logout</span></button>
-        </div>
-      `;
-      navRight.appendChild(userMenu);
-    }
+    navRight.querySelectorAll("[data-user-menu]").forEach((menu) => menu.remove());
+
+    const userMenu = document.createElement("div");
+    userMenu.className = "user-menu";
+    userMenu.dataset.userMenu = "";
+    userMenu.hidden = true;
+    userMenu.innerHTML = `
+      <a class="user-menu-trigger profile-chip" href="${frontendPrefix}profile.html" data-user-menu-trigger>
+        <span class="user-icon" aria-hidden="true"><i class="fa-solid fa-user"></i></span>
+        <span class="user-chip-copy">
+          <span class="user-chip-kicker">Dashboard</span>
+          <strong data-user-name>Profile</strong>
+        </span>
+      </a>
+    `;
+    navRight.appendChild(userMenu);
 
     this.navbar.querySelectorAll('a[href*="employer-dashboard.html"], a[href*="post-job.html"]').forEach((link) => {
       link.dataset.employerLink = "";
@@ -132,7 +126,7 @@ const App = {
     }
 
     if (this.userMenuTrigger) {
-      this.userMenuTrigger.addEventListener("click", () => this.toggleUserMenu());
+      this.userMenuTrigger.addEventListener("click", () => this.closeMobileNav());
     }
 
     if (this.logoutButton) {
@@ -166,10 +160,6 @@ const App = {
           && this.navToggle
           && !this.navbar.contains(event.target)) {
         this.closeMobileNav();
-      }
-
-      if (this.userMenu && !this.userMenu.contains(event.target)) {
-        this.closeUserMenu();
       }
 
       if (this.languageMenu
@@ -313,12 +303,12 @@ const App = {
     });
 
     if (this.userMenuTrigger) {
-      this.userMenuTrigger.setAttribute("aria-label", `Profile menu for ${displayName}`);
-      this.userMenuTrigger.title = "Profile menu";
+      this.userMenuTrigger.setAttribute("aria-label", `Open profile dashboard for ${displayName}`);
+      this.userMenuTrigger.title = "Open profile dashboard";
     }
 
     if (this.userLabel) {
-      this.userLabel.textContent = `Profile menu for ${displayName}`;
+      this.userLabel.textContent = `Open profile dashboard for ${displayName}`;
     }
 
     if (this.userMailLink) {
