@@ -9,4 +9,5 @@
 // - your GitHub Pages preview URL, if you use maps there
 // Use the JavaScript key only. Never put REST or Admin keys in frontend files.
 
-window.STUDENTBRIDGE_KAKAO_MAP_KEY = "76075bd76d0f43c4a071cbafbebf07c8";
+window.STUDENTBRIDGE_KAKAO_MAP_KEY = window.STUDENTBRIDGE_KAKAO_MAP_KEY
+  || "76075bd76d0f43c4a071cbafbebf07c8";

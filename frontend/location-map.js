@@ -101,6 +101,17 @@
     return "map.loadFailed";
   }
 
+  function getLoadFailureText(kind) {
+    const key = getLoadFailureMessage(kind);
+    const baseMessage = t(key);
+
+    if (key !== "map.loadFailed") {
+      return baseMessage;
+    }
+
+    return `${baseMessage} Current domain: ${window.location.origin}`;
+  }
+
   function loadKakaoMaps() {
     if (window.kakao && window.kakao.maps && window.kakao.maps.Map) {
       return Promise.resolve(window.kakao);
@@ -208,7 +219,7 @@
       }
 
       if (!runAddressSearch) {
-        setStatusKey(statusElement, getLoadFailureMessage("picker"), "error");
+        setStatus(statusElement, getLoadFailureText("picker"), "error");
         return;
       }
 
@@ -275,7 +286,7 @@
     } catch (error) {
       console.warn("StudentBridge map setup failed:", error);
       refreshFallbackLink();
-      setStatusKey(statusElement, getLoadFailureMessage("picker"), "error");
+      setStatus(statusElement, getLoadFailureText("picker"), "error");
     }
   }
 
@@ -333,7 +344,7 @@
       };
     } catch (error) {
       console.warn("StudentBridge job map setup failed:", error);
-      setStatusKey(statusElement, getLoadFailureMessage("viewer"), "error");
+      setStatus(statusElement, getLoadFailureText("viewer"), "error");
       return null;
     }
   }
