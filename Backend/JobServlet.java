@@ -23,7 +23,7 @@ public class JobServlet extends HttpServlet {
 
         try (Connection con = DBConnection.getConnection()) {
             if (con == null) {
-                sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database connection failed.");
+                writeEmptyJobsJson(response);
                 return;
             }
 
@@ -48,6 +48,10 @@ public class JobServlet extends HttpServlet {
     private void sendError(HttpServletResponse response, int statusCode, String message) throws IOException {
         response.setStatus(statusCode);
         response.getWriter().write("{\"error\":\"" + escapeJson(message) + "\"}");
+    }
+
+    private void writeEmptyJobsJson(HttpServletResponse response) throws IOException {
+        response.getWriter().write("[]");
     }
 
     private void writeJobsJson(Connection con, HttpServletResponse response, boolean includeMapColumns, String language)

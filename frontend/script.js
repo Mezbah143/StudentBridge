@@ -331,9 +331,18 @@ const App = {
 	  },
 
 	  setAuthState(state) {
-	    if (document.body) {
-	      document.body.dataset.authState = state;
+	    if (!document.body) {
+	      return;
 	    }
+
+      const previousState = document.body.dataset.authState;
+      document.body.dataset.authState = state;
+
+      if (previousState !== state) {
+        window.dispatchEvent(new CustomEvent("studentbridge:authchange", {
+          detail: { state }
+        }));
+      }
 	  },
 
   toggleUserMenu() {

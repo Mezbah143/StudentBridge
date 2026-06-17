@@ -45,8 +45,29 @@
     return window.StudentBridgePlatform && StudentBridgePlatform.canReachBackend();
   }
 
+  function isAuthenticatedSession() {
+    return document.body && document.body.dataset.authState === "user";
+  }
+
   function backendUrl(path) {
     return StudentBridgePlatform.toBackendUrl(path);
+  }
+
+  async function getSessionAuth() {
+    if (!canReachBackend()) {
+      return { loggedIn: false };
+    }
+
+    const response = await fetch(backendUrl("AuthStatusServlet"), {
+      credentials: "include",
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      return { loggedIn: false };
+    }
+
+    return response.json();
   }
 
   function frontendUrl(path) {
@@ -233,7 +254,12 @@
     });
 
     controllers.push(controller);
-    refreshController(controller);
+    root.hidden = true;
+
+    if (isAuthenticatedSession()) {
+      refreshController(controller);
+    }
+
     controller.intervalId = window.setInterval(
       () => refreshController(controller),
       REFRESH_INTERVAL_MS
@@ -259,6 +285,12 @@
   }
 
   async function fetchConversations() {
+    const auth = await getSessionAuth();
+
+    if (!auth.loggedIn) {
+      return { loggedIn: false, unreadCount: 0, conversations: [] };
+    }
+
     const response = await fetch(backendUrl("MessageServlet"), {
       credentials: "include",
       cache: "no-store"
@@ -276,7 +308,7 @@
   }
 
   async function refreshController(controller) {
-    if (!canReachBackend()) {
+    if (!canReachBackend() || !isAuthenticatedSession()) {
       controller.root.hidden = true;
       return;
     }
@@ -620,6 +652,13 @@
       }
 
       try {
+        const auth = await getSessionAuth();
+
+        if (!auth.loggedIn) {
+          window.location.href = frontendUrl("login.html?error=loginRequired&source=dashboard");
+          return;
+        }
+
         const response = await fetch(backendUrl("EmployerApplicationsServlet"), {
           credentials: "include",
           cache: "no-store"
@@ -740,6 +779,7 @@
     controllers.forEach(renderRoot);
   });
   window.addEventListener("studentbridge:messages:refresh", refreshAll);
+  window.addEventListener("studentbridge:authchange", refreshAll);
   window.StudentBridgeMessages = { refresh: refreshAll };
 
   if (document.readyState === "loading") {

@@ -25,6 +25,10 @@
     return window.StudentBridgePlatform && StudentBridgePlatform.canReachBackend();
   }
 
+  function isAuthenticatedSession() {
+    return document.body && document.body.dataset.authState === "user";
+  }
+
   function backendUrl(path) {
     return StudentBridgePlatform.toBackendUrl(path);
   }
@@ -162,7 +166,12 @@
     });
 
     controllers.push(controller);
-    refreshController(controller);
+    root.hidden = true;
+
+    if (isAuthenticatedSession()) {
+      refreshController(controller);
+    }
+
     controller.intervalId = window.setInterval(
       () => refreshController(controller),
       REFRESH_INTERVAL_MS
@@ -188,7 +197,7 @@
   }
 
   async function refreshController(controller) {
-    if (!canReachBackend()) {
+    if (!canReachBackend() || !isAuthenticatedSession()) {
       controller.root.hidden = true;
       return;
     }
@@ -370,6 +379,7 @@
     controllers.forEach(render);
   });
   window.addEventListener("studentbridge:notifications:refresh", refreshAll);
+  window.addEventListener("studentbridge:authchange", refreshAll);
   window.StudentBridgeNotifications = { refresh: refreshAll };
 
   if (document.readyState === "loading") {

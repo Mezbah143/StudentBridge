@@ -9,18 +9,20 @@ The current implementation uses a static HTML/CSS/JavaScript frontend, Java Serv
 | Area | Status | Notes |
 |---|---|---|
 | Homepage | Working | `index.html` presents the product, navigation, and calls to action. |
-| Job search UI | Working as frontend demo | `frontend/jobsearch.html` filters seeded in-browser job data. |
-| Registration | Partially working | `RegisterServlet` inserts users into MySQL when Tomcat and the database are configured. |
-| Login | Partially working | `LoginServlet` checks MySQL credentials and creates a servlet session. |
-| Job application | Not connected yet | The current job cards show an alert instead of storing applications. |
-| Live deployment | Needs verification | Local Tomcat is the reliable demo path for now. |
+| Job search UI | Working | `frontend/jobsearch.html` loads jobs from the backend and stays usable with an empty state if the database is unavailable. |
+| Registration | Working | `RegisterServlet` inserts student and employer accounts into MySQL when Tomcat/Railway database settings are configured. |
+| Login | Working | `LoginServlet` checks MySQL credentials, creates a servlet session, and redirects users to the correct dashboard/profile flow. |
+| Job application | Working | Students can apply once per job through `ApplyServlet`; duplicate applications are blocked. |
+| Employer workflow | Working | Employers can post jobs, view applicants for their own jobs, and send messages to student applicants. |
+| Kakao Map address search | Working with graceful fallback | Users search by address; coordinates are hidden and saved when Kakao geocoding succeeds. |
+| Live deployment | Available | Render hosts the current demo build at the live site link below. |
 
 ## Demo Links
 
 | Demo type | Link | Status |
 |---|---|---|
-| Local Tomcat demo | <http://localhost:8080/StudentBridge/> | Use for the midterm live demo after running setup. |
-| Static GitHub Pages demo | <https://capstonedesign-spring2026-ulsancollege.github.io/StudentBridge/> | Verify before using in a presentation. |
+| Local Tomcat demo | <http://localhost:8080/> | Use for final local verification after running the Render/Tomcat-style build. |
+| Static GitHub Pages demo | <https://capstonedesign-spring2026-ulsancollege.github.io/StudentBridge/> | Optional static reference; backend features require Tomcat/Render. |
 | Render live site | <https://studentbridge-6jn2.onrender.com> | Live StudentBridge deployment. |
 | Final presentation deck | [Download PPTX](docs/presentations/StudentBridge_Premium_Final_Deck_v5.pptx) | Capstone final presentation deck. |
 | Demo video | `[TODO: add demo video link]` | Required backup evidence. |
@@ -39,11 +41,12 @@ The current implementation uses a static HTML/CSS/JavaScript frontend, Java Serv
 ## Core Demo Flow
 
 1. Open the StudentBridge homepage.
-2. Navigate to the job search page.
-3. Search/filter part-time jobs by title, location, category, or type.
-4. Open registration and create a test user after Tomcat/MySQL setup.
-5. Log in with the test user and return to the homepage.
-6. Explain that application storage is the next backend milestone.
+2. Register or log in as an employer.
+3. Post a student-friendly job with a real address and Kakao map lookup.
+4. Log out and log in as a student.
+5. Search for the job and apply with one click.
+6. Log back in as the employer, open applicants, and send a message.
+7. Log in as the student and confirm the message is visible.
 
 ## Documentation Index
 
@@ -65,12 +68,10 @@ The current implementation uses a static HTML/CSS/JavaScript frontend, Java Serv
 
 ## Known Issues
 
-- Database credentials are currently hard-coded in `Backend/DBConnection.java`; replace with safer local configuration before public deployment.
-- Passwords are stored as plain text; hashing is required before real users.
-- `frontend/register.html` and `frontend/login.html` use absolute form actions that may need adjustment under the Tomcat `/StudentBridge` context.
-- Job listings are currently seeded in frontend JavaScript, not loaded from MySQL.
-- Application submission is not implemented yet.
-- Evidence links in docs must be replaced with real GitHub issue, PR, screenshot, and demo links before submission.
+- Passwords are stored as plain text for the capstone demo; hashing is required before real users.
+- Admin moderation, employer verification, and file storage hardening are future production work.
+- Some documentation evidence links still need final screenshots, demo video, and professor-submission URLs.
+- Kakao Map requires the JavaScript key and allowed domains to be configured in Kakao Developers; the app still saves address text if the map cannot load.
 
 ## Quick Start
 

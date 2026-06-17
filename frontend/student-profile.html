@@ -129,7 +129,7 @@
   <script src="./runtime-config.js?v=20260616-kakao-runtime"></script>
   <script src="./platform.js?v=20260616-profile"></script>
   <script src="./translations.js"></script>
-  <script src="./i18n.js?v=20260609-navbar-fix"></script>
+  <script src="./i18n.js?v=20260615-premium-glass-navbar"></script>
   <script src="./notifications.js?v=20260609-notifications"></script>
   <script src="./messages.js?v=20260609-messages"></script>
   <script src="./script.js?v=20260616-profile"></script>
@@ -169,12 +169,36 @@
       studentLocationForm.action = StudentBridgePlatform.toBackendUrl("StudentLocationServlet");
     }
 
+    async function getSessionAuth() {
+      if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
+        return { loggedIn: false };
+      }
+
+      const response = await fetch(StudentBridgePlatform.toBackendUrl("AuthStatusServlet"), {
+        credentials: "include",
+        cache: "no-store"
+      });
+
+      if (!response.ok) {
+        return { loggedIn: false };
+      }
+
+      return response.json();
+    }
+
     async function loadStudentProfile() {
       if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
         return;
       }
 
       try {
+        const auth = await getSessionAuth();
+
+        if (!auth.loggedIn) {
+          window.location.href = "./login.html?error=loginRequired&source=student-profile";
+          return;
+        }
+
         const response = await fetch(StudentBridgePlatform.toBackendUrl("StudentProfileServlet"), {
           credentials: "include"
         });

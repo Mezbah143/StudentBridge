@@ -37,6 +37,23 @@
     return `../${path}`;
   }
 
+  async function getSessionAuth() {
+    if (!window.StudentBridgePlatform || !StudentBridgePlatform.canReachBackend()) {
+      return { loggedIn: false };
+    }
+
+    const response = await fetch(backendUrl("AuthStatusServlet"), {
+      credentials: "same-origin",
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      return { loggedIn: false };
+    }
+
+    return response.json();
+  }
+
   function showMessage(text, type) {
     const message = element(selectors.message);
 
@@ -181,6 +198,13 @@
 
   async function loadProfile() {
     try {
+      const auth = await getSessionAuth();
+
+      if (!auth.loggedIn) {
+        window.location.href = "./login.html?error=loginRequired";
+        return;
+      }
+
       const response = await fetch(backendUrl("ProfileServlet"), {
         credentials: "same-origin",
         cache: "no-store"
